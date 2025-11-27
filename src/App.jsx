@@ -164,13 +164,13 @@ function App() {
     <div className="min-h-screen bg-gray-950 relative overflow-hidden">
       <div className="fixed inset-0 gradient-mesh opacity-40"></div>
       
-      <div className="relative z-10 container mx-auto px-4 py-6 max-w-7xl">
+      <div className="relative z-10 container mx-auto px-4 py-3 max-w-5xl">
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="mb-6"
+          className="mb-3"
         >
-          <div className="glass rounded-2xl p-4 mb-6">
+          <div className="glass rounded-xl p-3 mb-3">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <div className="w-3 h-3 rounded-full bg-emerald-400 animate-pulse"></div>
@@ -215,13 +215,13 @@ function App() {
         />
 
         <motion.div 
-          className="glass rounded-2xl p-6"
+          className="glass rounded-xl p-4"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
         >
           {/* Day Headers */}
-          <div className="grid grid-cols-7 gap-1 sm:gap-2 md:gap-3 mb-3">
+          <div className="grid grid-cols-7 gap-1 mb-2">
             {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((day) => (
               <div key={day} className="text-center py-2">
                 <span className="text-xs font-semibold text-gray-400 uppercase tracking-wide">{day}</span>
@@ -230,7 +230,7 @@ function App() {
           </div>
           
           {/* Calendar Grid */}
-          <div className="grid grid-cols-7 gap-1 sm:gap-2 md:gap-3">
+          <div className="grid grid-cols-7 gap-1">
             {calendarDays.map((day, index) => {
               if (!day) {
                 return <div key={`empty-${index}`} className="aspect-square"></div>;
@@ -265,7 +265,7 @@ function App() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.3 }}
-          className="mt-6 glass rounded-2xl p-6"
+          className="mt-3 glass rounded-xl p-4"
         >
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
             <div className="flex items-center gap-6 flex-wrap">

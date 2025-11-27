@@ -8,7 +8,7 @@ const MonthHeader = ({ currentMonth, onPreviousMonth, onNextMonth, totalHours })
     <motion.div 
       initial={{ opacity: 0, y: -20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="glass rounded-2xl p-6 mb-6"
+      className="glass rounded-xl p-4 mb-3"
     >
       <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
         <div className="flex items-center gap-4">

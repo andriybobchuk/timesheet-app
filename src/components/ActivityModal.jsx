@@ -61,30 +61,12 @@ const ActivityModal = ({ isOpen, onClose, date, currentData, onSave, activities,
             </div>
 
             <div className="space-y-6">
-              <div>
-                <label className="flex items-center gap-2 text-sm font-medium text-gray-300 mb-3">
-                  <Briefcase className="w-4 h-4" />
-                  Activity Type
-                </label>
-                <div className="grid grid-cols-1 gap-2">
-                  {activities.map((activity) => (
-                    <motion.button
-                      key={activity}
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                      onClick={() => setSelectedActivity(activity)}
-                      className={`
-                        p-3 rounded-lg border transition-all
-                        ${selectedActivity === activity
-                          ? 'bg-gradient-to-r from-purple-500/30 to-pink-500/30 border-purple-400'
-                          : 'bg-white/5 border-white/10 hover:bg-white/10'
-                        }
-                      `}
-                    >
-                      <span className="font-medium">{activity}</span>
-                    </motion.button>
-                  ))}
+              <div className="text-center">
+                <div className="flex items-center justify-center gap-2 mb-2">
+                  <Briefcase className="w-4 h-4 text-purple-400" />
+                  <span className="text-lg font-medium text-gray-300">LinkedIn Stuff</span>
                 </div>
+                <p className="text-sm text-gray-500">Track your LinkedIn work hours</p>
               </div>
 
               <div>
@@ -129,7 +111,7 @@ const ActivityModal = ({ isOpen, onClose, date, currentData, onSave, activities,
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                   onClick={handleSave}
-                  disabled={!selectedActivity || hours === 0}
+                  disabled={hours === 0}
                   className="flex-1 py-3 px-4 rounded-lg bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <Save className="w-4 h-4" />
