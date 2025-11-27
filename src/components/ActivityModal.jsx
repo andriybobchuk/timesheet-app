@@ -78,13 +78,13 @@ const ActivityModal = ({ isOpen, onClose, date, currentData, onSave, activities,
                   <input
                     type="range"
                     min="0"
-                    max={maxHours}
+                    max="2"
                     step="0.5"
                     value={hours}
                     onChange={(e) => setHours(parseFloat(e.target.value))}
                     className="w-full h-2 bg-white/10 rounded-lg appearance-none cursor-pointer slider"
                     style={{
-                      background: `linear-gradient(to right, rgb(168, 85, 247) 0%, rgb(168, 85, 247) ${(hours / maxHours) * 100}%, rgba(255, 255, 255, 0.1) ${(hours / maxHours) * 100}%, rgba(255, 255, 255, 0.1) 100%)`
+                      background: `linear-gradient(to right, rgb(168, 85, 247) 0%, rgb(168, 85, 247) ${(hours / 2) * 100}%, rgba(255, 255, 255, 0.1) ${(hours / 2) * 100}%, rgba(255, 255, 255, 0.1) 100%)`
                     }}
                   />
                   <div className="flex justify-between mt-2">
@@ -92,7 +92,7 @@ const ActivityModal = ({ isOpen, onClose, date, currentData, onSave, activities,
                     <span className="text-2xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
                       {hours}h
                     </span>
-                    <span className="text-xs text-gray-400">{maxHours}h</span>
+                    <span className="text-xs text-gray-400">2h</span>
                   </div>
                 </div>
               </div>
@@ -111,7 +111,7 @@ const ActivityModal = ({ isOpen, onClose, date, currentData, onSave, activities,
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                   onClick={handleSave}
-                  disabled={hours === 0}
+                  disabled={false}
                   className="flex-1 py-3 px-4 rounded-lg bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <Save className="w-4 h-4" />

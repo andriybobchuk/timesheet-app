@@ -164,7 +164,7 @@ function App() {
     <div className="min-h-screen bg-gray-950 relative overflow-hidden">
       <div className="fixed inset-0 gradient-mesh opacity-40"></div>
       
-      <div className="relative z-10 container mx-auto px-4 py-3 max-w-5xl">
+      <div className="relative z-10 container mx-auto px-4 py-3 max-w-4xl">
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -221,7 +221,7 @@ function App() {
           transition={{ delay: 0.1 }}
         >
           {/* Day Headers */}
-          <div className="grid grid-cols-7 gap-1 mb-2">
+          <div className="grid grid-cols-7 gap-3 mb-3">
             {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((day) => (
               <div key={day} className="text-center py-2">
                 <span className="text-xs font-semibold text-gray-400 uppercase tracking-wide">{day}</span>
@@ -230,7 +230,7 @@ function App() {
           </div>
           
           {/* Calendar Grid */}
-          <div className="grid grid-cols-7 gap-1">
+          <div className="grid grid-cols-7 gap-3">
             {calendarDays.map((day, index) => {
               if (!day) {
                 return <div key={`empty-${index}`} className="aspect-square"></div>;
