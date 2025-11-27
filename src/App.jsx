@@ -8,7 +8,10 @@ import {
   addMonths,
   subMonths,
   isSameMonth,
-  startOfToday
+  startOfToday,
+  startOfWeek,
+  endOfWeek,
+  getDay
 } from 'date-fns';
 import { Settings, Download, TrendingUp, Cloud, CloudOff, Loader2 } from 'lucide-react';
 import DayCard from './components/DayCard';
@@ -43,8 +46,8 @@ function App() {
   const [localConfig, setLocalConfig] = useState(() => {
     const saved = localStorage.getItem('timesheetConfig');
     return saved ? JSON.parse(saved) : {
-      activities: ['LinkedIn Stuff', 'Paid Vacation'],
-      maxHours: 12
+      activities: ['LinkedIn Stuff'],
+      maxHours: 2
     };
   });
 
@@ -69,10 +72,25 @@ function App() {
     localStorage.setItem('useCloud', JSON.stringify(useCloud));
   }, [useCloud]);
 
-  const days = useMemo(() => {
+  const calendarDays = useMemo(() => {
     const start = startOfMonth(currentMonth);
     const end = endOfMonth(currentMonth);
-    return eachDayOfInterval({ start, end });
+    const monthDays = eachDayOfInterval({ start, end });
+    
+    // Get the first day of the week (Monday = 1, Sunday = 0)
+    const firstDayOfMonth = getDay(start);
+    // Adjust so Monday is 0, Sunday is 6
+    const startPadding = firstDayOfMonth === 0 ? 6 : firstDayOfMonth - 1;
+    
+    // Add empty slots for days before month starts
+    const paddedDays = [...Array(startPadding).fill(null), ...monthDays];
+    
+    // Pad to complete the last week
+    while (paddedDays.length % 7 !== 0) {
+      paddedDays.push(null);
+    }
+    
+    return paddedDays;
   }, [currentMonth]);
 
   const totalHours = useMemo(() => {
@@ -202,8 +220,22 @@ function App() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
         >
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-3">
-            {days.map((day, index) => {
+          {/* Day Headers */}
+          <div className="grid grid-cols-7 gap-1 sm:gap-2 md:gap-3 mb-3">
+            {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((day) => (
+              <div key={day} className="text-center py-2">
+                <span className="text-xs font-semibold text-gray-400 uppercase tracking-wide">{day}</span>
+              </div>
+            ))}
+          </div>
+          
+          {/* Calendar Grid */}
+          <div className="grid grid-cols-7 gap-1 sm:gap-2 md:gap-3">
+            {calendarDays.map((day, index) => {
+              if (!day) {
+                return <div key={`empty-${index}`} className="aspect-square"></div>;
+              }
+              
               const key = format(day, 'yyyy-MM-dd');
               const dayData = timeData[key] || {};
               const holiday = isHoliday(day);
@@ -251,14 +283,7 @@ function App() {
               </div>
             </div>
             
-            <div className="flex items-center gap-3">
-              <TrendingUp className="w-5 h-5 text-emerald-400" />
-              <div className="text-sm text-gray-400">
-                Average: <span className="text-emerald-400 font-bold">
-                  {days.length > 0 ? (totalHours / days.length).toFixed(1) : 0}h/day
-                </span>
-              </div>
-            </div>
+            <div></div>
           </div>
         </motion.div>
       </div>

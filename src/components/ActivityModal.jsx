@@ -4,13 +4,16 @@ import { X, Clock, Briefcase, Save, Trash2 } from 'lucide-react';
 import { format } from 'date-fns';
 
 const ActivityModal = ({ isOpen, onClose, date, currentData, onSave, activities, maxHours }) => {
-  const [selectedActivity, setSelectedActivity] = useState(currentData?.activity || '');
-  const [hours, setHours] = useState(currentData?.hours || 0);
+  const [selectedActivity, setSelectedActivity] = useState(currentData?.activity || 'LinkedIn Stuff');
+  const [hours, setHours] = useState(currentData?.hours || 2);
 
   useEffect(() => {
     if (currentData) {
-      setSelectedActivity(currentData.activity || '');
-      setHours(currentData.hours || 0);
+      setSelectedActivity(currentData.activity || 'LinkedIn Stuff');
+      setHours(currentData.hours || 2);
+    } else {
+      setSelectedActivity('LinkedIn Stuff');
+      setHours(2);
     }
   }, [currentData]);
 
