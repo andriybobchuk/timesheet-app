@@ -110,7 +110,7 @@ const ActivityModal = ({ isOpen, onClose, date, currentData, onSave, activities,
                     </div>
                     <p className="text-sm text-red-300 mt-1">
                       This would put you at {hoursAfterSave}h/{monthlyLimit}h for the month. 
-                      The monthly limit is 2 hours per weekday to prevent billing abuse.
+                      The monthly limit is 2 hours per weekday.
                     </p>
                   </div>
                 )}
