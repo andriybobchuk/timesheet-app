@@ -149,4 +149,4 @@ MIT
 
 ## Author
 
-Created for LinkedIn Assistant timesheet tracking
+Created for LinkedIn Assistant timesheet tracking# Timesheet Pro - Live Production App
