@@ -17,14 +17,42 @@ export const useFirestore = () => {
   useEffect(() => {
     const docRef = doc(db, COLLECTION_NAME, DOCUMENT_ID);
     
+    const initializeDoc = async () => {
+      try {
+        const docSnap = await getDoc(docRef);
+        if (!docSnap.exists()) {
+          // Create initial document if it doesn't exist
+          await setDoc(docRef, {
+            timeData: {},
+            config: {
+              activities: ['LinkedIn Stuff'],
+              maxHours: 2
+            },
+            lastUpdated: new Date().toISOString()
+          });
+        }
+      } catch (err) {
+        console.error('Error initializing document:', err);
+      }
+    };
+    
+    initializeDoc();
+    
     const unsubscribe = onSnapshot(docRef, 
       (doc) => {
         if (doc.exists()) {
           const data = doc.data();
           setTimeData(data.timeData || {});
           setConfig(data.config || {
-            activities: ['LinkedIn Stuff', 'Paid Vacation'],
-            maxHours: 12
+            activities: ['LinkedIn Stuff'],
+            maxHours: 2
+          });
+        } else {
+          // Document doesn't exist, use defaults
+          setTimeData({});
+          setConfig({
+            activities: ['LinkedIn Stuff'],
+            maxHours: 2
           });
         }
         setLoading(false);
