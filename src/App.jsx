@@ -176,6 +176,19 @@ function App() {
       <div className="fixed inset-0 gradient-mesh opacity-40"></div>
       
       <div className="relative z-10 container mx-auto px-4 py-3 max-w-4xl">
+        <div className="flex justify-end mb-2">
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={() => setUseCloud(!useCloud)}
+            className={`p-2 rounded-lg transition-all ${
+              useCloud ? 'bg-emerald-500/20 text-emerald-400' : 'bg-white/10 text-gray-400'
+            }`}
+            title={useCloud ? 'Using Cloud Storage (Synced)' : 'Using Local Storage (Device Only)'}
+          >
+            {useCloud ? <Cloud className="w-5 h-5" /> : <CloudOff className="w-5 h-5" />}
+          </motion.button>
+        </div>
 
         <MonthHeader
           currentMonth={currentMonth}
