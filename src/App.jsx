@@ -12,12 +12,15 @@ import {
   startOfWeek,
   endOfWeek,
   getDay,
-  isWeekend
+  isWeekend,
+  getWeek
 } from 'date-fns';
 import { Loader2 } from 'lucide-react';
 import DayCard from './components/DayCard';
 import ActivityModal from './components/ActivityModal';
 import MonthHeader from './components/MonthHeader';
+import TabNavigation from './components/TabNavigation';
+import LinkedInAnalytics from './pages/LinkedInAnalytics';
 import { isHoliday } from './utils/holidays';
 import { useFirestore } from './hooks/useFirestore';
 
@@ -25,14 +28,20 @@ function App() {
   const [currentMonth, setCurrentMonth] = useState(startOfToday());
   const [selectedDate, setSelectedDate] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState(() => {
+    const saved = localStorage.getItem('activeTab');
+    return saved || 'timesheet';
+  });
   const [useCloud, setUseCloud] = useState(true);
   
   const { 
     timeData: cloudTimeData, 
+    linkedInData: cloudLinkedInData,
     config: cloudConfig, 
     loading: cloudLoading, 
     error: cloudError,
     updateTimeData: updateCloudTimeData,
+    updateLinkedInData: updateCloudLinkedInData,
     updateConfig: updateCloudConfig
   } = useFirestore();
 
@@ -50,8 +59,10 @@ function App() {
   });
 
   const timeData = useCloud ? cloudTimeData : localTimeData;
+  const linkedInData = cloudLinkedInData; // LinkedIn data only stored in cloud
   const config = useCloud ? cloudConfig : localConfig;
   const setTimeData = useCloud ? updateCloudTimeData : setLocalTimeData;
+  const setLinkedInData = updateCloudLinkedInData;
   const setConfig = useCloud ? updateCloudConfig : setLocalConfig;
 
   useEffect(() => {
@@ -65,6 +76,10 @@ function App() {
       localStorage.setItem('timesheetConfig', JSON.stringify(localConfig));
     }
   }, [localConfig, useCloud]);
+
+  useEffect(() => {
+    localStorage.setItem('activeTab', activeTab);
+  }, [activeTab]);
 
 
   const calendarDays = useMemo(() => {
@@ -170,8 +185,11 @@ function App() {
       <div className="fixed inset-0 gradient-mesh opacity-40"></div>
       
       <div className="relative z-10 container mx-auto px-4 py-3 max-w-4xl">
+        <TabNavigation activeTab={activeTab} onTabChange={setActiveTab} />
 
-        <MonthHeader
+        {activeTab === 'timesheet' ? (
+          <>
+            <MonthHeader
           currentMonth={currentMonth}
           onPreviousMonth={() => setCurrentMonth(prev => subMonths(prev, 1))}
           onNextMonth={() => setCurrentMonth(prev => addMonths(prev, 1))}
@@ -180,80 +198,128 @@ function App() {
         />
 
         <motion.div 
-          className="glass rounded-xl p-4"
+          className="glass rounded-xl p-2"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
         >
-          {/* Day Headers */}
-          <div className="grid grid-cols-7 gap-3 mb-3">
+          {/* Headers */}
+          <div className="grid grid-cols-8 gap-2 mb-2">
+            <div className="text-center py-1">
+              <span className="text-xs font-semibold text-purple-400 uppercase tracking-wide">WK</span>
+            </div>
             {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((day) => (
-              <div key={day} className="text-center py-2">
+              <div key={day} className="text-center py-1">
                 <span className="text-xs font-semibold text-gray-400 uppercase tracking-wide">{day}</span>
               </div>
             ))}
           </div>
           
-          {/* Calendar Grid */}
-          <div className="grid grid-cols-7 gap-3">
-            {calendarDays.map((day, index) => {
-              if (!day) {
-                return <div key={`empty-${index}`} className="aspect-square"></div>;
-              }
+          {/* Calendar by weeks */}
+          {(() => {
+            const weeks = [];
+            const start = startOfMonth(currentMonth);
+            const end = endOfMonth(currentMonth);
+            
+            // Start from the Monday of the week containing the first day
+            let weekStart = startOfWeek(start, { weekStartsOn: 1 });
+            
+            while (weekStart <= end) {
+              const weekEnd = endOfWeek(weekStart, { weekStartsOn: 1 });
+              const weekNumber = getWeek(weekStart, { weekStartsOn: 1 });
+              const weekDays = eachDayOfInterval({ start: weekStart, end: weekEnd });
               
-              const key = format(day, 'yyyy-MM-dd');
-              const dayData = timeData[key] || {};
-              const holiday = isHoliday(day);
-              
-              return (
-                <motion.div
-                  key={key}
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: index * 0.01 }}
-                >
-                  <DayCard
-                    date={day}
-                    holiday={holiday}
-                    hours={dayData.hours || 0}
-                    activity={dayData.activity}
-                    onUpdate={handleDayClick}
-                    isSelected={selectedDate && format(selectedDate, 'yyyy-MM-dd') === key}
-                  />
-                </motion.div>
+              weeks.push(
+                <div key={weekStart.toISOString()} className="grid grid-cols-8 gap-2 mb-1">
+                  {/* Week number */}
+                  <div className="flex items-center justify-center">
+                    <span className="text-xs font-bold text-purple-400 bg-purple-500/10 px-2 py-1 rounded">
+                      {weekNumber}
+                    </span>
+                  </div>
+                  
+                  {/* Week days */}
+                  {weekDays.map((day, dayIndex) => {
+                    const isCurrentMonth = isSameMonth(day, currentMonth);
+                    if (!isCurrentMonth) {
+                      return <div key={dayIndex} className="aspect-square opacity-30"></div>;
+                    }
+                    
+                    const key = format(day, 'yyyy-MM-dd');
+                    const dayData = timeData[key] || {};
+                    const holiday = isHoliday(day);
+                    
+                    return (
+                      <motion.div
+                        key={key}
+                        initial={{ opacity: 0, scale: 0.8 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ delay: dayIndex * 0.01 }}
+                      >
+                        <DayCard
+                          date={day}
+                          holiday={holiday}
+                          hours={dayData.hours || 0}
+                          activity={dayData.activity}
+                          onUpdate={handleDayClick}
+                          isSelected={selectedDate && format(selectedDate, 'yyyy-MM-dd') === key}
+                        />
+                      </motion.div>
+                    );
+                  })}
+                </div>
               );
-            })}
-          </div>
+              
+              // Move to next week
+              weekStart = new Date(weekStart);
+              weekStart.setDate(weekStart.getDate() + 7);
+            }
+            
+            return weeks;
+          })()}
         </motion.div>
 
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.3 }}
-          className="mt-3 glass rounded-xl p-4"
+          className="mt-2 glass rounded-xl p-3"
         >
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-            <div className="flex items-center gap-6 flex-wrap">
+            <div className="flex items-center gap-4 flex-wrap">
+              <div className="flex items-center gap-2">
+                <div className="w-3 h-3 rounded-full bg-gradient-to-r from-emerald-400 to-teal-400"></div>
+                <span className="text-xs text-gray-400">Hours Filled</span>
+              </div>
               <div className="flex items-center gap-2">
                 <div className="w-3 h-3 rounded-full bg-gradient-to-r from-blue-400 to-cyan-400"></div>
-                <span className="text-sm text-gray-400">Weekend</span>
+                <span className="text-xs text-gray-400">Weekend</span>
               </div>
               <div className="flex items-center gap-2">
                 <div className="w-3 h-3 rounded-full bg-gradient-to-r from-purple-400 to-pink-400"></div>
-                <span className="text-sm text-gray-400">Holiday</span>
+                <span className="text-xs text-gray-400">Holiday</span>
               </div>
               <div className="flex items-center gap-2">
                 <div className="w-3 h-3 rounded-full bg-gradient-to-r from-amber-400 to-orange-400"></div>
-                <span className="text-sm text-gray-400">Today</span>
+                <span className="text-xs text-gray-400">Today</span>
               </div>
             </div>
             
             <div></div>
           </div>
         </motion.div>
+          </>
+        ) : (
+          <LinkedInAnalytics 
+            linkedInData={linkedInData}
+            onUpdateLinkedInData={setLinkedInData}
+            loading={cloudLoading}
+          />
+        )}
       </div>
 
-      <ActivityModal
+      {activeTab === 'timesheet' && (
+        <ActivityModal
         isOpen={modalOpen}
         onClose={() => setModalOpen(false)}
         date={selectedDate || new Date()}
@@ -263,7 +329,8 @@ function App() {
         maxHours={config.maxHours}
         totalHours={totalHours}
         monthlyLimit={monthlyLimit}
-      />
+        />
+      )}
     </div>
   );
 }

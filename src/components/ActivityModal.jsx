@@ -91,7 +91,7 @@ const ActivityModal = ({ isOpen, onClose, date, currentData, onSave, activities,
                     onChange={(e) => setHours(parseFloat(e.target.value))}
                     className="w-full h-2 bg-white/10 rounded-lg appearance-none cursor-pointer slider"
                     style={{
-                      background: `linear-gradient(to right, rgb(168, 85, 247) 0%, rgb(168, 85, 247) ${(hours / 8) * 100}%, rgba(255, 255, 255, 0.1) ${(hours / 8) * 100}%, rgba(255, 255, 255, 0.1) 100%)`
+                      background: `linear-gradient(to right, rgb(168, 85, 247) 0%, rgb(168, 85, 247) ${Math.round((hours / 8) * 100)}%, rgba(255, 255, 255, 0.1) ${Math.round((hours / 8) * 100)}%, rgba(255, 255, 255, 0.1) 100%)`
                     }}
                   />
                   <div className="flex justify-between mt-2">

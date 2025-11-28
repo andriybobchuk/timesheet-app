@@ -10,6 +10,7 @@ const DayCard = ({ date, holiday, hours, activity, onUpdate, isSelected }) => {
   const dayName = format(date, 'EEE');
   
   const getBgClass = () => {
+    if (hours > 0) return 'bg-gradient-to-br from-emerald-500/30 to-teal-500/30 border-emerald-400/50';
     if (holiday) return 'bg-gradient-to-br from-purple-500/20 to-pink-500/20 border-purple-400/30';
     if (isWeekendDay) return 'bg-gradient-to-br from-blue-500/10 to-cyan-500/10 border-blue-400/20';
     if (isToday) return 'bg-gradient-to-br from-amber-500/20 to-orange-500/20 border-amber-400/30';
@@ -28,10 +29,10 @@ const DayCard = ({ date, holiday, hours, activity, onUpdate, isSelected }) => {
       whileHover={{ scale: 1.02, y: -2 }}
       whileTap={{ scale: 0.98 }}
       className={`
-        relative p-1 sm:p-2 rounded-lg sm:rounded-xl border backdrop-blur-lg cursor-pointer aspect-square
+        relative p-1 rounded-lg border backdrop-blur-lg cursor-pointer aspect-square
         transition-all duration-300 hover:shadow-xl hover:shadow-purple-500/10
         ${getBgClass()}
-        ${isSelected ? 'ring-1 sm:ring-2 ring-purple-400 shadow-lg shadow-purple-500/20' : ''}
+        ${isSelected ? 'ring-1 ring-purple-400 shadow-lg shadow-purple-500/20' : ''}
       `}
       onClick={() => onUpdate(date)}
     >
@@ -51,12 +52,13 @@ const DayCard = ({ date, holiday, hours, activity, onUpdate, isSelected }) => {
         
         {/* Desktop: Compact layout */}
         <div className="hidden sm:flex flex-col items-center justify-center h-full">
-          <div className="flex items-center gap-1 mb-1">
-            {getIcon()}
-            <span className="text-[10px] font-medium text-gray-400">{dayName}</span>
-          </div>
+          {getIcon() && (
+            <div className="absolute top-1 left-1">
+              {getIcon()}
+            </div>
+          )}
           
-          <div className="text-lg font-bold bg-gradient-to-br from-white to-gray-300 bg-clip-text text-transparent">
+          <div className="text-base font-bold bg-gradient-to-br from-white to-gray-300 bg-clip-text text-transparent">
             {dayNumber}
           </div>
           

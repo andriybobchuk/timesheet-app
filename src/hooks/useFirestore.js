@@ -7,9 +7,10 @@ const COLLECTION_NAME = 'timesheets';
 
 export const useFirestore = () => {
   const [timeData, setTimeData] = useState({});
+  const [linkedInData, setLinkedInData] = useState({});
   const [config, setConfig] = useState({
-    activities: ['LinkedIn Stuff', 'Paid Vacation'],
-    maxHours: 12
+    activities: ['LinkedIn Stuff'],
+    maxHours: 2
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -24,6 +25,7 @@ export const useFirestore = () => {
           // Create initial document if it doesn't exist
           await setDoc(docRef, {
             timeData: {},
+            linkedInData: {},
             config: {
               activities: ['LinkedIn Stuff'],
               maxHours: 2
@@ -43,6 +45,7 @@ export const useFirestore = () => {
         if (doc.exists()) {
           const data = doc.data();
           setTimeData(data.timeData || {});
+          setLinkedInData(data.linkedInData || {});
           setConfig(data.config || {
             activities: ['LinkedIn Stuff'],
             maxHours: 2
@@ -50,6 +53,7 @@ export const useFirestore = () => {
         } else {
           // Document doesn't exist, use defaults
           setTimeData({});
+          setLinkedInData({});
           setConfig({
             activities: ['LinkedIn Stuff'],
             maxHours: 2
@@ -72,6 +76,7 @@ export const useFirestore = () => {
       const docRef = doc(db, COLLECTION_NAME, DOCUMENT_ID);
       await setDoc(docRef, { 
         timeData: newTimeData, 
+        linkedInData,
         config,
         lastUpdated: new Date().toISOString()
       }, { merge: true });
@@ -82,11 +87,28 @@ export const useFirestore = () => {
     }
   };
 
+  const updateLinkedInData = async (newLinkedInData) => {
+    try {
+      const docRef = doc(db, COLLECTION_NAME, DOCUMENT_ID);
+      await setDoc(docRef, { 
+        timeData,
+        linkedInData: newLinkedInData,
+        config,
+        lastUpdated: new Date().toISOString()
+      }, { merge: true });
+      setLinkedInData(newLinkedInData);
+    } catch (err) {
+      console.error('Error updating LinkedIn data:', err);
+      setError(err.message);
+    }
+  };
+
   const updateConfig = async (newConfig) => {
     try {
       const docRef = doc(db, COLLECTION_NAME, DOCUMENT_ID);
       await setDoc(docRef, { 
         timeData,
+        linkedInData,
         config: newConfig,
         lastUpdated: new Date().toISOString()
       }, { merge: true });
@@ -99,10 +121,12 @@ export const useFirestore = () => {
 
   return {
     timeData,
+    linkedInData,
     config,
     loading,
     error,
     updateTimeData,
+    updateLinkedInData,
     updateConfig
   };
 };
