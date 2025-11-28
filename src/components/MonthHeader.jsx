@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { ChevronLeft, ChevronRight, Calendar } from 'lucide-react';
 import { format } from 'date-fns';
 
-const MonthHeader = ({ currentMonth, onPreviousMonth, onNextMonth, totalHours }) => {
+const MonthHeader = ({ currentMonth, onPreviousMonth, onNextMonth, totalHours, monthlyLimit }) => {
   return (
     <motion.div 
       initial={{ opacity: 0, y: -20 }}
@@ -42,10 +42,21 @@ const MonthHeader = ({ currentMonth, onPreviousMonth, onNextMonth, totalHours })
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
           transition={{ delay: 0.2 }}
-          className="flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-emerald-500/20 to-teal-500/20 border border-emerald-400/30"
+          className={`flex items-center gap-2 px-4 py-2 rounded-xl border ${
+            totalHours > monthlyLimit 
+              ? 'bg-gradient-to-r from-red-500/20 to-orange-500/20 border-red-400/30'
+              : 'bg-gradient-to-r from-emerald-500/20 to-teal-500/20 border-emerald-400/30'
+          }`}
         >
-          <span className="text-sm text-gray-300">Total Hours:</span>
-          <span className="text-2xl font-bold text-emerald-400">{totalHours}</span>
+          <span className="text-sm text-gray-300">Hours:</span>
+          <span className={`text-2xl font-bold ${
+            totalHours > monthlyLimit ? 'text-red-400' : 'text-emerald-400'
+          }`}>
+            {totalHours}/{monthlyLimit}
+          </span>
+          {totalHours > monthlyLimit && (
+            <span className="text-xs text-red-300 ml-2">LIMIT EXCEEDED</span>
+          )}
         </motion.div>
       </div>
     </motion.div>

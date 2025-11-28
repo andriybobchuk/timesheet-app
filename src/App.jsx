@@ -11,7 +11,8 @@ import {
   startOfToday,
   startOfWeek,
   endOfWeek,
-  getDay
+  getDay,
+  isWeekend
 } from 'date-fns';
 import { Settings, Download, TrendingUp, Cloud, CloudOff, Loader2 } from 'lucide-react';
 import DayCard from './components/DayCard';
@@ -93,11 +94,21 @@ function App() {
     return paddedDays;
   }, [currentMonth]);
 
-  const totalHours = useMemo(() => {
+  const { totalHours, monthlyLimit } = useMemo(() => {
+    const start = startOfMonth(currentMonth);
+    const end = endOfMonth(currentMonth);
+    const allDaysInMonth = eachDayOfInterval({ start, end });
+    
+    // Count weekdays (excluding weekends)
+    const weekdaysCount = allDaysInMonth.filter(day => !isWeekend(day)).length;
+    const monthlyLimit = weekdaysCount * 2; // 2 hours per weekday
+    
     const monthKey = format(currentMonth, 'yyyy-MM');
-    return Object.entries(timeData)
+    const totalHours = Object.entries(timeData)
       .filter(([key]) => key.startsWith(monthKey))
       .reduce((sum, [, data]) => sum + (data.hours || 0), 0);
+    
+    return { totalHours, monthlyLimit };
   }, [timeData, currentMonth]);
 
   const handleDayClick = (date) => {
@@ -165,53 +176,13 @@ function App() {
       <div className="fixed inset-0 gradient-mesh opacity-40"></div>
       
       <div className="relative z-10 container mx-auto px-4 py-3 max-w-4xl">
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          className="mb-3"
-        >
-          <div className="glass rounded-xl p-3 mb-3">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <div className="w-3 h-3 rounded-full bg-emerald-400 animate-pulse"></div>
-                <span className="text-sm font-medium text-gray-300">Timesheet Pro</span>
-              </div>
-              <div className="flex gap-2 items-center">
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={() => setUseCloud(!useCloud)}
-                  className={`p-2 rounded-lg transition-all ${
-                    useCloud ? 'bg-emerald-500/20 text-emerald-400' : 'bg-white/10 text-gray-400'
-                  }`}
-                  title={useCloud ? 'Using Cloud Storage' : 'Using Local Storage'}
-                >
-                  {useCloud ? <Cloud className="w-4 h-4" /> : <CloudOff className="w-4 h-4" />}
-                </motion.button>
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={exportData}
-                  className="p-2 rounded-lg hover:bg-white/10 transition-colors"
-                  title="Export CSV"
-                >
-                  <Download className="w-4 h-4" />
-                </motion.button>
-              </div>
-            </div>
-            {cloudError && useCloud && (
-              <div className="mt-2 text-xs text-red-400">
-                Cloud sync error: {cloudError}
-              </div>
-            )}
-          </div>
-        </motion.div>
 
         <MonthHeader
           currentMonth={currentMonth}
           onPreviousMonth={() => setCurrentMonth(prev => subMonths(prev, 1))}
           onNextMonth={() => setCurrentMonth(prev => addMonths(prev, 1))}
           totalHours={totalHours}
+          monthlyLimit={monthlyLimit}
         />
 
         <motion.div 
@@ -296,6 +267,8 @@ function App() {
         onSave={handleSaveActivity}
         activities={config.activities}
         maxHours={config.maxHours}
+        totalHours={totalHours}
+        monthlyLimit={monthlyLimit}
       />
     </div>
   );

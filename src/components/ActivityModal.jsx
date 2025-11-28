@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { X, Clock, Briefcase, Save, Trash2 } from 'lucide-react';
 import { format } from 'date-fns';
 
-const ActivityModal = ({ isOpen, onClose, date, currentData, onSave, activities, maxHours }) => {
+const ActivityModal = ({ isOpen, onClose, date, currentData, onSave, activities, maxHours, totalHours, monthlyLimit }) => {
   const [selectedActivity, setSelectedActivity] = useState(currentData?.activity || 'LinkedIn Stuff');
   const [hours, setHours] = useState(currentData?.hours || 2);
 
@@ -17,7 +17,14 @@ const ActivityModal = ({ isOpen, onClose, date, currentData, onSave, activities,
     }
   }, [currentData]);
 
+  const currentHoursForThisDay = currentData?.hours || 0;
+  const hoursAfterSave = totalHours - currentHoursForThisDay + hours;
+  const wouldExceedLimit = hoursAfterSave > monthlyLimit;
+
   const handleSave = () => {
+    if (wouldExceedLimit && hours > currentHoursForThisDay) {
+      return; // Don't save if it would exceed limit
+    }
     onSave(date, { activity: selectedActivity, hours });
     onClose();
   };
@@ -78,13 +85,13 @@ const ActivityModal = ({ isOpen, onClose, date, currentData, onSave, activities,
                   <input
                     type="range"
                     min="0"
-                    max="2"
+                    max="8"
                     step="0.5"
                     value={hours}
                     onChange={(e) => setHours(parseFloat(e.target.value))}
                     className="w-full h-2 bg-white/10 rounded-lg appearance-none cursor-pointer slider"
                     style={{
-                      background: `linear-gradient(to right, rgb(168, 85, 247) 0%, rgb(168, 85, 247) ${(hours / 2) * 100}%, rgba(255, 255, 255, 0.1) ${(hours / 2) * 100}%, rgba(255, 255, 255, 0.1) 100%)`
+                      background: `linear-gradient(to right, rgb(168, 85, 247) 0%, rgb(168, 85, 247) ${(hours / 8) * 100}%, rgba(255, 255, 255, 0.1) ${(hours / 8) * 100}%, rgba(255, 255, 255, 0.1) 100%)`
                     }}
                   />
                   <div className="flex justify-between mt-2">
@@ -92,9 +99,21 @@ const ActivityModal = ({ isOpen, onClose, date, currentData, onSave, activities,
                     <span className="text-2xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
                       {hours}h
                     </span>
-                    <span className="text-xs text-gray-400">2h</span>
+                    <span className="text-xs text-gray-400">8h</span>
                   </div>
                 </div>
+                
+                {wouldExceedLimit && hours > currentHoursForThisDay && (
+                  <div className="mt-4 p-3 rounded-lg bg-red-500/20 border border-red-400/30">
+                    <div className="flex items-center gap-2">
+                      <span className="text-red-400 font-semibold">⚠️ Monthly Limit Exceeded</span>
+                    </div>
+                    <p className="text-sm text-red-300 mt-1">
+                      This would put you at {hoursAfterSave}h/{monthlyLimit}h for the month. 
+                      The monthly limit is 2 hours per weekday to prevent billing abuse.
+                    </p>
+                  </div>
+                )}
               </div>
 
               <div className="flex gap-3">
@@ -111,7 +130,7 @@ const ActivityModal = ({ isOpen, onClose, date, currentData, onSave, activities,
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                   onClick={handleSave}
-                  disabled={false}
+                  disabled={wouldExceedLimit && hours > currentHoursForThisDay}
                   className="flex-1 py-3 px-4 rounded-lg bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <Save className="w-4 h-4" />
