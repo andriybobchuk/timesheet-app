@@ -22,15 +22,15 @@ const ActivityModal = ({ isOpen, onClose, date, currentData, onSave, activities,
   const wouldExceedLimit = hoursAfterSave > monthlyLimit;
 
   const handleSave = () => {
-    if (wouldExceedLimit && hours > currentHoursForThisDay) {
-      return; // Don't save if it would exceed limit
+    if (hours > 0 && wouldExceedLimit && hours > currentHoursForThisDay) {
+      return; // Don't save if it would exceed limit (but allow saving 0 hours)
     }
     onSave(date, { activity: selectedActivity, hours });
     onClose();
   };
 
   const handleClear = () => {
-    onSave(date, { activity: '', hours: 0 });
+    onSave(date, { activity: 'LinkedIn Stuff', hours: 0 });
     onClose();
   };
 
@@ -103,7 +103,7 @@ const ActivityModal = ({ isOpen, onClose, date, currentData, onSave, activities,
                   </div>
                 </div>
                 
-                {wouldExceedLimit && hours > currentHoursForThisDay && (
+                {hours > 0 && wouldExceedLimit && hours > currentHoursForThisDay && (
                   <div className="mt-4 p-3 rounded-lg bg-red-500/20 border border-red-400/30">
                     <div className="flex items-center gap-2">
                       <span className="text-red-400 font-semibold">⚠️ Monthly Limit Exceeded</span>
@@ -130,7 +130,7 @@ const ActivityModal = ({ isOpen, onClose, date, currentData, onSave, activities,
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                   onClick={handleSave}
-                  disabled={wouldExceedLimit && hours > currentHoursForThisDay}
+                  disabled={hours > 0 && wouldExceedLimit && hours > currentHoursForThisDay}
                   className="flex-1 py-3 px-4 rounded-lg bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <Save className="w-4 h-4" />
