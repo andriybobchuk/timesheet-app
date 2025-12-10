@@ -14,6 +14,8 @@ const LinkedInDataForm = ({ weekData, onSave, onClear, weekInfo }) => {
     }
   });
 
+  const [errors, setErrors] = useState({});
+
   useEffect(() => {
     setFormData({
       followerCount: weekData?.followerCount || '',
@@ -27,11 +29,39 @@ const LinkedInDataForm = ({ weekData, onSave, onClear, weekInfo }) => {
     });
   }, [weekData]);
 
+  const validateForm = () => {
+    const newErrors = {};
+
+    // Validate follower count
+    const followerCount = parseInt(formData.followerCount);
+    if (!formData.followerCount || isNaN(followerCount) || followerCount < 0) {
+      newErrors.followerCount = 'Please enter a valid follower count (0 or higher)';
+    }
+
+    // Validate SSI components
+    const ssiFields = ['establishBrand', 'findPeople', 'engageInsights', 'buildRelationships'];
+    ssiFields.forEach(field => {
+      const value = parseInt(formData.ssi[field]);
+      if (!formData.ssi[field] || isNaN(value) || value < 0 || value > 25) {
+        newErrors[field] = 'Must be a whole number between 0 and 25';
+      }
+    });
+
+    return newErrors;
+  };
+
   const handleSave = () => {
-    const establishBrand = parseFloat(formData.ssi.establishBrand) || 0;
-    const findPeople = parseFloat(formData.ssi.findPeople) || 0;
-    const engageInsights = parseFloat(formData.ssi.engageInsights) || 0;
-    const buildRelationships = parseFloat(formData.ssi.buildRelationships) || 0;
+    const validationErrors = validateForm();
+    setErrors(validationErrors);
+
+    if (Object.keys(validationErrors).length > 0) {
+      return; // Don't save if there are validation errors
+    }
+
+    const establishBrand = parseInt(formData.ssi.establishBrand) || 0;
+    const findPeople = parseInt(formData.ssi.findPeople) || 0;
+    const engageInsights = parseInt(formData.ssi.engageInsights) || 0;
+    const buildRelationships = parseInt(formData.ssi.buildRelationships) || 0;
     const totalSSI = establishBrand + findPeople + engageInsights + buildRelationships;
     
     const cleanData = {
@@ -41,7 +71,7 @@ const LinkedInDataForm = ({ weekData, onSave, onClear, weekInfo }) => {
         findPeople,
         engageInsights,
         buildRelationships,
-        total: Math.round(totalSSI) // Round to integer
+        total: totalSSI // No need to round since all components are integers
       }
     };
     onSave(cleanData);
@@ -58,10 +88,18 @@ const LinkedInDataForm = ({ weekData, onSave, onClear, weekInfo }) => {
         total: ''
       }
     });
+    setErrors({});
     onClear();
   };
 
-  const isFormValid = formData.followerCount && formData.ssi.total;
+  const isFormValid = () => {
+    return formData.followerCount && 
+           formData.ssi.establishBrand && 
+           formData.ssi.findPeople && 
+           formData.ssi.engageInsights && 
+           formData.ssi.buildRelationships &&
+           Object.keys(errors).length === 0;
+  };
 
   const ssiFields = [
     { key: 'establishBrand', label: 'Establish your professional brand', icon: Award, color: 'from-purple-400 to-pink-400' },
@@ -94,11 +132,25 @@ const LinkedInDataForm = ({ weekData, onSave, onClear, weekInfo }) => {
           </label>
           <input
             type="number"
+            min="0"
+            step="1"
             value={formData.followerCount}
-            onChange={(e) => setFormData(prev => ({ ...prev, followerCount: e.target.value }))}
+            onChange={(e) => {
+              setFormData(prev => ({ ...prev, followerCount: e.target.value }));
+              if (errors.followerCount) {
+                setErrors(prev => ({ ...prev, followerCount: undefined }));
+              }
+            }}
             placeholder="e.g., 1250"
-            className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all"
+            className={`w-full px-4 py-3 rounded-xl bg-white/5 border text-white placeholder-gray-500 focus:outline-none focus:ring-2 transition-all ${
+              errors.followerCount 
+                ? 'border-red-400/50 focus:ring-red-500/50 focus:border-red-500/50' 
+                : 'border-white/10 focus:ring-blue-500/50 focus:border-blue-500/50'
+            }`}
           />
+          {errors.followerCount && (
+            <p className="text-red-400 text-xs mt-2">{errors.followerCount}</p>
+          )}
         </div>
 
         {/* SSI Components */}
@@ -120,15 +172,27 @@ const LinkedInDataForm = ({ weekData, onSave, onClear, weekInfo }) => {
                     type="number"
                     min="0"
                     max="25"
-                    step="0.1"
+                    step="1"
                     value={formData.ssi[field.key]}
-                    onChange={(e) => setFormData(prev => ({
-                      ...prev,
-                      ssi: { ...prev.ssi, [field.key]: e.target.value }
-                    }))}
-                    placeholder="0-25"
-                    className="w-full px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-purple-500/50 focus:border-purple-500/50 transition-all"
+                    onChange={(e) => {
+                      setFormData(prev => ({
+                        ...prev,
+                        ssi: { ...prev.ssi, [field.key]: e.target.value }
+                      }));
+                      if (errors[field.key]) {
+                        setErrors(prev => ({ ...prev, [field.key]: undefined }));
+                      }
+                    }}
+                    placeholder="0-25 (whole numbers only)"
+                    className={`w-full px-3 py-2 rounded-lg bg-white/5 border text-white placeholder-gray-500 focus:outline-none focus:ring-1 transition-all ${
+                      errors[field.key] 
+                        ? 'border-red-400/50 focus:ring-red-500/50 focus:border-red-500/50' 
+                        : 'border-white/10 focus:ring-purple-500/50 focus:border-purple-500/50'
+                    }`}
                   />
+                  {errors[field.key] && (
+                    <p className="text-red-400 text-xs mt-1">{errors[field.key]}</p>
+                  )}
                 </div>
               );
             })}
@@ -143,12 +207,12 @@ const LinkedInDataForm = ({ weekData, onSave, onClear, weekInfo }) => {
           </label>
           <div className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-gray-400 flex items-center justify-between">
             <span>
-              {Math.round(
-                (parseFloat(formData.ssi.establishBrand) || 0) +
-                (parseFloat(formData.ssi.findPeople) || 0) +
-                (parseFloat(formData.ssi.engageInsights) || 0) +
-                (parseFloat(formData.ssi.buildRelationships) || 0)
-              )}
+              {
+                (parseInt(formData.ssi.establishBrand) || 0) +
+                (parseInt(formData.ssi.findPeople) || 0) +
+                (parseInt(formData.ssi.engageInsights) || 0) +
+                (parseInt(formData.ssi.buildRelationships) || 0)
+              }
             </span>
             <span className="text-xs text-gray-500">/100</span>
           </div>
@@ -170,7 +234,7 @@ const LinkedInDataForm = ({ weekData, onSave, onClear, weekInfo }) => {
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
             onClick={handleSave}
-            disabled={!isFormValid}
+            disabled={!isFormValid()}
             className="flex-2 py-3 px-6 rounded-xl bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed text-white font-medium"
           >
             <Save className="w-4 h-4" />
