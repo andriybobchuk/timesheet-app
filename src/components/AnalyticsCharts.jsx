@@ -151,6 +151,58 @@ const SSIChart = ({ data }) => {
   );
 };
 
+const TotalSSIChart = ({ data }) => {
+  if (!data || data.length === 0) {
+    return (
+      <div className="glass rounded-xl p-6 h-64 flex items-center justify-center">
+        <p className="text-gray-400">No data available for Total SSI trends</p>
+      </div>
+    );
+  }
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: 0.3 }}
+      className="glass rounded-xl p-6"
+    >
+      <h4 className="text-lg font-semibold text-white mb-4">Total SSI Score Over Time</h4>
+      <div className="h-64">
+        <ResponsiveContainer width="100%" height="100%">
+          <LineChart data={data}>
+            <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
+            <XAxis 
+              dataKey="week" 
+              stroke="#9CA3AF" 
+              fontSize={12}
+              tickFormatter={(value) => `W${value}`}
+            />
+            <YAxis stroke="#9CA3AF" fontSize={12} domain={[0, 100]} />
+            <Tooltip content={<CustomTooltip />} />
+            <defs>
+              <linearGradient id="totalSSIGradient" x1="0" y1="0" x2="1" y2="0">
+                <stop offset="0%" stopColor="#A855F7" />
+                <stop offset="50%" stopColor="#EC4899" />
+                <stop offset="100%" stopColor="#F59E0B" />
+              </linearGradient>
+            </defs>
+            <Line
+              type="monotone"
+              dataKey="totalSSI"
+              stroke="url(#totalSSIGradient)"
+              strokeWidth={3}
+              dot={{ fill: '#EC4899', r: 5 }}
+              activeDot={{ r: 8 }}
+              name="Total SSI"
+            />
+          </LineChart>
+        </ResponsiveContainer>
+      </div>
+    </motion.div>
+  );
+};
+
 const SSIRadarChart = ({ currentData }) => {
   if (!currentData?.ssi) {
     return (
@@ -250,6 +302,7 @@ const AnalyticsCharts = ({ linkedInData, currentWeekData }) => {
         <FollowerChart data={chartData} />
         <SSIChart data={chartData} />
       </div>
+      <TotalSSIChart data={chartData} />
     </div>
   );
 };

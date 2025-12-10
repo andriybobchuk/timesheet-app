@@ -38,12 +38,12 @@ const LinkedInDataForm = ({ weekData, onSave, onClear, weekInfo }) => {
       newErrors.followerCount = 'Please enter a valid follower count (0 or higher)';
     }
 
-    // Validate SSI components
+    // Validate SSI components (allow decimals)
     const ssiFields = ['establishBrand', 'findPeople', 'engageInsights', 'buildRelationships'];
     ssiFields.forEach(field => {
-      const value = parseInt(formData.ssi[field]);
+      const value = parseFloat(formData.ssi[field]);
       if (!formData.ssi[field] || isNaN(value) || value < 0 || value > 25) {
-        newErrors[field] = 'Must be a whole number between 0 and 25';
+        newErrors[field] = 'Must be between 0 and 25';
       }
     });
 
@@ -58,10 +58,10 @@ const LinkedInDataForm = ({ weekData, onSave, onClear, weekInfo }) => {
       return; // Don't save if there are validation errors
     }
 
-    const establishBrand = parseInt(formData.ssi.establishBrand) || 0;
-    const findPeople = parseInt(formData.ssi.findPeople) || 0;
-    const engageInsights = parseInt(formData.ssi.engageInsights) || 0;
-    const buildRelationships = parseInt(formData.ssi.buildRelationships) || 0;
+    const establishBrand = parseFloat(formData.ssi.establishBrand) || 0;
+    const findPeople = parseFloat(formData.ssi.findPeople) || 0;
+    const engageInsights = parseFloat(formData.ssi.engageInsights) || 0;
+    const buildRelationships = parseFloat(formData.ssi.buildRelationships) || 0;
     const totalSSI = establishBrand + findPeople + engageInsights + buildRelationships;
     
     const cleanData = {
@@ -71,7 +71,7 @@ const LinkedInDataForm = ({ weekData, onSave, onClear, weekInfo }) => {
         findPeople,
         engageInsights,
         buildRelationships,
-        total: totalSSI // No need to round since all components are integers
+        total: Math.round(totalSSI * 10) / 10 // Round to 1 decimal place
       }
     };
     onSave(cleanData);
@@ -172,7 +172,7 @@ const LinkedInDataForm = ({ weekData, onSave, onClear, weekInfo }) => {
                     type="number"
                     min="0"
                     max="25"
-                    step="1"
+                    step="0.01"
                     value={formData.ssi[field.key]}
                     onChange={(e) => {
                       setFormData(prev => ({
@@ -183,7 +183,7 @@ const LinkedInDataForm = ({ weekData, onSave, onClear, weekInfo }) => {
                         setErrors(prev => ({ ...prev, [field.key]: undefined }));
                       }
                     }}
-                    placeholder="0-25 (whole numbers only)"
+                    placeholder="0-25"
                     className={`w-full px-3 py-2 rounded-lg bg-white/5 border text-white placeholder-gray-500 focus:outline-none focus:ring-1 transition-all ${
                       errors[field.key] 
                         ? 'border-red-400/50 focus:ring-red-500/50 focus:border-red-500/50' 
@@ -207,12 +207,12 @@ const LinkedInDataForm = ({ weekData, onSave, onClear, weekInfo }) => {
           </label>
           <div className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-gray-400 flex items-center justify-between">
             <span>
-              {
-                (parseInt(formData.ssi.establishBrand) || 0) +
-                (parseInt(formData.ssi.findPeople) || 0) +
-                (parseInt(formData.ssi.engageInsights) || 0) +
-                (parseInt(formData.ssi.buildRelationships) || 0)
-              }
+              {(
+                (parseFloat(formData.ssi.establishBrand) || 0) +
+                (parseFloat(formData.ssi.findPeople) || 0) +
+                (parseFloat(formData.ssi.engageInsights) || 0) +
+                (parseFloat(formData.ssi.buildRelationships) || 0)
+              ).toFixed(1)}
             </span>
             <span className="text-xs text-gray-500">/100</span>
           </div>
