@@ -6,7 +6,7 @@ const DOCUMENT_ID = 'points';
 const COLLECTION_NAME = 'scoreboard';
 
 export const useFirestore = () => {
-  const [scores, setScores] = useState({ andrew: 0, agata: 0 });
+  const [scores, setScores] = useState({ andrew: 0, veronica: 0 });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -19,7 +19,7 @@ export const useFirestore = () => {
         if (!docSnap.exists()) {
           await setDoc(docRef, {
             andrew: 0,
-            agata: 0,
+            veronica: 0,
             lastUpdated: new Date().toISOString()
           });
         }
@@ -36,7 +36,7 @@ export const useFirestore = () => {
           const data = doc.data();
           setScores({
             andrew: data.andrew ?? 0,
-            agata: data.agata ?? 0
+            veronica: data.veronica ?? 0
           });
         }
         setLoading(false);

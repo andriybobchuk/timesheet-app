@@ -2,7 +2,7 @@ import { useFirestore } from './hooks/useFirestore';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Plus, Minus } from 'lucide-react';
 
-function ScoreCard({ name, score, onIncrement, onDecrement, color }) {
+function ScoreCard({ name, score, onIncrement, onDecrement, color, note }) {
   const isPositive = score > 0;
   const isNegative = score < 0;
 
@@ -11,7 +11,7 @@ function ScoreCard({ name, score, onIncrement, onDecrement, color }) {
       initial={{ opacity: 0, y: 30 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      className="flex flex-col items-center gap-6"
+      className="flex flex-col items-center gap-4 sm:gap-6 w-full"
     >
       <h2 className={`text-2xl sm:text-3xl font-bold ${color}`}>{name}</h2>
 
@@ -23,7 +23,7 @@ function ScoreCard({ name, score, onIncrement, onDecrement, color }) {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.8 }}
             transition={{ type: 'spring', stiffness: 300, damping: 25 }}
-            className={`text-7xl sm:text-8xl font-black tabular-nums block text-center ${
+            className={`text-6xl sm:text-8xl font-black tabular-nums block text-center ${
               isPositive ? 'text-emerald-400' : isNegative ? 'text-red-400' : 'text-white/60'
             }`}
           >
@@ -38,7 +38,7 @@ function ScoreCard({ name, score, onIncrement, onDecrement, color }) {
           whileTap={{ scale: 0.9 }}
           onClick={onDecrement}
           className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl glass flex items-center justify-center
-                     text-red-400 hover:bg-red-500/20 hover:border-red-500/30 transition-colors"
+                     text-red-400 hover:bg-red-500/20 hover:border-red-500/30 transition-colors active:scale-90"
         >
           <Minus size={28} />
         </motion.button>
@@ -47,11 +47,13 @@ function ScoreCard({ name, score, onIncrement, onDecrement, color }) {
           whileTap={{ scale: 0.9 }}
           onClick={onIncrement}
           className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl glass flex items-center justify-center
-                     text-emerald-400 hover:bg-emerald-500/20 hover:border-emerald-500/30 transition-colors"
+                     text-emerald-400 hover:bg-emerald-500/20 hover:border-emerald-500/30 transition-colors active:scale-90"
         >
           <Plus size={28} />
         </motion.button>
       </div>
+
+      <p className="text-white/25 text-xs text-center italic">{note}</p>
     </motion.div>
   );
 }
@@ -84,44 +86,29 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-dvh gradient-mesh flex flex-col items-center justify-center p-4 gap-8">
-      <motion.h1
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="text-3xl sm:text-4xl font-black text-white/90 tracking-tight text-center"
-      >
-        The Scoreboard
-      </motion.h1>
-
-      <div className="glass rounded-3xl p-8 sm:p-12 flex flex-col sm:flex-row items-center gap-12 sm:gap-20">
+    <div className="min-h-dvh gradient-mesh flex items-center justify-center p-4">
+      <div className="glass rounded-3xl p-6 sm:p-12 flex flex-col sm:flex-row items-center gap-8 sm:gap-20 w-full max-w-lg sm:max-w-2xl">
         <ScoreCard
           name="Andrew"
           score={scores.andrew}
           onIncrement={() => updateScore('andrew', 1)}
           onDecrement={() => updateScore('andrew', -1)}
           color="text-blue-400"
+          note="Only Veronica is allowed to change this"
         />
 
-        <div className="hidden sm:block w-px h-40 bg-white/10" />
-        <div className="sm:hidden h-px w-40 bg-white/10" />
+        <div className="hidden sm:block w-px h-40 bg-white/10 shrink-0" />
+        <div className="sm:hidden h-px w-3/4 bg-white/10" />
 
         <ScoreCard
-          name="Agata"
-          score={scores.agata}
-          onIncrement={() => updateScore('agata', 1)}
-          onDecrement={() => updateScore('agata', -1)}
+          name="Veronica"
+          score={scores.veronica}
+          onIncrement={() => updateScore('veronica', 1)}
+          onDecrement={() => updateScore('veronica', -1)}
           color="text-pink-400"
+          note="Only Andrew is allowed to change this"
         />
       </div>
-
-      <motion.p
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.5 }}
-        className="text-white/20 text-sm"
-      >
-        real-time synced
-      </motion.p>
     </div>
   );
 }
