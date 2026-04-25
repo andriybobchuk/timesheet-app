@@ -6,6 +6,7 @@ const TAGS = ['Accounting', 'LinkedIn', 'Side Quest'];
 const i18n = {
   pl: {
     title: 'Skrzynka Andrija',
+    subtitle: 'Czego chcesz od Andrija?',
     tag: 'Tag',
     taskTitle: 'Tytuł zadania',
     placeholder: 'Co trzeba zrobić?',
@@ -19,6 +20,7 @@ const i18n = {
   },
   en: {
     title: "Andrii's Inbox",
+    subtitle: 'What do you want from Andrii?',
     tag: 'Tag',
     taskTitle: 'Task title',
     placeholder: 'What needs to be done?',
@@ -168,12 +170,12 @@ export default function App() {
               transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
               className="w-full max-w-md space-y-8"
             >
-              <motion.h1
-                {...fade}
-                className="text-xl font-semibold text-white tracking-tight"
-              >
-                {t.title}
-              </motion.h1>
+              <motion.div {...fade}>
+                <h1 className="text-xl font-semibold text-white tracking-tight">
+                  {t.title}
+                </h1>
+                <p className="text-sm text-white/40 mt-1">{t.subtitle}</p>
+              </motion.div>
 
               <motion.form
                 onSubmit={handleSubmit}
