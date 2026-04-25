@@ -3,28 +3,11 @@
 @tailwind utilities;
 
 @layer base {
-  :root {
-    --gradient-1: #667eea;
-    --gradient-2: #764ba2;
-    --gradient-3: #f093fb;
-  }
-  
   body {
-    @apply bg-gray-950 text-white;
+    @apply bg-black text-white antialiased;
   }
-}
 
-@layer utilities {
-  .glass {
-    @apply backdrop-blur-xl bg-white/5 border border-white/10;
-  }
-  
-  .gradient-mesh {
-    background-image: 
-      radial-gradient(at 40% 20%, hsla(280, 100%, 70%, 0.3) 0px, transparent 50%),
-      radial-gradient(at 80% 0%, hsla(240, 100%, 70%, 0.2) 0px, transparent 50%),
-      radial-gradient(at 0% 50%, hsla(355, 100%, 93%, 0.2) 0px, transparent 50%),
-      radial-gradient(at 80% 50%, hsla(340, 100%, 76%, 0.2) 0px, transparent 50%),
-      radial-gradient(at 0% 100%, hsla(260, 100%, 70%, 0.3) 0px, transparent 50%);
+  select option {
+    @apply bg-black text-white;
   }
 }

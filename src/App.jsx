@@ -1,113 +1,138 @@
-import { useFirestore } from './hooks/useFirestore';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, Minus } from 'lucide-react';
+import { useState } from 'react';
 
-function ScoreCard({ name, score, onIncrement, onDecrement, color, note }) {
-  const isPositive = score > 0;
-  const isNegative = score < 0;
-
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 30 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
-      className="flex flex-col items-center gap-4 sm:gap-6 w-full"
-    >
-      <h2 className={`text-2xl sm:text-3xl font-bold ${color}`}>{name}</h2>
-
-      <div className="relative">
-        <AnimatePresence mode="popLayout">
-          <motion.span
-            key={score}
-            initial={{ opacity: 0, y: -20, scale: 0.8 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 20, scale: 0.8 }}
-            transition={{ type: 'spring', stiffness: 300, damping: 25 }}
-            className={`text-6xl sm:text-8xl font-black tabular-nums block text-center ${
-              isPositive ? 'text-emerald-400' : isNegative ? 'text-red-400' : 'text-white/60'
-            }`}
-          >
-            {score > 0 ? `+${score}` : score}
-          </motion.span>
-        </AnimatePresence>
-      </div>
-
-      <div className="flex gap-3">
-        <motion.button
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.9 }}
-          onClick={onDecrement}
-          className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl glass flex items-center justify-center
-                     text-red-400 hover:bg-red-500/20 hover:border-red-500/30 transition-colors active:scale-90"
-        >
-          <Minus size={28} />
-        </motion.button>
-        <motion.button
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.9 }}
-          onClick={onIncrement}
-          className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl glass flex items-center justify-center
-                     text-emerald-400 hover:bg-emerald-500/20 hover:border-emerald-500/30 transition-colors active:scale-90"
-        >
-          <Plus size={28} />
-        </motion.button>
-      </div>
-
-      <p className="text-white/25 text-xs text-center italic">{note}</p>
-    </motion.div>
-  );
-}
+const SUBMITTERS = (import.meta.env.VITE_SUBMITTERS || 'Accountant,Sister,Friend')
+  .split(',')
+  .map((s) => s.trim());
 
 export default function App() {
-  const { scores, loading, error, updateScore } = useFirestore();
+  const [title, setTitle] = useState('');
+  const [description, setDescription] = useState('');
+  const [submitter, setSubmitter] = useState(SUBMITTERS[0]);
+  const [status, setStatus] = useState('idle'); // idle | submitting | success | error
+  const [errorMsg, setErrorMsg] = useState('');
 
-  if (loading) {
-    return (
-      <div className="min-h-dvh gradient-mesh flex items-center justify-center">
-        <motion.div
-          animate={{ opacity: [0.5, 1, 0.5] }}
-          transition={{ duration: 1.5, repeat: Infinity }}
-          className="text-white/50 text-lg"
-        >
-          Loading...
-        </motion.div>
-      </div>
-    );
-  }
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!title.trim()) return;
 
-  if (error) {
+    setStatus('submitting');
+    setErrorMsg('');
+
+    try {
+      const res = await fetch('/.netlify/functions/submit-task', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          title: title.trim(),
+          description: description.trim(),
+          submitter,
+        }),
+      });
+
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.error || 'Something went wrong');
+      }
+
+      setStatus('success');
+      setTitle('');
+      setDescription('');
+    } catch (err) {
+      setErrorMsg(err.message);
+      setStatus('error');
+    }
+  };
+
+  const handleAnother = () => {
+    setStatus('idle');
+    setErrorMsg('');
+  };
+
+  if (status === 'success') {
     return (
-      <div className="min-h-dvh gradient-mesh flex items-center justify-center p-4">
-        <div className="glass rounded-2xl p-6 text-red-400 text-center max-w-sm">
-          Something went wrong: {error}
+      <div className="min-h-dvh bg-black flex items-center justify-center p-4">
+        <div className="w-full max-w-md text-center space-y-6">
+          <p className="text-5xl">&#10003;</p>
+          <h2 className="text-xl font-semibold text-white">Task sent to Andrii</h2>
+          <button
+            onClick={handleAnother}
+            className="mt-4 w-full py-3 bg-white text-black font-medium rounded-lg hover:bg-white/90 transition-colors"
+          >
+            Submit another
+          </button>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-dvh gradient-mesh flex items-center justify-center p-4">
-      <div className="glass rounded-3xl p-6 sm:p-12 flex flex-col sm:flex-row items-center gap-8 sm:gap-20 w-full max-w-lg sm:max-w-2xl">
-        <ScoreCard
-          name="Andrew"
-          score={scores.andrew}
-          onIncrement={() => updateScore('andrew', 1)}
-          onDecrement={() => updateScore('andrew', -1)}
-          color="text-blue-400"
-          note="Only Veronica is allowed to change this"
-        />
+    <div className="min-h-dvh bg-black flex items-center justify-center p-4">
+      <div className="w-full max-w-md space-y-8">
+        <h1 className="text-xl font-semibold text-white tracking-tight">
+          Inbox of Andrii's Corporation
+        </h1>
 
-        <div className="hidden sm:block w-px h-40 bg-white/10 shrink-0" />
-        <div className="sm:hidden h-px w-3/4 bg-white/10" />
+        <form onSubmit={handleSubmit} className="space-y-5">
+          <div>
+            <label htmlFor="submitter" className="block text-sm text-white/50 mb-1.5">
+              Your name
+            </label>
+            <select
+              id="submitter"
+              value={submitter}
+              onChange={(e) => setSubmitter(e.target.value)}
+              className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2.5 text-white focus:outline-none focus:border-white/30 transition-colors"
+            >
+              {SUBMITTERS.map((name) => (
+                <option key={name} value={name}>
+                  {name}
+                </option>
+              ))}
+            </select>
+          </div>
 
-        <ScoreCard
-          name="Veronica"
-          score={scores.veronica}
-          onIncrement={() => updateScore('veronica', 1)}
-          onDecrement={() => updateScore('veronica', -1)}
-          color="text-pink-400"
-          note="Only Andrew is allowed to change this"
-        />
+          <div>
+            <label htmlFor="title" className="block text-sm text-white/50 mb-1.5">
+              Task title
+            </label>
+            <input
+              id="title"
+              type="text"
+              required
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              placeholder="What needs to be done?"
+              className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2.5 text-white placeholder:text-white/20 focus:outline-none focus:border-white/30 transition-colors"
+            />
+          </div>
+
+          <div>
+            <label htmlFor="description" className="block text-sm text-white/50 mb-1.5">
+              Description
+              <span className="text-white/30 ml-1">optional</span>
+            </label>
+            <textarea
+              id="description"
+              rows={4}
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              placeholder="Any extra context..."
+              className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2.5 text-white placeholder:text-white/20 focus:outline-none focus:border-white/30 transition-colors resize-none"
+            />
+          </div>
+
+          {status === 'error' && (
+            <p className="text-red-400 text-sm">{errorMsg}</p>
+          )}
+
+          <button
+            type="submit"
+            disabled={status === 'submitting' || !title.trim()}
+            className="w-full py-3 bg-white text-black font-medium rounded-lg hover:bg-white/90 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+          >
+            {status === 'submitting' ? 'Sending...' : 'Submit'}
+          </button>
+        </form>
       </div>
     </div>
   );
