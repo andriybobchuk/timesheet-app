@@ -126,7 +126,7 @@ export default function App() {
                 {...fade}
                 className="text-xl font-semibold text-white tracking-tight"
               >
-                Inbox of Andrii's Corporation
+                Andrii's Inbox
               </motion.h1>
 
               <motion.form
