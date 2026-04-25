@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useCallback } from 'react';
+import { useState, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const TAGS = ['Accounting', 'LinkedIn', 'Side Quest'];
@@ -30,14 +30,6 @@ export default function App() {
       el.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }, 300);
   }, []);
-
-  // Auto-focus title field when returning to form
-  useEffect(() => {
-    if (status === 'idle' && titleRef.current) {
-      // Don't auto-focus on initial mount (let animations play)
-      // Only focus when coming back from success state
-    }
-  }, [status]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -152,7 +144,7 @@ export default function App() {
                     id="tag"
                     value={tag}
                     onChange={(e) => setTag(e.target.value)}
-                    className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-3 text-white focus:outline-none focus:border-white/30 transition-colors appearance-none"
+                    className="field appearance-none"
                   >
                     {TAGS.map((name) => (
                       <option key={name} value={name}>
@@ -177,7 +169,7 @@ export default function App() {
                     onChange={(e) => setTitle(e.target.value)}
                     onFocus={scrollIntoView}
                     placeholder="What needs to be done?"
-                    className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-3 text-white placeholder:text-white/20 focus:outline-none focus:border-white/30 transition-colors"
+                    className="field"
                   />
                 </motion.div>
 
@@ -195,7 +187,7 @@ export default function App() {
                     onChange={(e) => setDescription(e.target.value)}
                     onFocus={scrollIntoView}
                     placeholder="Any extra context..."
-                    className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-3 text-white placeholder:text-white/20 focus:outline-none focus:border-white/30 transition-colors resize-none"
+                    className="field resize-none"
                   />
                 </motion.div>
 

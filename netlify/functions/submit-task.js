@@ -12,7 +12,7 @@ async function createNotionTask(title, description, tag) {
       title: [{ text: { content: title } }],
     },
     Status: {
-      status: { name: 'Today/Incoming' },
+      select: { name: 'Today/Incoming' },
     },
     Tag: {
       multi_select: [{ name: tag }],
