@@ -11,6 +11,9 @@ async function createNotionTask(title, description, tag) {
     Name: {
       title: [{ text: { content: title } }],
     },
+    Status: {
+      status: { name: 'Today/Incoming' },
+    },
     Tag: {
       multi_select: [{ name: tag }],
     },
