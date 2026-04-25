@@ -3,11 +3,23 @@
 @tailwind utilities;
 
 @layer base {
-  body {
+  html, body, #root {
     @apply bg-black text-white antialiased;
+    /* Prevent iOS overscroll bounce */
+    overscroll-behavior: none;
+  }
+
+  html {
+    /* Stable scrollbar, prevent layout shifts */
+    overflow-y: scroll;
   }
 
   select option {
     @apply bg-black text-white;
+  }
+
+  /* Prevent iOS auto-zoom on input focus (needs >= 16px) */
+  input, textarea, select {
+    font-size: 16px;
   }
 }
