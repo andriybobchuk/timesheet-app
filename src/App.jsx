@@ -1,13 +1,11 @@
 import { useState } from 'react';
 
-const SUBMITTERS = (import.meta.env.VITE_SUBMITTERS || 'Accountant,Sister,Friend')
-  .split(',')
-  .map((s) => s.trim());
+const TAGS = ['Accounting', 'LinkedIn', 'Side Quest'];
 
 export default function App() {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
-  const [submitter, setSubmitter] = useState(SUBMITTERS[0]);
+  const [tag, setTag] = useState(TAGS[0]);
   const [status, setStatus] = useState('idle'); // idle | submitting | success | error
   const [errorMsg, setErrorMsg] = useState('');
 
@@ -25,7 +23,7 @@ export default function App() {
         body: JSON.stringify({
           title: title.trim(),
           description: description.trim(),
-          submitter,
+          tag,
         }),
       });
 
@@ -74,16 +72,16 @@ export default function App() {
 
         <form onSubmit={handleSubmit} className="space-y-5">
           <div>
-            <label htmlFor="submitter" className="block text-sm text-white/50 mb-1.5">
-              Your name
+            <label htmlFor="tag" className="block text-sm text-white/50 mb-1.5">
+              Tag
             </label>
             <select
-              id="submitter"
-              value={submitter}
-              onChange={(e) => setSubmitter(e.target.value)}
+              id="tag"
+              value={tag}
+              onChange={(e) => setTag(e.target.value)}
               className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2.5 text-white focus:outline-none focus:border-white/30 transition-colors"
             >
-              {SUBMITTERS.map((name) => (
+              {TAGS.map((name) => (
                 <option key={name} value={name}>
                   {name}
                 </option>

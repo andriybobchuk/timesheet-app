@@ -6,7 +6,7 @@ const NOTION_DATABASE_ID = process.env.NOTION_DATABASE_ID;
 const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
 const TELEGRAM_CHAT_ID = process.env.TELEGRAM_CHAT_ID;
 
-async function createNotionTask(title, description, submitter) {
+async function createNotionTask(title, description, tag) {
   const properties = {
     Name: {
       title: [{ text: { content: title } }],
@@ -14,11 +14,9 @@ async function createNotionTask(title, description, submitter) {
     Status: {
       status: { name: 'Incoming' },
     },
-  };
-
-  // Add "Submitted By" as a rich_text property if the database has it
-  properties['Submitted By'] = {
-    rich_text: [{ text: { content: submitter } }],
+    Tags: {
+      multi_select: [{ name: tag }],
+    },
   };
 
   const children = [];
@@ -39,10 +37,10 @@ async function createNotionTask(title, description, submitter) {
   });
 }
 
-async function sendTelegramNotification(title, submitter) {
+async function sendTelegramNotification(title, tag) {
   if (!TELEGRAM_BOT_TOKEN || !TELEGRAM_CHAT_ID) return;
 
-  const text = `New task from ${submitter}:\n${title}`;
+  const text = `New task [${tag}]:\n${title}`;
   const url = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
 
   await fetch(url, {
@@ -62,16 +60,16 @@ export async function handler(event) {
   }
 
   try {
-    const { title, description, submitter } = JSON.parse(event.body);
+    const { title, description, tag } = JSON.parse(event.body);
 
     if (!title || !title.trim()) {
       return { statusCode: 400, body: JSON.stringify({ error: 'Title is required' }) };
     }
 
-    await createNotionTask(title, description || '', submitter || 'Anonymous');
+    await createNotionTask(title, description || '', tag || 'Side Quest');
 
     // Fire-and-forget — don't let Telegram failures block the response
-    sendTelegramNotification(title, submitter || 'Anonymous').catch(console.error);
+    sendTelegramNotification(title, tag || 'Side Quest').catch(console.error);
 
     return {
       statusCode: 200,
