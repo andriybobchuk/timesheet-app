@@ -3,6 +3,35 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 const TAGS = ['Accounting', 'LinkedIn', 'Side Quest'];
 
+const i18n = {
+  pl: {
+    title: 'Skrzynka Andrija',
+    tag: 'Tag',
+    taskTitle: 'Tytuł zadania',
+    placeholder: 'Co trzeba zrobić?',
+    description: 'Opis',
+    optional: 'opcjonalnie',
+    descPlaceholder: 'Dodatkowy kontekst...',
+    submit: 'Wyślij',
+    sending: 'Wysyłanie...',
+    success: 'Zadanie wysłane do Andrija',
+    another: 'Wyślij kolejne',
+  },
+  en: {
+    title: "Andrii's Inbox",
+    tag: 'Tag',
+    taskTitle: 'Task title',
+    placeholder: 'What needs to be done?',
+    description: 'Description',
+    optional: 'optional',
+    descPlaceholder: 'Any extra context...',
+    submit: 'Submit',
+    sending: 'Sending...',
+    success: 'Task sent to Andrii',
+    another: 'Submit another',
+  },
+};
+
 const fade = {
   initial: { opacity: 0, y: 12 },
   animate: { opacity: 1, y: 0 },
@@ -14,6 +43,7 @@ const stagger = {
 };
 
 export default function App() {
+  const [lang, setLang] = useState('pl');
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [tag, setTag] = useState(TAGS[0]);
@@ -22,10 +52,10 @@ export default function App() {
   const formRef = useRef(null);
   const titleRef = useRef(null);
 
-  // Scroll focused input into view when keyboard opens (especially iOS)
+  const t = i18n[lang];
+
   const scrollIntoView = useCallback((e) => {
     const el = e.target;
-    // Small delay to let keyboard finish animating
     setTimeout(() => {
       el.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }, 300);
@@ -35,7 +65,6 @@ export default function App() {
     e.preventDefault();
     if (!title.trim()) return;
 
-    // Dismiss keyboard before submitting
     document.activeElement?.blur();
 
     setStatus('submitting');
@@ -73,6 +102,23 @@ export default function App() {
 
   return (
     <div className="min-h-dvh bg-black flex flex-col">
+      <div className="flex justify-end p-4 pb-0">
+        <div className="flex gap-1 text-sm text-white/40">
+          <button
+            onClick={() => setLang('pl')}
+            className={`px-2 py-1 rounded transition-colors ${lang === 'pl' ? 'text-white bg-white/10' : 'hover:text-white/60'}`}
+          >
+            PL
+          </button>
+          <button
+            onClick={() => setLang('en')}
+            className={`px-2 py-1 rounded transition-colors ${lang === 'en' ? 'text-white bg-white/10' : 'hover:text-white/60'}`}
+          >
+            EN
+          </button>
+        </div>
+      </div>
+
       <div className="flex-1 flex items-center justify-center p-4 py-safe">
         <AnimatePresence mode="wait">
           {status === 'success' ? (
@@ -98,7 +144,7 @@ export default function App() {
                 transition={{ delay: 0.25 }}
                 className="text-xl font-semibold text-white"
               >
-                Task sent to Andrii
+                {t.success}
               </motion.h2>
               <motion.button
                 initial={{ opacity: 0, y: 8 }}
@@ -109,7 +155,7 @@ export default function App() {
                 onClick={handleAnother}
                 className="mt-4 w-full py-3.5 bg-white text-black font-medium rounded-lg hover:bg-white/90 transition-colors active:bg-white/80"
               >
-                Submit another
+                {t.another}
               </motion.button>
             </motion.div>
           ) : (
@@ -126,7 +172,7 @@ export default function App() {
                 {...fade}
                 className="text-xl font-semibold text-white tracking-tight"
               >
-                Andrii's Inbox
+                {t.title}
               </motion.h1>
 
               <motion.form
@@ -138,7 +184,7 @@ export default function App() {
               >
                 <motion.div variants={fade}>
                   <label htmlFor="tag" className="block text-sm text-white/50 mb-1.5">
-                    Tag
+                    {t.tag}
                   </label>
                   <select
                     id="tag"
@@ -156,7 +202,7 @@ export default function App() {
 
                 <motion.div variants={fade}>
                   <label htmlFor="title" className="block text-sm text-white/50 mb-1.5">
-                    Task title
+                    {t.taskTitle}
                   </label>
                   <input
                     ref={titleRef}
@@ -168,15 +214,15 @@ export default function App() {
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
                     onFocus={scrollIntoView}
-                    placeholder="What needs to be done?"
+                    placeholder={t.placeholder}
                     className="field"
                   />
                 </motion.div>
 
                 <motion.div variants={fade}>
                   <label htmlFor="description" className="block text-sm text-white/50 mb-1.5">
-                    Description
-                    <span className="text-white/30 ml-1">optional</span>
+                    {t.description}
+                    <span className="text-white/30 ml-1">{t.optional}</span>
                   </label>
                   <textarea
                     id="description"
@@ -186,7 +232,7 @@ export default function App() {
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
                     onFocus={scrollIntoView}
-                    placeholder="Any extra context..."
+                    placeholder={t.descPlaceholder}
                     className="field resize-none"
                   />
                 </motion.div>
@@ -212,7 +258,7 @@ export default function App() {
                     whileTap={{ scale: 0.97 }}
                     className="w-full py-3.5 bg-white text-black font-medium rounded-lg hover:bg-white/90 transition-colors disabled:opacity-30 disabled:cursor-not-allowed active:bg-white/80"
                   >
-                    {status === 'submitting' ? 'Sending...' : 'Submit'}
+                    {status === 'submitting' ? t.sending : t.submit}
                   </motion.button>
                 </motion.div>
               </motion.form>
