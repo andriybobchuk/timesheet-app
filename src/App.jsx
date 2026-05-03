@@ -1,12 +1,12 @@
 import { useState, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-const TAGS = ['Accounting', 'LinkedIn', 'Side Quest'];
+const TAGS = ['Finance', 'LinkedIn', 'Legal', 'Side Quest'];
 
 const i18n = {
   pl: {
     title: 'Skrzynka Andrija',
-    subtitle: 'Czego chcesz od Andrija?',
+    subtitle: 'Czego chcesz?',
     tag: 'Tag',
     taskTitle: 'Tytuł zadania',
     placeholder: 'Co trzeba zrobić?',
@@ -20,7 +20,7 @@ const i18n = {
   },
   en: {
     title: "Andrii's Inbox",
-    subtitle: 'What do you want from Andrii?',
+    subtitle: 'What do you want?',
     tag: 'Tag',
     taskTitle: 'Task title',
     placeholder: 'What needs to be done?',
@@ -45,7 +45,7 @@ const stagger = {
 };
 
 export default function App() {
-  const [lang, setLang] = useState('pl');
+  const [lang, setLang] = useState('en');
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [tag, setTag] = useState(TAGS[0]);
@@ -170,11 +170,18 @@ export default function App() {
               transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
               className="w-full max-w-md space-y-8"
             >
-              <motion.div {...fade}>
-                <h1 className="text-xl font-semibold text-white tracking-tight">
-                  {t.title}
-                </h1>
-                <p className="text-sm text-white/40 mt-1">{t.subtitle}</p>
+              <motion.div {...fade} className="space-y-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-purple-500 to-purple-700 flex items-center justify-center shrink-0">
+                    <span className="text-white text-xs font-black tracking-tighter">212</span>
+                  </div>
+                  <div>
+                    <h1 className="text-xl font-semibold text-white tracking-tight">
+                      {t.title}
+                    </h1>
+                    <p className="text-sm text-white/40">{t.subtitle}</p>
+                  </div>
+                </div>
               </motion.div>
 
               <motion.form
