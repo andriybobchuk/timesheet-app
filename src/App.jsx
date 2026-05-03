@@ -103,8 +103,17 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-dvh bg-black flex flex-col">
-      <div className="flex justify-end p-4 pb-0">
+    <div className="min-h-dvh bg-black flex flex-col relative overflow-hidden">
+      <div
+        aria-hidden="true"
+        className="pointer-events-none select-none absolute inset-x-0 top-0 flex justify-center"
+      >
+        <span className="text-[12rem] sm:text-[20rem] font-black leading-none tracking-tighter bg-gradient-to-b from-white/20 via-white/5 to-transparent bg-clip-text text-transparent">
+          212
+        </span>
+      </div>
+
+      <div className="flex justify-end p-4 pb-0 relative z-10">
         <div className="flex gap-1 text-sm text-white/40">
           <button
             onClick={() => setLang('pl')}
@@ -121,7 +130,7 @@ export default function App() {
         </div>
       </div>
 
-      <div className="flex-1 flex items-center justify-center p-4 py-safe">
+      <div className="flex-1 flex items-center justify-center p-4 py-safe relative z-10">
         <AnimatePresence mode="wait">
           {status === 'success' ? (
             <motion.div
@@ -170,18 +179,11 @@ export default function App() {
               transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
               className="w-full max-w-md space-y-8"
             >
-              <motion.div {...fade} className="space-y-4">
-                <div className="flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-purple-500 to-purple-700 flex items-center justify-center shrink-0">
-                    <span className="text-white text-xs font-black tracking-tighter">212</span>
-                  </div>
-                  <div>
-                    <h1 className="text-xl font-semibold text-white tracking-tight">
-                      {t.title}
-                    </h1>
-                    <p className="text-sm text-white/40">{t.subtitle}</p>
-                  </div>
-                </div>
+              <motion.div {...fade}>
+                <h1 className="text-xl font-semibold text-white tracking-tight">
+                  {t.title}
+                </h1>
+                <p className="text-sm text-white/40 mt-1">{t.subtitle}</p>
               </motion.div>
 
               <motion.form
