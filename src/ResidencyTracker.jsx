@@ -6,7 +6,8 @@ const PERIOD_TYPES = [
   { value: 'student_karta', label: 'Student Karta Pobytu', rate: 0.5, color: 'text-sky-400', bg: 'bg-sky-400/10', border: 'border-sky-400/20' },
   { value: 'work_karta', label: 'Karta Pobytu (UoP)', rate: 1.0, color: 'text-emerald-400', bg: 'bg-emerald-400/10', border: 'border-emerald-400/20' },
   { value: 'business_karta', label: 'Karta Pobytu (B2B/JDG)', rate: 1.0, color: 'text-amber-400', bg: 'bg-amber-400/10', border: 'border-amber-400/20' },
-  { value: 'pending', label: 'Application Pending (stampka)', rate: 1.0, color: 'text-purple-400', bg: 'bg-purple-400/10', border: 'border-purple-400/20' },
+  { value: 'pending_student', label: 'Stampka (after student karta)', rate: 0.5, color: 'text-purple-400', bg: 'bg-purple-400/10', border: 'border-purple-400/20' },
+  { value: 'pending_work', label: 'Stampka (after work/business karta)', rate: 1.0, color: 'text-violet-400', bg: 'bg-violet-400/10', border: 'border-violet-400/20' },
   { value: 'other', label: 'Other Legal Stay', rate: 1.0, color: 'text-gray-400', bg: 'bg-gray-400/10', border: 'border-gray-400/20' },
 ];
 
@@ -47,7 +48,7 @@ const DEFAULT_PERIODS = [
   },
   {
     id: '5',
-    type: 'pending',
+    type: 'pending_work',
     label: 'Pending — B2B/JDG Karta Application (Katowice)',
     startDate: '2025-02-28',
     endDate: '',
@@ -89,7 +90,9 @@ const DEFAULT_CASES = [
 ];
 
 const LONG_TERM_YEARS = 5;
-const PASSPORT_YEARS = 8; // via karta stałego pobytu path after long-term residency
+// Current law: 3yr on long-term resident card after obtaining it (5+3=8 practical minimum)
+// Pending bills propose 8-10yr but none passed as of May 2026
+const PASSPORT_YEARS = 8;
 
 function generateId() {
   return Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
@@ -247,8 +250,8 @@ export default function ResidencyTracker({ onBack }) {
           />
           <ProgressCard
             title="Paszport Polski"
-            subtitle="Polish Citizenship"
-            required={`${PASSPORT_YEARS} years`}
+            subtitle="Citizenship (5yr LTR + 3yr on card)"
+            required={`~${PASSPORT_YEARS} years total`}
             accumulated={formatYearsMonthsDays(calculations.totalEffectiveDays)}
             progress={calculations.passportProgress}
             remaining={calculations.passportRemaining > 0 ? formatYearsMonthsDays(calculations.passportRemaining) : null}
@@ -396,14 +399,15 @@ export default function ResidencyTracker({ onBack }) {
               </div>
 
               <div className="bg-white/5 rounded-xl border border-white/8 p-4 space-y-3 text-xs text-white/40">
-                <h3 className="text-white/60 font-medium text-sm">Polish Law Notes</h3>
+                <h3 className="text-white/60 font-medium text-sm">Polish Law Notes (as of 2026)</h3>
                 <ul className="space-y-1.5 list-disc list-inside">
                   <li><span className="text-amber-400/70">Student visa/karta periods count at 50%</span> toward long-term residency (Art. 212 ustawy o cudzoziemcach)</li>
                   <li><span className="text-emerald-400/70">Work & business karta periods count at 100%</span></li>
-                  <li>Time spent waiting for a decision (stampka) counts as legal stay if application was filed on time</li>
+                  <li><span className="text-purple-400/70">Stampka waiting time counts at the rate of the previous karta</span> — if your student karta expired and you applied for a new one, waiting time = 50%. If work karta expired, waiting time = 100% (Art. 108)</li>
                   <li>Karta długoterminowego rezydenta UE requires <strong className="text-white/60">5 years</strong> of uninterrupted legal stay</li>
                   <li>Absences: max 6 months single absence, max 10 months total in the 5-year period</li>
-                  <li>Polish citizenship (passport) typically requires continuous residency plus additional criteria (language exam B1, stable income)</li>
+                  <li>Polish citizenship: current law requires <strong className="text-white/60">3 years</strong> on a permanent/long-term resident card (so ~8yr total in practice). Pending bills may raise this to 8-10yr — not yet passed</li>
+                  <li><span className="text-red-400/70">From July 1, 2026:</span> B1 language certificate required for long-term resident card (university diplomas no longer accepted)</li>
                 </ul>
               </div>
             </motion.div>
