@@ -1,5 +1,6 @@
 import { useState, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import ResidencyTracker from './ResidencyTracker';
 
 const TAGS = ['Finance', 'LinkedIn', 'Legal', 'Side Quest'];
 
@@ -51,6 +52,7 @@ export default function App() {
   const [tag, setTag] = useState(TAGS[0]);
   const [status, setStatus] = useState('idle');
   const [errorMsg, setErrorMsg] = useState('');
+  const [screen, setScreen] = useState('inbox');
   const formRef = useRef(null);
   const titleRef = useRef(null);
 
@@ -102,6 +104,10 @@ export default function App() {
     setErrorMsg('');
   };
 
+  if (screen === 'residency') {
+    return <ResidencyTracker onBack={() => setScreen('inbox')} />;
+  }
+
   return (
     <div className="min-h-dvh bg-black flex flex-col relative overflow-hidden">
       <div
@@ -113,7 +119,13 @@ export default function App() {
         </span>
       </div>
 
-      <div className="flex justify-end p-4 pb-0 relative z-10">
+      <div className="flex justify-between p-4 pb-0 relative z-10">
+        <button
+          onClick={() => setScreen('residency')}
+          className="text-sm text-white/30 hover:text-white/60 transition-colors px-2 py-1"
+        >
+          Residency
+        </button>
         <div className="flex gap-1 text-sm text-white/40">
           <button
             onClick={() => setLang('pl')}
