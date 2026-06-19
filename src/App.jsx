@@ -1,9 +1,22 @@
-import { useState, useRef, useCallback } from 'react';
+import { useState, useRef, useCallback, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import ResidencyTracker from './ResidencyTracker';
 import MooneyDesigner from './MooneyDesigner';
 
 const TAGS = ['Finance', 'LinkedIn', 'Legal', 'Side Quest'];
+
+const VALID_SCREENS = ['inbox', 'residency', 'mooney'];
+const SCREEN_TITLES = {
+  inbox: "Andrii's Inbox",
+  residency: 'Residency Tracker',
+  mooney: 'Mooney Designer',
+};
+
+const getScreenFromPath = () => {
+  if (typeof window === 'undefined') return 'inbox';
+  const path = window.location.pathname.replace(/^\/+|\/+$/g, '');
+  return VALID_SCREENS.includes(path) ? path : 'inbox';
+};
 
 const i18n = {
   pl: {
@@ -53,9 +66,27 @@ export default function App() {
   const [tag, setTag] = useState(TAGS[0]);
   const [status, setStatus] = useState('idle');
   const [errorMsg, setErrorMsg] = useState('');
-  const [screen, setScreen] = useState('inbox');
+  const [screen, setScreenState] = useState(getScreenFromPath);
   const formRef = useRef(null);
   const titleRef = useRef(null);
+
+  const setScreen = useCallback((newScreen) => {
+    setScreenState(newScreen);
+    const newPath = newScreen === 'inbox' ? '/' : `/${newScreen}`;
+    if (typeof window !== 'undefined' && window.location.pathname !== newPath) {
+      window.history.pushState(null, '', newPath);
+    }
+  }, []);
+
+  useEffect(() => {
+    const onPopState = () => setScreenState(getScreenFromPath());
+    window.addEventListener('popstate', onPopState);
+    return () => window.removeEventListener('popstate', onPopState);
+  }, []);
+
+  useEffect(() => {
+    document.title = `${SCREEN_TITLES[screen] || SCREEN_TITLES.inbox} · 212 Studio`;
+  }, [screen]);
 
   const t = i18n[lang];
 

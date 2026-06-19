@@ -348,9 +348,29 @@
 .mooney-app .preview-mini-label { color: var(--accent); }
 .mooney-app .preview-mini-sep { opacity: 0.4; }
 
+/* Tablet — single col, preview sticky to top, mid scale */
 @media (max-width: 1024px) {
-  .mooney-app .carousel-layout { grid-template-columns: 1fr; }
-  .mooney-app .carousel-preview-col { position: static; }
+  .mooney-app .carousel-layout { grid-template-columns: 1fr; gap: 14px; }
+  .mooney-app .carousel-preview-col {
+    position: sticky;
+    top: 0;
+    z-index: 30;
+    background: linear-gradient(180deg, #000 0%, #000 88%, rgba(0,0,0,0.85) 100%);
+    margin: 0 -24px;
+    padding: 8px 24px 10px;
+    border-bottom: 1px solid rgba(192,132,252,0.12);
+  }
+  .mooney-app .single-view { justify-content: center; }
+  .mooney-app .carousel-scaler-portrait {
+    transform: scale(0.34);
+    margin-right: -712.8px;
+    margin-bottom: -891px;
+  }
+  .mooney-app .carousel-scaler-square {
+    transform: scale(0.34);
+    margin-right: -712.8px;
+    margin-bottom: -712.8px;
+  }
 }
 
 .mooney-app .carousel-controls-wrapper {
@@ -1472,4 +1492,184 @@
 @media (max-width: 800px) {
   .mooney-app .grid-view { grid-template-columns: 1fr; max-width: 400px; }
   .mooney-app .logo-grid { grid-template-columns: repeat(2, 1fr); gap: 16px; }
+}
+
+/* =============================================
+   MOBILE (≤640px) — sticky preview, compact controls
+   ============================================= */
+@media (max-width: 640px) {
+  .mooney-app {
+    padding: 10px;
+    padding-top: 8px;
+  }
+
+  /* Toolbar */
+  .mooney-app .mooney-toolbar {
+    margin-bottom: 8px;
+    gap: 6px;
+  }
+  .mooney-app .mooney-back-btn,
+  .mooney-app .mooney-tool-trigger {
+    font-size: 12px;
+    padding: 6px 10px;
+  }
+  .mooney-app .mooney-studio-mark { display: none; }
+  .mooney-app .mooney-tool-dropdown { min-width: 240px; }
+
+  /* Title compact */
+  .mooney-app .controls-title { font-size: 19px; margin-bottom: 2px; }
+  .mooney-app .controls-tagline { font-size: 11px; margin-bottom: 10px; }
+  .mooney-app .controls { margin-bottom: 12px; }
+
+  /* Sticky preview - tighter padding, smaller scale */
+  .mooney-app .carousel-preview-col {
+    margin: 0 -10px;
+    padding: 6px 10px 8px;
+  }
+  .mooney-app .preview-mini-bar {
+    font-size: 10px;
+    letter-spacing: 1px;
+  }
+  .mooney-app .carousel-scaler-portrait {
+    transform: scale(0.28);
+    margin-right: -777.6px;
+    margin-bottom: -972px;
+  }
+  .mooney-app .carousel-scaler-square {
+    transform: scale(0.28);
+    margin-right: -777.6px;
+    margin-bottom: -777.6px;
+  }
+
+  /* Quick guide */
+  .mooney-app .quick-guide {
+    padding: 10px 28px 10px 12px;
+    margin-bottom: 12px;
+  }
+  .mooney-app .quick-guide-steps {
+    font-size: 11.5px;
+    line-height: 1.5;
+    padding-left: 16px;
+  }
+  .mooney-app .quick-guide-close {
+    width: 32px; height: 32px;
+    font-size: 22px;
+  }
+
+  /* Single-col cards */
+  .mooney-app .control-cards {
+    grid-template-columns: 1fr;
+    gap: 6px;
+  }
+  .mooney-app .control-card { padding: 9px 11px; }
+  .mooney-app .control-card.wide { grid-column: span 1; }
+
+  /* Bigger touch targets on toggles */
+  .mooney-app .seg-toggle button {
+    padding: 10px 8px;
+    font-size: 13px;
+  }
+  .mooney-app .theme-btn {
+    padding: 10px 18px;
+    font-size: 13px;
+  }
+
+  /* Horizontal-scroll variant picker */
+  .mooney-app .variant-picker {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    margin: 0 -11px;
+    padding: 0 11px 6px;
+    scrollbar-width: thin;
+  }
+  .mooney-app .vp-btn {
+    flex-shrink: 0;
+    padding: 9px 12px;
+    font-size: 13px;
+  }
+  .mooney-app .vp-btn .vp-num {
+    width: 18px; height: 18px; font-size: 11px;
+  }
+  .mooney-app .vp-btn.vp-dice {
+    margin-left: 0;
+    padding: 9px 14px;
+  }
+
+  /* Horizontal-scroll slide strip */
+  .mooney-app .slide-strip {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    margin: 0 -10px;
+    padding: 0 10px 6px;
+    scrollbar-width: thin;
+  }
+  .mooney-app .slide-chip {
+    flex-shrink: 0;
+    padding: 9px 14px;
+    font-size: 13px;
+  }
+  .mooney-app .slide-chip.showall-chip { margin-left: 0; }
+
+  /* Size slider — bigger thumb for fingers */
+  .mooney-app .size-slider-row { gap: 10px; }
+  .mooney-app .size-slider { height: 8px; }
+  .mooney-app .size-slider::-webkit-slider-thumb {
+    width: 26px; height: 26px;
+  }
+  .mooney-app .size-slider::-moz-range-thumb {
+    width: 26px; height: 26px;
+  }
+
+  /* Editor — tighter, single-col grid */
+  .mooney-app .editor-panel { padding: 10px; }
+  .mooney-app .editor-grid {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+  .mooney-app .editor-grid .span-2 { grid-column: span 1; }
+  .mooney-app .editor-input,
+  .mooney-app .editor-textarea {
+    padding: 10px 12px;
+    font-size: 14px;
+  }
+  .mooney-app .editor-tip { font-size: 11px; }
+
+  /* Export — full-width sticky-bottom button */
+  .mooney-app .ctrl-section:last-child {
+    position: sticky;
+    bottom: 0;
+    background: linear-gradient(180deg, transparent 0%, #000 30%);
+    margin: 0 -10px;
+    padding: 16px 10px 10px;
+    z-index: 20;
+  }
+  .mooney-app .btn.btn-big {
+    width: 100%;
+    text-align: center;
+    padding: 14px 18px;
+    font-size: 14px;
+  }
+  .mooney-app .export-row { align-items: stretch; }
+
+  /* Screenshot tab — full-width controls */
+  .mooney-app .format-toggle { flex-wrap: wrap; gap: 6px; }
+  .mooney-app .format-btn { padding: 8px 14px; }
+}
+
+/* Very small phones — even tighter preview */
+@media (max-width: 380px) {
+  .mooney-app .carousel-scaler-portrait {
+    transform: scale(0.24);
+    margin-right: -820.8px;
+    margin-bottom: -1026px;
+  }
+  .mooney-app .carousel-scaler-square {
+    transform: scale(0.24);
+    margin-right: -820.8px;
+    margin-bottom: -820.8px;
+  }
 }
