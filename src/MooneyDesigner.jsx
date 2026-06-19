@@ -831,14 +831,6 @@ function CarouselDesigner({ exportSlide, exporting, setExporting }) {
   const [hookVariant, setHookVariant] = useState(() => Math.floor(Math.random() * HOOK_VARIANT_COUNT))
   const [currentSlide, setCurrentSlide] = useState(0)
   const [showAll, setShowAll] = useState(false)
-  const [guideOpen, setGuideOpen] = useState(() => {
-    try { return localStorage.getItem('mooney-guide-dismissed') !== '1' } catch { return true }
-  })
-
-  const dismissGuide = () => {
-    setGuideOpen(false)
-    try { localStorage.setItem('mooney-guide-dismissed', '1') } catch { /* ignore */ }
-  }
 
   const fmt = CAROUSEL_FORMATS[format]
   const singleRef = useRef(null)
@@ -896,22 +888,8 @@ function CarouselDesigner({ exportSlide, exporting, setExporting }) {
   return (
     <div className="carousel-layout">
       <div className="carousel-controls-col"><div className="carousel-controls-wrapper">
-        {guideOpen && (
-          <div className="quick-guide">
-            <button className="quick-guide-close" onClick={dismissGuide} aria-label="dismiss">×</button>
-            <div className="quick-guide-title">★ How this works (1 min read)</div>
-            <ol className="quick-guide-steps">
-              <li><b>Pick a color theme and format</b> in the Style section.</li>
-              <li><b>Choose a Hook style</b> — that's the first slide. There are 6 layouts. Try a few. Hit 🎲 to roll a random one.</li>
-              <li><b>Click any slide in the Slides strip</b> to edit its text. Each middle slide has a unique random art piece — click "New random art" until you like it.</li>
-              <li><b>Drag the Text size slider</b> if the text feels too big or too small.</li>
-              <li><b>Hit Export</b> when you're happy. One PNG at a time, or all of them at once.</li>
-            </ol>
-          </div>
-        )}
-
         <div className="ctrl-section">
-          <h3 className="ctrl-section-title">1. Style</h3>
+          <h3 className="ctrl-section-title">Style</h3>
           <div className="control-cards">
             <div className="control-card">
               <label className="control-card-label">Color theme</label>
@@ -929,7 +907,7 @@ function CarouselDesigner({ exportSlide, exporting, setExporting }) {
             </div>
             <div className="control-card wide">
               <label className="control-card-label">
-                Hook style <span className="hint">— layout of the first slide</span>
+                Hook style <span className="hint">— first slide layout</span>
               </label>
               <div className="variant-picker">
                 {HOOK_STYLE_NAMES.map((name, i) => (
@@ -942,6 +920,18 @@ function CarouselDesigner({ exportSlide, exporting, setExporting }) {
                   </button>
                 ))}
                 <button className="vp-btn vp-dice" onClick={reshuffleHook} title="Random hook style">🎲</button>
+              </div>
+              <div className="variant-picker-mobile">
+                <select
+                  className="editor-input variant-select"
+                  value={hookVariant}
+                  onChange={e => setHookVariant(Number(e.target.value))}
+                >
+                  {HOOK_STYLE_NAMES.map((name, i) => (
+                    <option key={i} value={i}>{`${i + 1}. ${name}`}</option>
+                  ))}
+                </select>
+                <button className="btn vp-dice-btn" onClick={reshuffleHook} title="Random hook style">🎲</button>
               </div>
             </div>
             <div className="control-card wide">
@@ -967,8 +957,7 @@ function CarouselDesigner({ exportSlide, exporting, setExporting }) {
         </div>
 
         <div className="ctrl-section">
-          <h3 className="ctrl-section-title">2. Slides</h3>
-          <p className="ctrl-section-hint">Click any chip to edit. Final slide is the same every time on purpose.</p>
+          <h3 className="ctrl-section-title">Slides</h3>
           <div className="slide-strip">
             {slides.map((s, i) => (
               <button
@@ -1064,8 +1053,7 @@ function CarouselDesigner({ exportSlide, exporting, setExporting }) {
           </div>
         )}
 
-        <div className="ctrl-section">
-          <h3 className="ctrl-section-title">3. Export</h3>
+        <div className="ctrl-section export-section">
           <div className="export-row">
             <button
               className="btn btn-export btn-big"
