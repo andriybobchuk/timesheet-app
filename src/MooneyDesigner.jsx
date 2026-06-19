@@ -54,10 +54,13 @@ const DEFAULT_CTA = {
   mockImage: ASSET('mock_analytics.png'),
 }
 
-const HOOK_VARIANT_COUNT = 6
+const HOOK_VARIANT_COUNT = 14
 const GRAPHIC_VARIANT_COUNT = 14
 
-const HOOK_STYLE_NAMES = ['Bold', 'Question', 'Split', 'Diagonal', 'Quote', 'Highlight']
+const HOOK_STYLE_NAMES = [
+  'Bold', 'Question', 'Split', 'Diagonal', 'Quote', 'Highlight',
+  'Sticker', 'Stacked', 'Glitch', 'Big Stat', 'POV', 'Tape', 'Card', 'Neon',
+]
 
 /* Base sizes bumped up so the slide fills more space by default */
 const TAKE_TITLE_BASE = 118
@@ -643,6 +646,95 @@ function HookSlide({ text, variantIndex, format, theme, textMult = 1, slideRef }
           <div className="hook-swipe">→ → →</div>
         </div>
       )}
+
+      {v === 6 && (
+        /* STICKER — tilted teal sticker shape */
+        <div className="hook-content hook-sticker">
+          <div className="hook-tag">stop scrolling</div>
+          <div className="hook-sticker-shape">
+            <h1 className="hook-sticker-text" style={sz(105)}>{text}</h1>
+          </div>
+          <div className="hook-swipe">↓</div>
+        </div>
+      )}
+
+      {v === 7 && (
+        /* STACKED — word per line, alternating colors */
+        <div className="hook-content hook-stacked">
+          <div className="hook-stacked-eyebrow">read it slow</div>
+          <div className="hook-stacked-list">
+            {words.map((w, i) => (
+              <div key={i} className={`hook-stacked-word${i % 2 === 1 ? ' alt' : ''}`} style={sz(90)}>
+                {w}
+              </div>
+            ))}
+          </div>
+          <div className="hook-swipe">→</div>
+        </div>
+      )}
+
+      {v === 8 && (
+        /* GLITCH — RGB-offset stacked layers */
+        <div className="hook-content hook-glitch">
+          <div className="hook-glitch-stack">
+            <h1 className="hook-glitch-layer hook-glitch-cyan" style={sz(125)}>{text}</h1>
+            <h1 className="hook-glitch-layer hook-glitch-magenta" style={sz(125)}>{text}</h1>
+            <h1 className="hook-glitch-layer hook-glitch-main" style={sz(125)}>{text}</h1>
+          </div>
+          <div className="hook-swipe">// scroll</div>
+        </div>
+      )}
+
+      {v === 9 && (() => {
+        /* BIG STAT — first word goes mega, rest is supporting */
+        const parts = text.split(/\s+/)
+        const stat = parts[0]
+        const rest = parts.slice(1).join(' ')
+        return (
+          <div className="hook-content hook-bigstat">
+            <div className="hook-bigstat-num">{stat}</div>
+            <h1 className="hook-bigstat-text" style={sz(72)}>{rest || text}</h1>
+            <div className="hook-swipe">swipe →</div>
+          </div>
+        )
+      })()}
+
+      {v === 10 && (
+        /* POV — POV: badge prefix */
+        <div className="hook-content hook-pov">
+          <div className="hook-pov-badge">POV</div>
+          <h1 className="hook-pov-text" style={sz(125)}>{text}</h1>
+          <div className="hook-swipe">→</div>
+        </div>
+      )}
+
+      {v === 11 && (
+        /* TAPE — masking tape strips top + bottom */
+        <div className="hook-content hook-tape">
+          <div className="hook-tape-strip hook-tape-top" />
+          <h1 className="hook-tape-text" style={sz(125)}>{text}</h1>
+          <div className="hook-tape-strip hook-tape-bottom" />
+        </div>
+      )}
+
+      {v === 12 && (
+        /* CARD — floating glass card with attribution */
+        <div className="hook-content hook-card">
+          <div className="hook-card-shape">
+            <div className="hook-card-eyebrow">★ Hot take</div>
+            <h1 className="hook-card-text" style={sz(95)}>{text}</h1>
+            <div className="hook-card-author">— Mooney</div>
+          </div>
+        </div>
+      )}
+
+      {v === 13 && (
+        /* NEON — glowing neon sign */
+        <div className="hook-content hook-neon">
+          <h1 className="hook-neon-text" style={sz(135)}>{text}</h1>
+          <div className="hook-swipe">.tap.</div>
+        </div>
+      )}
     </div>
   )
 }
@@ -802,8 +894,8 @@ function CarouselDesigner({ exportSlide, exporting, setExporting }) {
   const isTake = currentSlideData.kind === 'take'
 
   return (
-    <>
-      <div className="carousel-controls-wrapper">
+    <div className="carousel-layout">
+      <div className="carousel-controls-col"><div className="carousel-controls-wrapper">
         {guideOpen && (
           <div className="quick-guide">
             <button className="quick-guide-close" onClick={dismissGuide} aria-label="dismiss">×</button>
@@ -985,24 +1077,31 @@ function CarouselDesigner({ exportSlide, exporting, setExporting }) {
             <p className="ctrl-section-hint">{fmt.w} × {fmt.h}px · {fmt.label} · {fmt.name}</p>
           </div>
         </div>
-      </div>
+      </div></div>
 
-      {showAll ? (
-        <div className="carousel-grid-view">
-          {slides.map((s, i) => (
-            <div key={i} className="grid-item">
-              {renderSlide(s, el => allRefs.current[i] = el)}
-            </div>
-          ))}
+      <div className="carousel-preview-col">
+        <div className="preview-mini-bar">
+          <span className="preview-mini-label">{slideLabel(currentSlideData)}</span>
+          <span className="preview-mini-sep">·</span>
+          <span className="preview-mini-info">{fmt.w}×{fmt.h}</span>
         </div>
-      ) : (
-        <div className="single-view">
-          <div className={`carousel-scaler carousel-scaler-${format}`} style={{ width: fmt.w, height: fmt.h }}>
-            {renderSlide(currentSlideData, singleRef)}
+        {showAll ? (
+          <div className="carousel-grid-view">
+            {slides.map((s, i) => (
+              <div key={i} className="grid-item">
+                {renderSlide(s, el => allRefs.current[i] = el)}
+              </div>
+            ))}
           </div>
-        </div>
-      )}
-    </>
+        ) : (
+          <div className="single-view">
+            <div className={`carousel-scaler carousel-scaler-${format}`} style={{ width: fmt.w, height: fmt.h }}>
+              {renderSlide(currentSlideData, singleRef)}
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
   )
 }
 
@@ -1036,7 +1135,7 @@ export default function MooneyDesigner({ onBack }) {
     }
     const w = overrideW ?? fmt.w
     const h = overrideH ?? fmt.h
-    const dataUrl = await toPng(element, { width: w, height: h, pixelRatio: 1, skipAutoScale: true })
+    const dataUrl = await toPng(element, { width: w, height: h, pixelRatio: 2, skipAutoScale: true })
     if (scaler) {
       scaler.style.transform = origTransform
       scaler.style.marginBottom = origMargin
@@ -1050,7 +1149,7 @@ export default function MooneyDesigner({ onBack }) {
   const exportLogo = useCallback(async (element, filename) => {
     if (!element) return
     setExporting(true)
-    const dataUrl = await toPng(element, { width: 1024, height: 1024, pixelRatio: 1, skipAutoScale: true })
+    const dataUrl = await toPng(element, { width: 1024, height: 1024, pixelRatio: 2, skipAutoScale: true })
     const link = document.createElement('a')
     link.download = filename
     link.href = dataUrl
@@ -1086,6 +1185,7 @@ export default function MooneyDesigner({ onBack }) {
         {onBack && (
           <button onClick={onBack} className="mooney-back-btn">← Back to inbox</button>
         )}
+        <div className="mooney-studio-mark">Studio · Mooney Designer</div>
         <div className="mooney-tool-menu">
           <button
             className="mooney-tool-trigger"
