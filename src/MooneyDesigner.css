@@ -1,0 +1,1062 @@
+/* =============================================
+   MOONEY DESIGNER — scoped under .mooney-app
+   (no body/* resets so it doesn't clobber tailwind)
+   ============================================= */
+
+.mooney-app {
+  --bg-deepest: #060a0e;
+  --bg-dark: #0D1117;
+  --bg-card: #1C2025;
+  --accent: #4DD0C8;
+  --accent-dim: #3BA8A1;
+  --text-primary: #F0F0F0;
+  --text-secondary: #8B949E;
+
+  min-height: 100vh;
+  padding: 24px;
+  background: #111;
+  color: var(--text-primary);
+  font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* =============================================
+   TOP TOOLBAR
+   ============================================= */
+.mooney-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1100px;
+  margin: 0 auto 18px;
+  position: relative;
+  z-index: 50;
+}
+
+.mooney-back-btn {
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.12);
+  color: var(--text-secondary);
+  padding: 7px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.mooney-back-btn:hover {
+  color: var(--text-primary);
+  border-color: rgba(77,208,200,0.4);
+}
+
+/* "Other tools" dropdown — tucks Screenshots + App Icon out of the main flow */
+.mooney-tool-menu { position: relative; margin-left: auto; }
+.mooney-tool-trigger {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.08);
+  color: var(--text-secondary);
+  padding: 7px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.mooney-tool-trigger:hover {
+  color: var(--text-primary);
+  border-color: rgba(77,208,200,0.4);
+}
+.mooney-tool-backdrop {
+  position: fixed; inset: 0; z-index: 90;
+}
+.mooney-tool-dropdown {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  z-index: 100;
+  background: #15191e;
+  border: 1px solid rgba(77,208,200,0.18);
+  border-radius: 12px;
+  padding: 8px;
+  min-width: 280px;
+  box-shadow: 0 18px 50px rgba(0,0,0,0.5), 0 4px 12px rgba(0,0,0,0.3);
+}
+.mooney-tool-dropdown-label {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: var(--text-secondary);
+  padding: 6px 10px 8px;
+  font-weight: 700;
+}
+.mooney-tool-dropdown button {
+  display: flex; align-items: center;
+  width: 100%;
+  background: transparent;
+  border: none;
+  color: var(--text-primary);
+  padding: 10px 12px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.15s;
+}
+.mooney-tool-dropdown button:hover { background: rgba(77,208,200,0.08); }
+.mooney-tool-dropdown button.on {
+  background: rgba(77,208,200,0.15);
+  color: var(--accent);
+}
+.mooney-tool-dropdown .mtd-hint {
+  margin-left: 6px;
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--text-secondary);
+}
+
+/* --- Controls --- */
+.mooney-app .controls { max-width: 800px; margin: 0 auto 32px; text-align: center; }
+.mooney-app .controls-title { font-size: 28px; font-weight: 700; margin-bottom: 4px; }
+.mooney-app .controls-subtitle { font-size: 14px; color: var(--text-secondary); margin-bottom: 16px; }
+
+.mooney-app .format-toggle { display: flex; justify-content: center; gap: 8px; margin-bottom: 16px; }
+.mooney-app .format-btn {
+  background: var(--bg-card); color: var(--text-secondary);
+  border: 1px solid rgba(255,255,255,0.08); padding: 10px 24px;
+  border-radius: 10px; font-size: 14px; font-weight: 600;
+  cursor: pointer; transition: all 0.2s;
+  display: flex; flex-direction: column; align-items: center; gap: 2px;
+}
+.mooney-app .format-btn .format-dims { font-size: 11px; font-weight: 400; opacity: 0.6; }
+.mooney-app .format-btn.active { background: rgba(77,208,200,0.12); border-color: var(--accent); color: var(--accent); }
+.mooney-app .format-btn:hover:not(.active) { border-color: rgba(77,208,200,0.3); }
+
+.mooney-app .controls-row { display: flex; align-items: center; justify-content: center; gap: 12px; flex-wrap: wrap; }
+.mooney-app .btn {
+  background: var(--bg-card); color: var(--text-primary);
+  border: 1px solid rgba(77,208,200,0.2); padding: 8px 20px;
+  border-radius: 8px; font-size: 14px; cursor: pointer; transition: all 0.2s;
+  box-sizing: border-box;
+}
+.mooney-app .btn:hover:not(:disabled) { background: rgba(77,208,200,0.1); border-color: var(--accent); }
+.mooney-app .btn:disabled { opacity: 0.3; cursor: not-allowed; }
+.mooney-app .btn-export { background: rgba(77,208,200,0.15); border-color: var(--accent); color: var(--accent); font-weight: 600; }
+.mooney-app .btn-export:hover:not(:disabled) { background: rgba(77,208,200,0.25); }
+.mooney-app .slide-counter { font-size: 16px; font-weight: 600; color: var(--accent); min-width: 60px; }
+
+/* --- Single View --- */
+.mooney-app .single-view { display: flex; justify-content: center; overflow: hidden; }
+.mooney-app .single-view .slide-scaler {
+  transform: scale(0.32);
+  transform-origin: top center;
+  margin-bottom: -1850px;
+}
+
+/* --- Grid View --- */
+.mooney-app .grid-view { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; max-width: 1400px; margin: 0 auto; }
+.mooney-app .grid-item { border-radius: 8px; overflow: hidden; box-shadow: 0 4px 24px rgba(0,0,0,0.4); }
+.mooney-app .grid-item .slide { width: 100% !important; height: auto !important; aspect-ratio: 1290 / 2796; }
+.mooney-app .grid-item .slide-content { padding: 8% 6% 0; }
+.mooney-app .grid-item .text-section { margin-bottom: 3%; }
+.mooney-app .grid-item .headline { font-size: clamp(14px, 2.5vw, 32px); letter-spacing: -1px; margin-bottom: 6px; }
+.mooney-app .grid-item .subtitle { font-size: clamp(6px, 1vw, 14px); }
+.mooney-app .grid-item .phone-section { bottom: -10%; }
+.mooney-app .grid-item .phone-image { width: 88%; }
+
+/* =============================================
+   SCREENSHOT SLIDE
+   ============================================= */
+.mooney-app .slide { position: relative; overflow: hidden; }
+
+.mooney-app .bg-base { position: absolute; inset: 0; background: var(--bg-deepest); z-index: 0; }
+.mooney-app .bg-gradient { position: absolute; inset: 0; z-index: 1; }
+
+.mooney-app .slide-variant-0 .bg-gradient {
+  background:
+    radial-gradient(ellipse 80% 50% at 50% 0%, rgba(77,208,200,0.14) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 40% at 80% 100%, rgba(77,208,200,0.06) 0%, transparent 50%),
+    linear-gradient(180deg, #0a0f14 0%, #060a0e 100%);
+}
+.mooney-app .slide-variant-1 .bg-gradient {
+  background:
+    radial-gradient(ellipse 70% 50% at 20% 10%, rgba(77,208,200,0.12) 0%, transparent 60%),
+    radial-gradient(ellipse 80% 40% at 90% 90%, rgba(59,168,161,0.08) 0%, transparent 50%),
+    linear-gradient(160deg, #0c1016 0%, #060a0e 100%);
+}
+.mooney-app .slide-variant-2 .bg-gradient {
+  background:
+    radial-gradient(ellipse 60% 60% at 70% 5%, rgba(77,208,200,0.12) 0%, transparent 50%),
+    radial-gradient(ellipse 50% 50% at 10% 80%, rgba(77,208,200,0.05) 0%, transparent 50%),
+    linear-gradient(200deg, #0b1018 0%, #060a0e 100%);
+}
+.mooney-app .slide-variant-3 .bg-gradient {
+  background:
+    radial-gradient(ellipse 90% 40% at 50% 15%, rgba(77,208,200,0.1) 0%, transparent 50%),
+    radial-gradient(ellipse 40% 60% at 30% 90%, rgba(59,168,161,0.06) 0%, transparent 50%),
+    linear-gradient(180deg, #0d1118 0%, #060a0e 100%);
+}
+
+.mooney-app .bg-noise {
+  position: absolute; inset: 0; z-index: 2; opacity: 0.03;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 256px;
+}
+
+.mooney-app .bg-orb { position: absolute; border-radius: 50%; filter: blur(120px); z-index: 1; pointer-events: none; }
+.mooney-app .bg-orb-1 { width: 46%; height: 22%; background: rgba(77,208,200,0.08); top: -4%; right: -8%; }
+.mooney-app .bg-orb-2 { width: 31%; height: 14%; background: rgba(77,208,200,0.05); bottom: 7%; left: -8%; }
+.mooney-app .bg-orb-3 { width: 23%; height: 11%; background: rgba(74,222,128,0.04); bottom: -2%; right: 8%; }
+.mooney-app .slide-variant-1 .bg-orb-1 { top: -5%; left: -8%; right: auto; }
+.mooney-app .slide-variant-1 .bg-orb-2 { bottom: 11%; right: -12%; left: auto; }
+.mooney-app .slide-variant-2 .bg-orb-1 { top: 2%; right: -15%; width: 39%; height: 18%; }
+.mooney-app .slide-variant-3 .bg-orb-1 { top: -7%; left: 25%; width: 62%; height: 14%; }
+
+.mooney-app .slide-content {
+  position: relative; z-index: 10;
+  display: flex; flex-direction: column; align-items: center;
+  height: 100%; padding: 10% 8% 0;
+}
+
+.mooney-app .text-section { text-align: center; flex-shrink: 0; margin-bottom: 5%; }
+
+.mooney-app .headline {
+  font-size: 100px; font-weight: 800; line-height: 1.08;
+  color: var(--text-primary); letter-spacing: -3px; margin-bottom: 20px;
+}
+.mooney-app .headline-accent {
+  background: linear-gradient(135deg, var(--accent) 0%, #7EEEE6 50%, var(--accent-dim) 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+.mooney-app .subtitle {
+  font-size: 52px; font-weight: 400; color: var(--text-secondary);
+  line-height: 1.35; max-width: 88%; margin: 0 auto;
+}
+
+.mooney-app .phone-section {
+  position: absolute; bottom: -10%; left: 0; right: 0;
+  display: flex; justify-content: center;
+}
+.mooney-app .phone-image {
+  width: 92%; max-width: 1190px;
+  filter: drop-shadow(0 20px 60px rgba(0,0,0,0.5)) drop-shadow(0 8px 20px rgba(0,0,0,0.3));
+}
+.mooney-app .phone-image img { width: 100%; height: auto; display: block; }
+
+/* =============================================
+   TABS
+   ============================================= */
+.mooney-app .tab-switcher {
+  justify-content: center; gap: 4px; margin-bottom: 16px;
+  background: rgba(255,255,255,0.04); border-radius: 10px;
+  padding: 4px; display: inline-flex;
+}
+.mooney-app .tab-btn {
+  background: transparent; color: var(--text-secondary); border: none;
+  padding: 8px 28px; border-radius: 8px; font-size: 14px; font-weight: 600;
+  cursor: pointer; transition: all 0.2s;
+}
+.mooney-app .tab-btn.active { background: rgba(77,208,200,0.15); color: var(--accent); }
+.mooney-app .tab-btn:hover:not(.active) { color: var(--text-primary); }
+
+/* =============================================
+   LOGO DESIGNER
+   ============================================= */
+.mooney-app .logo-designer { max-width: 1200px; margin: 0 auto; }
+.mooney-app .logo-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+.mooney-app .logo-grid-item { display: flex; flex-direction: column; gap: 10px; }
+.mooney-app .logo-preview {
+  border-radius: 22%; overflow: hidden;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.4); aspect-ratio: 1;
+  width: calc(1024px / 3); height: calc(1024px / 3);
+}
+.mooney-app .logo-canvas {
+  width: 1024px; height: 1024px;
+  transform: scale(calc(1 / 3)); transform-origin: top left;
+  position: relative; display: flex; align-items: center; justify-content: center;
+  overflow: hidden;
+}
+.mooney-app .logo-noise {
+  position: absolute; inset: 0; opacity: 0.04;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 256px; z-index: 1;
+}
+.mooney-app .logo-glow {
+  position: absolute; width: 600px; height: 600px; border-radius: 50%;
+  background: rgba(77,208,200,0.12); filter: blur(120px);
+  top: -100px; right: -100px; z-index: 1;
+}
+.mooney-app .logo-text {
+  position: relative; z-index: 10;
+  font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  line-height: 1; user-select: none;
+}
+.mooney-app .logo-text-shadow { text-shadow: 0 8px 40px rgba(0,0,0,0.4); }
+.mooney-app .logo-text-outline { -webkit-text-stroke: 4px #4DD0C8; }
+.mooney-app .logo-accent-letter { margin-left: -25px; }
+.mooney-app .logo-circle {
+  position: absolute; width: 620px; height: 620px; border-radius: 50%;
+  background: linear-gradient(135deg, #4DD0C8 0%, #3BA8A1 100%); z-index: 5;
+}
+.mooney-app .logo-has-circle .logo-text { z-index: 10; }
+.mooney-app .logo-dot {
+  position: absolute; width: 80px; height: 80px; border-radius: 50%;
+  background: #4DD0C8; bottom: 240px; right: 260px; z-index: 10;
+  box-shadow: 0 0 30px rgba(77,208,200,0.5);
+}
+.mooney-app .logo-item-footer { display: flex; align-items: center; justify-content: space-between; padding: 0 4px; }
+.mooney-app .logo-item-name { font-size: 14px; color: var(--text-secondary); font-weight: 500; }
+.mooney-app .btn-sm { padding: 5px 14px; font-size: 12px; }
+
+/* =============================================
+   CAROUSEL DESIGNER CONTROLS — REDESIGNED
+   ============================================= */
+.mooney-app .controls-tagline {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin-bottom: 20px;
+}
+
+.mooney-app .carousel-controls-wrapper {
+  max-width: 920px;
+  margin: 0 auto 24px;
+  text-align: left;
+}
+
+/* Quick guide banner */
+.mooney-app .quick-guide {
+  position: relative;
+  background: linear-gradient(135deg, rgba(77,208,200,0.10) 0%, rgba(77,208,200,0.04) 100%);
+  border: 1px solid rgba(77,208,200,0.25);
+  border-radius: 14px;
+  padding: 18px 22px 18px;
+  margin-bottom: 22px;
+}
+.mooney-app .quick-guide-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--accent);
+  margin-bottom: 10px;
+  letter-spacing: 0.3px;
+}
+.mooney-app .quick-guide-steps {
+  margin: 0;
+  padding-left: 22px;
+  font-size: 14px;
+  line-height: 1.7;
+  color: var(--text-primary);
+}
+.mooney-app .quick-guide-steps li { margin-bottom: 2px; }
+.mooney-app .quick-guide-steps b { color: var(--accent); font-weight: 700; }
+.mooney-app .quick-guide-close {
+  position: absolute; top: 10px; right: 10px;
+  width: 28px; height: 28px;
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 20px;
+  cursor: pointer;
+  border-radius: 6px;
+  line-height: 1;
+}
+.mooney-app .quick-guide-close:hover {
+  background: rgba(255,255,255,0.08);
+  color: var(--text-primary);
+}
+
+/* Section structure */
+.mooney-app .ctrl-section { margin-bottom: 24px; }
+.mooney-app .ctrl-section-title {
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: var(--text-secondary);
+  margin-bottom: 12px;
+}
+.mooney-app .ctrl-section-hint {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin: -4px 0 12px;
+}
+
+/* Control cards */
+.mooney-app .control-cards {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+.mooney-app .control-card {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 12px;
+  padding: 14px 16px;
+}
+.mooney-app .control-card.wide { grid-column: span 2; }
+.mooney-app .control-card-label {
+  display: block;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: var(--text-primary);
+  margin-bottom: 10px;
+}
+.mooney-app .control-card-label .hint {
+  font-size: 11px;
+  font-weight: 500;
+  text-transform: none;
+  letter-spacing: 0;
+  color: var(--text-secondary);
+  margin-left: 4px;
+}
+.mooney-app .control-card-label .size-readout {
+  display: inline-block;
+  background: rgba(77,208,200,0.15);
+  color: var(--accent);
+  padding: 1px 8px;
+  border-radius: 6px;
+  font-size: 12px;
+  margin-left: 6px;
+  font-weight: 700;
+}
+
+/* Segmented toggle — used for theme and format */
+.mooney-app .seg-toggle {
+  display: flex;
+  gap: 4px;
+  background: rgba(0,0,0,0.3);
+  border-radius: 9px;
+  padding: 3px;
+}
+.mooney-app .seg-toggle button {
+  flex: 1;
+  background: transparent;
+  color: var(--text-secondary);
+  border: none;
+  padding: 9px 12px;
+  border-radius: 7px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.mooney-app .seg-toggle button:hover:not(.on) { color: var(--text-primary); }
+.mooney-app .seg-toggle button.on {
+  background: rgba(77,208,200,0.18);
+  color: var(--accent);
+  box-shadow: 0 0 0 1px rgba(77,208,200,0.3);
+}
+
+/* Hook variant picker */
+.mooney-app .variant-picker {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.mooney-app .vp-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(0,0,0,0.3);
+  border: 1px solid rgba(255,255,255,0.06);
+  color: var(--text-primary);
+  padding: 9px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.mooney-app .vp-btn .vp-num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px; height: 18px;
+  background: rgba(77,208,200,0.12);
+  color: var(--accent);
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 800;
+}
+.mooney-app .vp-btn:hover:not(.on) { border-color: rgba(77,208,200,0.3); }
+.mooney-app .vp-btn.on {
+  background: rgba(77,208,200,0.15);
+  border-color: var(--accent);
+  color: var(--accent);
+  box-shadow: 0 0 0 1px rgba(77,208,200,0.3);
+}
+.mooney-app .vp-btn.on .vp-num { background: var(--accent); color: #0a1214; }
+.mooney-app .vp-btn.vp-dice {
+  font-size: 18px;
+  padding: 8px 14px;
+  margin-left: auto;
+}
+
+/* Text size slider */
+.mooney-app .size-slider-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.mooney-app .size-tick {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-secondary);
+  width: 18px;
+  text-align: center;
+}
+.mooney-app .size-tick.big { font-size: 22px; }
+.mooney-app .size-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  flex: 1;
+  height: 6px;
+  background: linear-gradient(90deg, rgba(77,208,200,0.15) 0%, rgba(77,208,200,0.35) 100%);
+  border-radius: 6px;
+  outline: none;
+  cursor: pointer;
+}
+.mooney-app .size-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px; height: 20px;
+  background: var(--accent);
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 0 0 4px rgba(77,208,200,0.15), 0 2px 10px rgba(0,0,0,0.4);
+  border: 2px solid #0D1117;
+}
+.mooney-app .size-slider::-moz-range-thumb {
+  width: 20px; height: 20px;
+  background: var(--accent);
+  border-radius: 50%;
+  cursor: pointer;
+  border: 2px solid #0D1117;
+  box-shadow: 0 0 0 4px rgba(77,208,200,0.15);
+}
+
+/* Slide strip */
+.mooney-app .slide-strip {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.mooney-app .slide-chip {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  color: var(--text-secondary);
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.mooney-app .slide-chip:hover:not(.on) {
+  color: var(--text-primary);
+  border-color: rgba(77,208,200,0.3);
+}
+.mooney-app .slide-chip.on {
+  background: rgba(77,208,200,0.18);
+  border-color: var(--accent);
+  color: var(--accent);
+  box-shadow: 0 0 0 1px rgba(77,208,200,0.3);
+}
+.mooney-app .slide-chip.hook.on { box-shadow: 0 0 0 1px rgba(77,208,200,0.3); }
+.mooney-app .slide-chip.final {
+  border-style: dashed;
+}
+.mooney-app .slide-chip.showall-chip {
+  margin-left: auto;
+  background: transparent;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+.mooney-app .slide-chip.showall-chip.on {
+  background: rgba(77,208,200,0.10);
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+/* Editor panel — used for editing the current slide's text */
+.mooney-app .editor-panel-title {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  color: var(--accent);
+  margin-bottom: 12px;
+}
+.mooney-app .editor-tip {
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin: 6px 0 0;
+  font-style: italic;
+}
+.mooney-app .btn.btn-accent {
+  background: rgba(77,208,200,0.15);
+  border-color: var(--accent);
+  color: var(--accent);
+  font-weight: 700;
+}
+.mooney-app .btn.btn-accent:hover:not(:disabled) {
+  background: rgba(77,208,200,0.25);
+}
+
+/* Export row */
+.mooney-app .export-row {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+}
+.mooney-app .btn.btn-big {
+  font-size: 15px;
+  padding: 14px 28px;
+  font-weight: 700;
+  border-radius: 10px;
+}
+.mooney-app .export-row .ctrl-section-hint { margin: 0; }
+
+/* Legacy class kept for backwards compat */
+.mooney-app .carousel-controls-extra { max-width: 900px; margin: 0 auto 24px; text-align: center; }
+
+.mooney-app .editor-panel {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(77,208,200,0.15);
+  border-radius: 12px; padding: 16px; margin-top: 16px; text-align: left;
+}
+.mooney-app .editor-label {
+  display: block; font-size: 11px; text-transform: uppercase; letter-spacing: 1px;
+  color: var(--text-secondary); margin-bottom: 6px; font-weight: 600;
+}
+.mooney-app .editor-input,
+.mooney-app .editor-textarea {
+  width: 100%; background: rgba(0,0,0,0.4);
+  border: 1px solid rgba(255,255,255,0.08); color: var(--text-primary);
+  padding: 10px 12px; border-radius: 8px; font-size: 14px;
+  font-family: inherit; resize: vertical; box-sizing: border-box;
+}
+.mooney-app .editor-input:focus,
+.mooney-app .editor-textarea:focus {
+  outline: none; border-color: var(--accent);
+  background: rgba(77,208,200,0.05);
+}
+.mooney-app .editor-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+}
+.mooney-app .editor-grid .span-2 { grid-column: span 2; }
+.mooney-app .graphic-controls { display: flex; flex-direction: column; gap: 6px; }
+.mooney-app .graphic-controls .btn { width: 100%; }
+
+/* Single view scaler — carousels can be portrait or square */
+.mooney-app .carousel-scaler { transform-origin: top center; }
+.mooney-app .carousel-scaler-portrait { transform: scale(0.5); margin-bottom: -680px; }
+.mooney-app .carousel-scaler-square    { transform: scale(0.5); margin-bottom: -540px; }
+
+/* Grid view for carousels */
+.mooney-app .carousel-grid-view {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;
+  max-width: 1400px; margin: 0 auto;
+}
+.mooney-app .carousel-grid-view .grid-item {
+  border-radius: 12px; overflow: hidden; box-shadow: 0 4px 24px rgba(0,0,0,0.4);
+}
+.mooney-app .carousel-grid-view .carousel-slide {
+  width: 100% !important; height: auto !important;
+}
+.mooney-app .carousel-grid-view .carousel-slide.hook-slide,
+.mooney-app .carousel-grid-view .carousel-slide.take-slide,
+.mooney-app .carousel-grid-view .carousel-slide.cta-slide {
+  aspect-ratio: 1080 / 1350;
+}
+
+/* =============================================
+   BASE CAROUSEL SLIDE
+   ============================================= */
+.mooney-app .carousel-slide {
+  position: relative; overflow: hidden;
+  color: var(--text-primary);
+  font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+}
+.mooney-app .cs-bg-base { position: absolute; inset: 0; background: var(--bg-deepest); z-index: 0; }
+.mooney-app .cs-bg-gradient {
+  position: absolute; inset: 0; z-index: 1;
+  background:
+    radial-gradient(ellipse 70% 50% at 20% 0%, rgba(77,208,200,0.18) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 50% at 100% 100%, rgba(77,208,200,0.08) 0%, transparent 55%),
+    linear-gradient(170deg, #0b1218 0%, #060a0e 100%);
+}
+.mooney-app .cs-bg-noise {
+  position: absolute; inset: 0; z-index: 2; opacity: 0.04;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 256px;
+}
+.mooney-app .cs-bg-orb { position: absolute; border-radius: 50%; filter: blur(120px); z-index: 1; pointer-events: none; }
+.mooney-app .cs-orb-1 { width: 60%; height: 30%; background: rgba(77,208,200,0.18); top: -10%; right: -10%; }
+.mooney-app .cs-orb-2 { width: 40%; height: 25%; background: rgba(77,208,200,0.10); bottom: -8%; left: -10%; }
+
+/* =============================================
+   HOOK SLIDE
+   ============================================= */
+.mooney-app .hook-content {
+  position: relative; z-index: 10;
+  width: 100%; height: 100%;
+  display: flex; flex-direction: column;
+}
+.mooney-app .hook-tag {
+  font-size: 28px; font-weight: 600; color: var(--accent);
+  text-transform: uppercase; letter-spacing: 6px; opacity: 0.9;
+}
+.mooney-app .hook-swipe {
+  font-size: 28px; color: var(--text-secondary);
+  font-weight: 500; opacity: 0.7; margin-top: auto;
+}
+.mooney-app .hook-swipe-dark { color: rgba(0,0,0,0.55); font-size: 28px; font-weight: 600; margin-top: auto; }
+
+.mooney-app .hook-mega { padding: 80px 70px; }
+.mooney-app .hook-mega-text {
+  font-size: 150px; font-weight: 900; line-height: 0.98;
+  letter-spacing: -5px; margin: auto 0; color: var(--text-primary);
+}
+.mooney-app .hook-variant-0 .cs-bg-gradient {
+  background:
+    radial-gradient(circle at 50% 50%, rgba(77,208,200,0.18) 0%, transparent 55%),
+    linear-gradient(180deg, #0b1218 0%, #060a0e 100%);
+}
+
+.mooney-app .hook-question { padding: 80px 70px; align-items: center; justify-content: center; }
+.mooney-app .hook-question-mark {
+  position: absolute; font-size: 1100px; font-weight: 900;
+  color: rgba(77,208,200,0.08); line-height: 0.8;
+  top: -8%; right: -10%; z-index: 1; pointer-events: none;
+}
+.mooney-app .hook-question-text {
+  position: relative; z-index: 5;
+  font-size: 140px; font-weight: 900; line-height: 1.0;
+  letter-spacing: -4px; text-align: center; color: var(--text-primary);
+}
+
+.mooney-app .hook-split { padding: 0; }
+.mooney-app .hook-split-top {
+  flex: 1; background: linear-gradient(135deg, #4DD0C8 0%, #3BA8A1 100%);
+  color: #0a1214; padding: 80px 70px;
+  display: flex; flex-direction: column; justify-content: flex-end;
+  position: relative; z-index: 5;
+}
+.mooney-app .hook-split-eyebrow {
+  font-size: 26px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 6px; opacity: 0.65; margin-bottom: 20px;
+}
+.mooney-app .hook-split-top-text {
+  font-size: 120px; font-weight: 900; line-height: 1.0; letter-spacing: -4px; color: #0a1214;
+}
+.mooney-app .hook-split-bottom {
+  flex: 1; padding: 80px 70px;
+  display: flex; flex-direction: column; justify-content: flex-start;
+  position: relative; z-index: 5;
+}
+.mooney-app .hook-split-bottom-text {
+  font-size: 120px; font-weight: 900; line-height: 1.0; letter-spacing: -4px;
+  background: linear-gradient(135deg, #fff 0%, #7EEEE6 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+.mooney-app .hook-variant-2 .cs-bg-gradient,
+.mooney-app .hook-variant-2 .cs-bg-orb { display: none; }
+
+.mooney-app .hook-diagonal { padding: 80px 70px; justify-content: center; align-items: flex-start; }
+.mooney-app .hook-diag-bar { position: absolute; height: 200px; width: 130%; z-index: 2; pointer-events: none; }
+.mooney-app .hook-diag-bar-1 {
+  background: linear-gradient(90deg, transparent 0%, rgba(77,208,200,0.18) 50%, transparent 100%);
+  top: 22%; left: -15%; transform: rotate(-8deg);
+}
+.mooney-app .hook-diag-bar-2 {
+  background: linear-gradient(90deg, transparent 0%, rgba(77,208,200,0.10) 50%, transparent 100%);
+  top: 60%; left: -15%; transform: rotate(-8deg); height: 140px;
+}
+.mooney-app .hook-diag-text {
+  position: relative; z-index: 5;
+  font-size: 130px; font-weight: 900; line-height: 1.02; letter-spacing: -4px;
+  transform: rotate(-3deg); margin: auto 0;
+  background: linear-gradient(135deg, #fff 0%, #4DD0C8 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+
+.mooney-app .hook-quote { padding: 80px 80px; align-items: center; justify-content: center; text-align: center; }
+.mooney-app .hook-quote-mark {
+  font-size: 320px; font-weight: 900; line-height: 0.7; color: var(--accent);
+  font-family: Georgia, 'Times New Roman', serif; align-self: flex-start;
+}
+.mooney-app .hook-quote-close { align-self: flex-end; transform: rotate(180deg); }
+.mooney-app .hook-quote-text {
+  font-size: 110px; font-weight: 700; line-height: 1.1; letter-spacing: -2px;
+  font-style: italic; color: var(--text-primary); margin: 20px 0;
+  flex: 1; display: flex; align-items: center;
+}
+.mooney-app .hook-quote-attr {
+  font-size: 26px; color: var(--text-secondary); letter-spacing: 2px;
+  text-transform: lowercase; margin-top: auto;
+}
+
+.mooney-app .hook-marker { padding: 80px 70px; justify-content: center; }
+.mooney-app .hook-marker-eyebrow {
+  font-size: 30px; font-weight: 700; color: var(--accent);
+  text-transform: lowercase; letter-spacing: 1px; margin-bottom: 40px;
+}
+.mooney-app .hook-marker-text {
+  font-size: 130px; font-weight: 900; line-height: 1.05; letter-spacing: -3px; color: var(--text-primary);
+}
+.mooney-app .hook-marker-text .hook-mark {
+  background: linear-gradient(180deg, transparent 55%, rgba(77,208,200,0.55) 55%, rgba(77,208,200,0.55) 92%, transparent 92%);
+  padding: 0 6px; margin: 0 -6px; color: #fff;
+}
+
+/* =============================================
+   TAKE SLIDE — bigger by default, more space-filling
+   ============================================= */
+.mooney-app .take-bg {
+  background:
+    radial-gradient(ellipse 80% 50% at 50% 0%, rgba(77,208,200,0.16) 0%, transparent 55%),
+    linear-gradient(180deg, #0c1118 0%, #060a0e 100%);
+}
+
+.mooney-app .take-slide .take-content {
+  position: relative; z-index: 10;
+  width: 100%; height: 100%;
+  padding: 65px 60px 60px;
+  display: flex; flex-direction: column;
+  box-sizing: border-box;
+}
+
+.mooney-app .take-header {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 22px;
+}
+.mooney-app .take-number {
+  font-size: 130px; font-weight: 900; line-height: 1; letter-spacing: -4px;
+  background: linear-gradient(135deg, var(--accent) 0%, #7EEEE6 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+.mooney-app .take-brand {
+  font-size: 28px; font-weight: 700; color: var(--text-secondary);
+  text-transform: uppercase; letter-spacing: 6px; opacity: 0.85;
+}
+
+.mooney-app .take-text-block {
+  margin-bottom: 24px;
+  display: flex; flex-direction: column; gap: 20px;
+}
+.mooney-app .take-title {
+  font-weight: 900; line-height: 1.0; letter-spacing: -3px;
+  color: var(--text-primary);
+}
+.mooney-app .take-accent {
+  background: linear-gradient(135deg, var(--accent) 0%, #7EEEE6 50%, var(--accent-dim) 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+.mooney-app .take-body {
+  font-weight: 500; line-height: 1.35;
+  color: var(--text-secondary); max-width: 95%;
+}
+
+/* Random graphic — position/size driven by inline style (seeded layout) */
+.mooney-app .take-graphic {
+  position: absolute; z-index: 5;
+  display: flex; align-items: center; justify-content: center;
+  pointer-events: none; transform-origin: center;
+}
+.mooney-app .take-graphic-glow {
+  position: absolute; inset: 8%;
+  background: radial-gradient(ellipse, rgba(77,208,200,0.32) 0%, transparent 65%);
+  filter: blur(80px); z-index: 1;
+}
+.mooney-app .rg {
+  position: relative; z-index: 2;
+  width: 100%; height: 100%;
+  filter: drop-shadow(0 20px 50px rgba(0,0,0,0.45));
+}
+
+/* =============================================
+   CTA SLIDE
+   ============================================= */
+.mooney-app .cta-bg {
+  background:
+    radial-gradient(ellipse 80% 60% at 50% 50%, rgba(77,208,200,0.22) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 40% at 100% 0%, rgba(126,238,230,0.12) 0%, transparent 55%),
+    linear-gradient(165deg, #0c1820 0%, #060a0e 70%, #0a1418 100%);
+}
+.mooney-app .cta-mock-fragment {
+  position: absolute; z-index: 3;
+  top: 10%; right: -18%; width: 60%;
+  transform: rotate(8deg);
+  filter: drop-shadow(0 30px 60px rgba(0,0,0,0.6));
+  opacity: 0.85;
+}
+.mooney-app .cta-mock-fragment img { width: 100%; height: auto; display: block; border-radius: 32px; }
+.mooney-app .cta-content {
+  position: relative; z-index: 10;
+  width: 100%; height: 100%;
+  padding: 70px 70px;
+  display: flex; flex-direction: column; justify-content: center;
+  box-sizing: border-box;
+}
+.mooney-app .cta-logo-row { margin-bottom: 40px; }
+.mooney-app .cta-logo {
+  font-size: 90px; font-weight: 900; letter-spacing: -3px;
+  color: var(--text-primary); display: inline-block; line-height: 1;
+}
+.mooney-app .cta-logo-o { color: var(--accent); }
+.mooney-app .cta-app-icon {
+  width: 180px; height: 180px; border-radius: 38px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.5), 0 0 80px rgba(77,208,200,0.25);
+  display: block;
+}
+.mooney-app .cta-headline {
+  font-weight: 900; line-height: 0.95; letter-spacing: -7px;
+  color: var(--text-primary); margin-bottom: 24px;
+  background: linear-gradient(135deg, #fff 0%, #7EEEE6 70%, var(--accent) 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+.mooney-app .cta-sub {
+  font-weight: 600; line-height: 1.3; color: #E8F4F3;
+  margin-bottom: 50px; max-width: 90%;
+  text-shadow: 0 2px 12px rgba(0,0,0,0.4);
+}
+.mooney-app .cta-button {
+  display: inline-flex; align-items: center; gap: 20px;
+  background: linear-gradient(135deg, var(--accent) 0%, #7EEEE6 100%);
+  color: #0a1214; font-size: 44px; font-weight: 800;
+  padding: 28px 52px; border-radius: 100px;
+  align-self: flex-start; margin-bottom: 50px;
+  box-shadow: 0 20px 50px rgba(77,208,200,0.35);
+}
+.mooney-app .cta-arrow { font-size: 38px; font-weight: 900; }
+.mooney-app .cta-stores { display: flex; gap: 16px; }
+.mooney-app .store-badge {
+  display: flex; align-items: center; gap: 14px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.12);
+  padding: 16px 22px; border-radius: 16px;
+  backdrop-filter: blur(8px);
+}
+.mooney-app .store-icon { flex-shrink: 0; display: flex; align-items: center; justify-content: center; color: var(--text-primary); }
+.mooney-app .store-text { display: flex; flex-direction: column; line-height: 1.1; }
+.mooney-app .store-small { font-size: 16px; color: var(--text-secondary); font-weight: 500; }
+.mooney-app .store-big { font-size: 26px; color: var(--text-primary); font-weight: 700; }
+
+/* =============================================
+   THEME + TEXT-SIZE TOGGLES (controls UI)
+   ============================================= */
+.mooney-app .theme-toggle {
+  display: inline-flex; align-items: center; gap: 4px;
+  margin: 0 8px 16px;
+  background: rgba(255,255,255,0.04);
+  border-radius: 10px; padding: 4px;
+}
+.mooney-app .size-label {
+  font-size: 11px; text-transform: uppercase; letter-spacing: 1px;
+  color: var(--text-secondary); padding: 0 10px 0 12px; font-weight: 600;
+}
+.mooney-app .theme-btn {
+  background: transparent; color: var(--text-secondary);
+  border: none; padding: 8px 24px; border-radius: 8px;
+  font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s;
+}
+.mooney-app .theme-btn.active { background: rgba(77,208,200,0.15); color: var(--accent); }
+
+/* =============================================
+   LIGHT THEME
+   ============================================= */
+.mooney-app .carousel-slide.theme-light {
+  --cs-light-bg: #FAF7F0;
+  --cs-light-bg-deepest: #EFEAE0;
+  --cs-light-card: #FFFFFF;
+  --cs-light-text: #0D1117;
+  --cs-light-text-sec: #5C6772;
+  --cs-light-accent: #2A8780;
+  --cs-light-accent-bright: #4DD0C8;
+  --cs-light-border: rgba(13,17,23,0.08);
+}
+.mooney-app .carousel-slide.theme-light .cs-bg-base { background: var(--cs-light-bg); }
+.mooney-app .carousel-slide.theme-light .cs-bg-gradient {
+  background:
+    radial-gradient(ellipse 70% 50% at 20% 0%, rgba(77,208,200,0.22) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 50% at 100% 100%, rgba(42,135,128,0.12) 0%, transparent 55%),
+    linear-gradient(170deg, #FBF8F1 0%, #F0E9DA 100%);
+}
+.mooney-app .carousel-slide.theme-light .cs-bg-noise { opacity: 0.06; mix-blend-mode: multiply; }
+.mooney-app .carousel-slide.theme-light .cs-bg-orb { opacity: 0.45; }
+.mooney-app .carousel-slide.theme-light .take-bg {
+  background:
+    radial-gradient(ellipse 80% 50% at 50% 0%, rgba(77,208,200,0.20) 0%, transparent 55%),
+    linear-gradient(180deg, #FBF8F1 0%, #EFE9DA 100%);
+}
+.mooney-app .carousel-slide.theme-light .cta-bg {
+  background:
+    radial-gradient(ellipse 80% 60% at 50% 50%, rgba(77,208,200,0.28) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 40% at 100% 0%, rgba(126,238,230,0.18) 0%, transparent 55%),
+    linear-gradient(165deg, #FAF8F2 0%, #EFE9DA 70%, #F4EEDE 100%);
+}
+.mooney-app .carousel-slide.theme-light .hook-tag,
+.mooney-app .carousel-slide.theme-light .hook-marker-eyebrow { color: var(--cs-light-accent); }
+.mooney-app .carousel-slide.theme-light .hook-mega-text,
+.mooney-app .carousel-slide.theme-light .hook-question-text,
+.mooney-app .carousel-slide.theme-light .hook-marker-text { color: var(--cs-light-text); }
+.mooney-app .carousel-slide.theme-light .hook-question-mark { color: rgba(42,135,128,0.12); }
+.mooney-app .carousel-slide.theme-light .hook-swipe { color: var(--cs-light-text-sec); }
+.mooney-app .carousel-slide.theme-light .hook-quote-text { color: var(--cs-light-text); }
+.mooney-app .carousel-slide.theme-light .hook-quote-mark { color: var(--cs-light-accent); }
+.mooney-app .carousel-slide.theme-light .hook-quote-attr { color: var(--cs-light-text-sec); }
+.mooney-app .carousel-slide.theme-light .hook-diag-text {
+  background: linear-gradient(135deg, #0D1117 0%, #2A8780 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+.mooney-app .carousel-slide.theme-light .hook-split-bottom-text {
+  background: linear-gradient(135deg, #0D1117 0%, #2A8780 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+.mooney-app .carousel-slide.theme-light .hook-marker-text .hook-mark {
+  background: linear-gradient(180deg, transparent 55%, rgba(77,208,200,0.7) 55%, rgba(77,208,200,0.7) 92%, transparent 92%);
+  color: var(--cs-light-text);
+}
+.mooney-app .carousel-slide.theme-light .take-number {
+  background: linear-gradient(135deg, var(--cs-light-accent) 0%, var(--cs-light-accent-bright) 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+.mooney-app .carousel-slide.theme-light .take-brand { color: var(--cs-light-text-sec); }
+.mooney-app .carousel-slide.theme-light .take-title { color: var(--cs-light-text); }
+.mooney-app .carousel-slide.theme-light .take-accent {
+  background: linear-gradient(135deg, var(--cs-light-accent) 0%, var(--cs-light-accent-bright) 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+.mooney-app .carousel-slide.theme-light .take-body { color: var(--cs-light-text-sec); }
+.mooney-app .carousel-slide.theme-light .take-graphic-glow {
+  background: radial-gradient(ellipse, rgba(77,208,200,0.40) 0%, transparent 65%);
+}
+.mooney-app .carousel-slide.theme-light .rg { filter: drop-shadow(0 12px 24px rgba(42,135,128,0.18)); }
+.mooney-app .carousel-slide.theme-light .cta-headline {
+  background: linear-gradient(135deg, #0D1117 0%, var(--cs-light-accent) 70%, var(--cs-light-accent-bright) 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+.mooney-app .carousel-slide.theme-light .cta-sub { color: var(--cs-light-text); text-shadow: none; opacity: 0.85; }
+.mooney-app .carousel-slide.theme-light .store-badge {
+  background: rgba(255,255,255,0.85);
+  border: 1px solid var(--cs-light-border);
+  box-shadow: 0 4px 14px rgba(13,17,23,0.06);
+}
+.mooney-app .carousel-slide.theme-light .store-icon { color: var(--cs-light-text); }
+.mooney-app .carousel-slide.theme-light .store-small { color: var(--cs-light-text-sec); }
+.mooney-app .carousel-slide.theme-light .store-big { color: var(--cs-light-text); }
+.mooney-app .carousel-slide.theme-light .cta-mock-fragment { opacity: 0.5; }
+
+/* =============================================
+   RESPONSIVE
+   ============================================= */
+@media (max-width: 1400px) {
+  .mooney-app .grid-view { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 800px) {
+  .mooney-app .grid-view { grid-template-columns: 1fr; max-width: 400px; }
+  .mooney-app .logo-grid { grid-template-columns: repeat(2, 1fr); gap: 16px; }
+}

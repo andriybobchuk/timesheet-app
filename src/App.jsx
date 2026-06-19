@@ -1,6 +1,7 @@
 import { useState, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import ResidencyTracker from './ResidencyTracker';
+import MooneyDesigner from './MooneyDesigner';
 
 const TAGS = ['Finance', 'LinkedIn', 'Legal', 'Side Quest'];
 
@@ -108,6 +109,10 @@ export default function App() {
     return <ResidencyTracker onBack={() => setScreen('inbox')} />;
   }
 
+  if (screen === 'mooney') {
+    return <MooneyDesigner onBack={() => setScreen('inbox')} />;
+  }
+
   return (
     <div className="min-h-dvh bg-black flex flex-col relative overflow-hidden">
       <div
@@ -120,12 +125,20 @@ export default function App() {
       </div>
 
       <div className="flex justify-between p-4 pb-0 relative z-10">
-        <button
-          onClick={() => setScreen('residency')}
-          className="text-sm text-white/30 hover:text-white/60 transition-colors px-2 py-1"
-        >
-          Residency
-        </button>
+        <div className="flex gap-1">
+          <button
+            onClick={() => setScreen('residency')}
+            className="text-sm text-white/30 hover:text-white/60 transition-colors px-2 py-1"
+          >
+            Residency
+          </button>
+          <button
+            onClick={() => setScreen('mooney')}
+            className="text-sm text-white/30 hover:text-white/60 transition-colors px-2 py-1"
+          >
+            Mooney
+          </button>
+        </div>
         <div className="flex gap-1 text-sm text-white/40">
           <button
             onClick={() => setLang('pl')}
