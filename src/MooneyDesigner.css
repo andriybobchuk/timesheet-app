@@ -1312,6 +1312,278 @@
     0 0 100px rgba(77,208,200,0.35);
 }
 
+/* 14 — Newspaper */
+.mooney-app .hook-variant-14 .cs-bg-gradient {
+  background: linear-gradient(180deg, #faf6ec 0%, #f1ead8 100%);
+}
+.mooney-app .hook-variant-14 .cs-bg-orb { display: none; }
+.mooney-app .hook-newspaper {
+  padding: 80px 70px;
+  justify-content: center;
+  font-family: Georgia, 'Times New Roman', serif;
+  color: #1a1410;
+}
+.mooney-app .hook-newspaper-tag {
+  font-size: 26px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 8px;
+  text-align: center;
+  margin-bottom: 28px;
+  color: #1a1410;
+}
+.mooney-app .hook-newspaper-rule {
+  height: 6px;
+  background: #1a1410;
+  border-bottom: 2px solid #1a1410;
+  border-top: 2px solid #1a1410;
+  padding: 4px 0;
+  margin: 0 0 28px;
+}
+.mooney-app .hook-newspaper-rule + .hook-newspaper-text + .hook-newspaper-rule { margin: 28px 0; }
+.mooney-app .hook-newspaper-text {
+  font-weight: 900;
+  font-family: Georgia, 'Times New Roman', serif;
+  line-height: 1.04;
+  letter-spacing: -2px;
+  text-align: center;
+  color: #1a1410;
+}
+.mooney-app .hook-newspaper-byline {
+  font-size: 24px;
+  text-align: center;
+  font-style: italic;
+  margin-top: 24px;
+  color: #1a1410;
+  letter-spacing: 2px;
+}
+
+/* 15 — Receipt */
+.mooney-app .hook-variant-15 .cs-bg-gradient {
+  background: linear-gradient(180deg, #1a1410 0%, #0a0606 100%);
+}
+.mooney-app .hook-receipt {
+  padding: 70px 50px;
+  align-items: center;
+  justify-content: center;
+}
+.mooney-app .hook-receipt-card {
+  background: #fffaf0;
+  color: #1a1410;
+  padding: 56px 48px;
+  max-width: 88%;
+  font-family: 'SF Mono', Menlo, Monaco, 'Courier New', monospace;
+  box-shadow: 0 30px 60px rgba(0,0,0,0.5);
+  position: relative;
+}
+.mooney-app .hook-receipt-card::before,
+.mooney-app .hook-receipt-card::after {
+  content: '';
+  position: absolute;
+  left: 0; right: 0; height: 16px;
+  background: radial-gradient(circle at 8px 0, transparent 8px, #fffaf0 8px) 0 0/16px 16px;
+}
+.mooney-app .hook-receipt-card::before { top: -12px; transform: rotate(180deg); }
+.mooney-app .hook-receipt-card::after { bottom: -12px; }
+.mooney-app .hook-receipt-head {
+  display: flex;
+  justify-content: space-between;
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  margin-bottom: 12px;
+}
+.mooney-app .hook-receipt-divider {
+  text-align: center;
+  font-size: 20px;
+  letter-spacing: -2px;
+  opacity: 0.55;
+  margin: 8px 0;
+}
+.mooney-app .hook-receipt-text {
+  font-weight: 700;
+  font-family: 'SF Mono', Menlo, Monaco, 'Courier New', monospace;
+  line-height: 1.25;
+  letter-spacing: -1px;
+  margin: 24px 0;
+  text-align: center;
+}
+.mooney-app .hook-receipt-foot {
+  display: flex;
+  justify-content: space-between;
+  font-size: 28px;
+  font-weight: 800;
+  margin-top: 14px;
+}
+.mooney-app .hook-receipt-thanks {
+  text-align: center;
+  font-size: 18px;
+  letter-spacing: 3px;
+  margin-top: 18px;
+  opacity: 0.65;
+  text-transform: lowercase;
+}
+
+/* 16 — Subtitle */
+.mooney-app .hook-variant-16 .cs-bg-gradient {
+  background: linear-gradient(180deg, #0a0a0a 0%, #050505 100%);
+}
+.mooney-app .hook-subtitle {
+  padding: 0;
+  justify-content: flex-end;
+  align-items: stretch;
+  padding-bottom: 12%;
+}
+.mooney-app .hook-subtitle-band {
+  background: rgba(0,0,0,0.78);
+  border-top: 2px solid rgba(255,255,255,0.08);
+  border-bottom: 2px solid rgba(255,255,255,0.08);
+  padding: 50px 70px;
+  text-align: center;
+}
+.mooney-app .hook-subtitle-text {
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -1.5px;
+  color: #fffbe0;
+  text-shadow: 0 0 24px rgba(0,0,0,0.9), 0 2px 0 #000;
+  font-family: 'SF Pro Display', Arial, sans-serif;
+}
+
+/* 17 — 3D */
+.mooney-app .hook-3d {
+  padding: 100px 70px;
+  justify-content: center;
+  align-items: center;
+}
+.mooney-app .hook-3d-text {
+  font-weight: 900;
+  line-height: 1.0;
+  letter-spacing: -4px;
+  text-align: center;
+  color: #fff;
+  text-shadow:
+    1px 1px 0 var(--accent),
+    2px 2px 0 var(--accent),
+    3px 3px 0 var(--accent),
+    4px 4px 0 var(--accent),
+    5px 5px 0 var(--accent),
+    6px 6px 0 var(--accent),
+    7px 7px 0 var(--accent-dim),
+    8px 8px 0 var(--accent-dim),
+    9px 9px 0 var(--accent-dim),
+    10px 10px 0 var(--accent-dim),
+    14px 14px 30px rgba(0,0,0,0.5);
+}
+
+/* 18 — Sticky note */
+.mooney-app .hook-variant-18 .cs-bg-gradient {
+  background: linear-gradient(180deg, #181410 0%, #0a0806 100%);
+}
+.mooney-app .hook-sticky {
+  padding: 80px 60px;
+  align-items: center;
+  justify-content: center;
+}
+.mooney-app .hook-sticky-note {
+  position: relative;
+  background: linear-gradient(135deg, #fff282 0%, #ffd84d 100%);
+  padding: 80px 60px;
+  max-width: 88%;
+  transform: rotate(-3deg);
+  box-shadow:
+    0 30px 60px rgba(0,0,0,0.5),
+    0 12px 24px rgba(0,0,0,0.35),
+    inset 0 -8px 16px rgba(0,0,0,0.05);
+  font-family: 'Marker Felt', 'Comic Sans MS', 'Bradley Hand', cursive;
+  color: #2a2010;
+}
+.mooney-app .hook-sticky-text {
+  font-weight: 800;
+  line-height: 1.08;
+  letter-spacing: -1px;
+  text-align: center;
+  color: #2a2010;
+}
+.mooney-app .hook-sticky-pin {
+  position: absolute;
+  top: -18px;
+  left: 50%;
+  width: 36px;
+  height: 36px;
+  background: radial-gradient(circle at 35% 35%, #ff8b8b 0%, #c53030 70%, #7a1818 100%);
+  border-radius: 50%;
+  transform: translateX(-50%);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+}
+
+/* 19 — Brackets */
+.mooney-app .hook-brackets {
+  padding: 60px 40px;
+  display: flex;
+  flex-direction: row !important;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+}
+.mooney-app .hook-brackets-l,
+.mooney-app .hook-brackets-r {
+  font-size: 620px;
+  font-weight: 200;
+  line-height: 0.78;
+  color: var(--accent);
+  font-family: Georgia, 'Times New Roman', serif;
+  flex-shrink: 0;
+  margin-top: -20px;
+}
+.mooney-app .hook-brackets-text {
+  flex: 1;
+  font-weight: 900;
+  line-height: 1.0;
+  letter-spacing: -4px;
+  color: var(--text-primary);
+  text-align: center;
+  padding: 0 10px;
+}
+
+/* 20 — Banner */
+.mooney-app .hook-banner {
+  padding: 0;
+  position: relative;
+  align-items: center;
+  justify-content: center;
+}
+.mooney-app .hook-banner-stripe {
+  position: absolute;
+  left: -10%;
+  right: -10%;
+  top: 40%;
+  background: linear-gradient(90deg, #4DD0C8 0%, #3BA8A1 100%);
+  padding: 60px 100px;
+  transform: rotate(-8deg);
+  box-shadow:
+    0 30px 60px rgba(0,0,0,0.5),
+    0 0 0 12px rgba(77,208,200,0.08);
+  border-top: 4px solid rgba(255,255,255,0.25);
+  border-bottom: 4px solid rgba(0,0,0,0.18);
+}
+.mooney-app .hook-banner-text {
+  font-weight: 900;
+  line-height: 1.05;
+  letter-spacing: -3px;
+  color: #0a1214;
+  text-align: center;
+}
+.mooney-app .hook-banner-mark {
+  position: absolute;
+  font-size: 200px;
+  color: rgba(77,208,200,0.15);
+  bottom: 6%;
+  right: 8%;
+  pointer-events: none;
+  font-weight: 900;
+}
+
 /* --- Light-theme overrides for new variants --- */
 .mooney-app .carousel-slide.theme-light .hook-stacked-word { color: var(--cs-light-text); }
 .mooney-app .carousel-slide.theme-light .hook-stacked-word.alt { color: var(--cs-light-accent); }
@@ -1352,6 +1624,46 @@
     0 0 16px rgba(42,135,128,0.4),
     0 0 36px rgba(42,135,128,0.25);
 }
+
+/* Newspaper / Receipt / Subtitle / 3D / Sticky / Brackets / Banner — light */
+.mooney-app .carousel-slide.theme-light.hook-variant-14 .cs-bg-gradient {
+  background: linear-gradient(180deg, #fffefa 0%, #f3eddb 100%);
+}
+.mooney-app .carousel-slide.theme-light.hook-variant-15 .cs-bg-gradient {
+  background: linear-gradient(180deg, #FBF8F1 0%, #EFE9DA 100%);
+}
+.mooney-app .carousel-slide.theme-light .hook-receipt-card {
+  background: #fff;
+  box-shadow: 0 18px 40px rgba(13,17,23,0.12);
+}
+.mooney-app .carousel-slide.theme-light.hook-variant-16 .cs-bg-gradient {
+  background: linear-gradient(180deg, #FBF8F1 0%, #EFE9DA 100%);
+}
+.mooney-app .carousel-slide.theme-light .hook-subtitle-band {
+  background: rgba(13,17,23,0.92);
+  border-color: rgba(13,17,23,0.15);
+}
+.mooney-app .carousel-slide.theme-light .hook-3d-text {
+  color: var(--cs-light-text);
+  text-shadow:
+    1px 1px 0 var(--cs-light-accent),
+    2px 2px 0 var(--cs-light-accent),
+    3px 3px 0 var(--cs-light-accent),
+    4px 4px 0 var(--cs-light-accent),
+    5px 5px 0 var(--cs-light-accent),
+    6px 6px 0 var(--cs-light-accent-bright),
+    7px 7px 0 var(--cs-light-accent-bright),
+    8px 8px 0 var(--cs-light-accent-bright),
+    9px 9px 0 var(--cs-light-accent-bright),
+    10px 10px 0 var(--cs-light-accent-bright),
+    14px 14px 30px rgba(13,17,23,0.15);
+}
+.mooney-app .carousel-slide.theme-light.hook-variant-18 .cs-bg-gradient {
+  background: linear-gradient(180deg, #F4EEDE 0%, #E8DFC6 100%);
+}
+.mooney-app .carousel-slide.theme-light .hook-brackets-l,
+.mooney-app .carousel-slide.theme-light .hook-brackets-r { color: var(--cs-light-accent); }
+.mooney-app .carousel-slide.theme-light .hook-brackets-text { color: var(--cs-light-text); }
 
 /* =============================================
    212 STUDIO BRAND — UI CHROME ONLY

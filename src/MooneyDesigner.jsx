@@ -78,12 +78,13 @@ const DEFAULT_CTA = {
   mockImage: ASSET('mock_analytics.png'),
 }
 
-const HOOK_VARIANT_COUNT = 14
+const HOOK_VARIANT_COUNT = 21
 const GRAPHIC_VARIANT_COUNT = 14
 
 const HOOK_STYLE_NAMES = [
   'Bold', 'Question', 'Split', 'Diagonal', 'Quote', 'Highlight',
   'Sticker', 'Stacked', 'Glitch', 'Big Stat', 'POV', 'Tape', 'Card', 'Neon',
+  'Newspaper', 'Receipt', 'Subtitle', '3D', 'Sticky', 'Brackets', 'Banner',
 ]
 
 /* Base sizes bumped up so the slide fills more space by default */
@@ -757,6 +758,86 @@ function HookSlide({ text, variantIndex, format, theme, textMult = 1, slideRef }
         <div className="hook-content hook-neon">
           <h1 className="hook-neon-text" style={sz(135)}>{text}</h1>
           <div className="hook-swipe">.tap.</div>
+        </div>
+      )}
+
+      {v === 14 && (
+        /* NEWSPAPER — serif headline with rules */
+        <div className="hook-content hook-newspaper">
+          <div className="hook-newspaper-tag">★ BREAKING ★</div>
+          <div className="hook-newspaper-rule" />
+          <h1 className="hook-newspaper-text" style={sz(105)}>{text}</h1>
+          <div className="hook-newspaper-rule" />
+          <div className="hook-newspaper-byline">— THE MOONEY POST</div>
+        </div>
+      )}
+
+      {v === 15 && (() => {
+        /* RECEIPT — monospace, dotted dividers, fiscal vibe */
+        const receiptNo = String(Math.abs(
+          text.split('').reduce((a, c) => a * 31 + c.charCodeAt(0), 0)
+        ) % 9999).padStart(4, '0')
+        return (
+          <div className="hook-content hook-receipt">
+            <div className="hook-receipt-card">
+              <div className="hook-receipt-head">
+                <div>MOONEY TRUTH</div>
+                <div>NO. {receiptNo}</div>
+              </div>
+              <div className="hook-receipt-divider">— — — — — — — — — — — —</div>
+              <h1 className="hook-receipt-text" style={sz(72)}>{text}</h1>
+              <div className="hook-receipt-divider">— — — — — — — — — — — —</div>
+              <div className="hook-receipt-foot">
+                <span>TOTAL</span><span>PRICELESS</span>
+              </div>
+              <div className="hook-receipt-thanks">★ thanks for scrolling ★</div>
+            </div>
+          </div>
+        )
+      })()}
+
+      {v === 16 && (
+        /* SUBTITLE — TV caption band */
+        <div className="hook-content hook-subtitle">
+          <div className="hook-subtitle-band">
+            <h1 className="hook-subtitle-text" style={sz(80)}>{text}</h1>
+          </div>
+        </div>
+      )}
+
+      {v === 17 && (
+        /* 3D — extruded text shadow */
+        <div className="hook-content hook-3d">
+          <h1 className="hook-3d-text" style={sz(135)}>{text}</h1>
+        </div>
+      )}
+
+      {v === 18 && (
+        /* STICKY — yellow post-it note */
+        <div className="hook-content hook-sticky">
+          <div className="hook-sticky-note">
+            <h1 className="hook-sticky-text" style={sz(90)}>{text}</h1>
+            <div className="hook-sticky-pin" />
+          </div>
+        </div>
+      )}
+
+      {v === 19 && (
+        /* BRACKETS — giant flanking brackets */
+        <div className="hook-content hook-brackets">
+          <div className="hook-brackets-l">[</div>
+          <h1 className="hook-brackets-text" style={sz(110)}>{text}</h1>
+          <div className="hook-brackets-r">]</div>
+        </div>
+      )}
+
+      {v === 20 && (
+        /* BANNER — diagonal sash stripe */
+        <div className="hook-content hook-banner">
+          <div className="hook-banner-stripe">
+            <h1 className="hook-banner-text" style={sz(82)}>{text}</h1>
+          </div>
+          <div className="hook-banner-mark">★</div>
         </div>
       )}
     </div>
