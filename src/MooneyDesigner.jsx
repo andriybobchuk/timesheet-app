@@ -84,7 +84,7 @@ const GRAPHIC_VARIANT_COUNT = 14
 const HOOK_STYLE_NAMES = [
   'Bold', 'Question', 'Split', 'Diagonal', 'Quote', 'Highlight',
   'Sticker', 'Stacked', 'Glitch', 'Big Stat', 'POV', 'Tape', 'Card', 'Neon',
-  'Newspaper', 'Receipt', 'Subtitle', '3D', 'Sticky', 'Brackets', 'Banner',
+  'Editorial', 'Block', 'Pillar', 'Outlined', 'Two-Tone', 'Tag', 'Ribbon',
 ]
 
 /* Base sizes bumped up so the slide fills more space by default */
@@ -762,82 +762,79 @@ function HookSlide({ text, variantIndex, format, theme, textMult = 1, slideRef }
       )}
 
       {v === 14 && (
-        /* NEWSPAPER — serif headline with rules */
-        <div className="hook-content hook-newspaper">
-          <div className="hook-newspaper-tag">★ BREAKING ★</div>
-          <div className="hook-newspaper-rule" />
-          <h1 className="hook-newspaper-text" style={sz(105)}>{text}</h1>
-          <div className="hook-newspaper-rule" />
-          <div className="hook-newspaper-byline">— THE MOONEY POST</div>
+        /* EDITORIAL — clean magazine: eyebrow, headline, accent rule, byline */
+        <div className="hook-content hook-editorial">
+          <div className="hook-editorial-eyebrow">★ MOONEY ESSAY · NO. {(variantIndex % 99) + 1}</div>
+          <h1 className="hook-editorial-text" style={sz(115)}>{text}</h1>
+          <div className="hook-editorial-rule" />
+          <div className="hook-editorial-foot">read in 3 swipes →</div>
         </div>
       )}
 
-      {v === 15 && (() => {
-        /* RECEIPT — monospace, dotted dividers, fiscal vibe */
-        const receiptNo = String(Math.abs(
-          text.split('').reduce((a, c) => a * 31 + c.charCodeAt(0), 0)
-        ) % 9999).padStart(4, '0')
-        return (
-          <div className="hook-content hook-receipt">
-            <div className="hook-receipt-card">
-              <div className="hook-receipt-head">
-                <div>MOONEY TRUTH</div>
-                <div>NO. {receiptNo}</div>
-              </div>
-              <div className="hook-receipt-divider">— — — — — — — — — — — —</div>
-              <h1 className="hook-receipt-text" style={sz(72)}>{text}</h1>
-              <div className="hook-receipt-divider">— — — — — — — — — — — —</div>
-              <div className="hook-receipt-foot">
-                <span>TOTAL</span><span>PRICELESS</span>
-              </div>
-              <div className="hook-receipt-thanks">★ thanks for scrolling ★</div>
-            </div>
-          </div>
-        )
-      })()}
+      {v === 15 && (
+        /* BLOCK — brutalist all-caps wall, fills slide */
+        <div className="hook-content hook-block">
+          <h1 className="hook-block-text" style={sz(140)}>{text.toUpperCase()}</h1>
+        </div>
+      )}
 
       {v === 16 && (
-        /* SUBTITLE — TV caption band */
-        <div className="hook-content hook-subtitle">
-          <div className="hook-subtitle-band">
-            <h1 className="hook-subtitle-text" style={sz(80)}>{text}</h1>
+        /* PILLAR — vertical teal line + indented headline */
+        <div className="hook-content hook-pillar">
+          <div className="hook-pillar-line" />
+          <div className="hook-pillar-body">
+            <div className="hook-pillar-eyebrow">listen up.</div>
+            <h1 className="hook-pillar-text" style={sz(115)}>{text}</h1>
+            <div className="hook-pillar-foot">— Mooney</div>
           </div>
         </div>
       )}
 
       {v === 17 && (
-        /* 3D — extruded text shadow */
-        <div className="hook-content hook-3d">
-          <h1 className="hook-3d-text" style={sz(135)}>{text}</h1>
+        /* OUTLINED — hollow text, last word filled teal */
+        <div className="hook-content hook-outlined">
+          <h1 className="hook-outlined-text" style={sz(130)}>
+            {words.map((w, i) => (
+              <span key={i} className={i === words.length - 1 ? 'outlined-fill' : ''}>
+                {w}{i < words.length - 1 ? ' ' : ''}
+              </span>
+            ))}
+          </h1>
+          <div className="hook-swipe">swipe →</div>
         </div>
       )}
 
-      {v === 18 && (
-        /* STICKY — yellow post-it note */
-        <div className="hook-content hook-sticky">
-          <div className="hook-sticky-note">
-            <h1 className="hook-sticky-text" style={sz(90)}>{text}</h1>
-            <div className="hook-sticky-pin" />
+      {v === 18 && (() => {
+        /* TWO-TONE — small intro phrase, big payoff hook */
+        const wordCount = words.length
+        const splitAt = Math.min(3, Math.floor(wordCount / 3))
+        const intro = words.slice(0, splitAt).join(' ')
+        const payoff = words.slice(splitAt).join(' ') || text
+        return (
+          <div className="hook-content hook-two-tone">
+            <div className="hook-two-tone-intro">{intro || 'hot take:'}</div>
+            <h1 className="hook-two-tone-payoff" style={sz(120)}>{payoff}</h1>
+            <div className="hook-swipe">swipe →</div>
           </div>
-        </div>
-      )}
+        )
+      })()}
 
       {v === 19 && (
-        /* BRACKETS — giant flanking brackets */
-        <div className="hook-content hook-brackets">
-          <div className="hook-brackets-l">[</div>
-          <h1 className="hook-brackets-text" style={sz(110)}>{text}</h1>
-          <div className="hook-brackets-r">]</div>
+        /* TAG — hashtag/chip prefix + hook */
+        <div className="hook-content hook-tagstyle">
+          <div className="hook-tag-chip">#mooneytruth</div>
+          <h1 className="hook-tag-text" style={sz(118)}>{text}</h1>
+          <div className="hook-swipe">→ → →</div>
         </div>
       )}
 
       {v === 20 && (
-        /* BANNER — diagonal sash stripe */
-        <div className="hook-content hook-banner">
-          <div className="hook-banner-stripe">
-            <h1 className="hook-banner-text" style={sz(82)}>{text}</h1>
+        /* RIBBON — clean horizontal teal ribbon with caps text */
+        <div className="hook-content hook-ribbon">
+          <div className="hook-ribbon-band">
+            <h1 className="hook-ribbon-text" style={sz(85)}>{text.toUpperCase()}</h1>
           </div>
-          <div className="hook-banner-mark">★</div>
+          <div className="hook-ribbon-foot">— issue 14 · mooney</div>
         </div>
       )}
     </div>

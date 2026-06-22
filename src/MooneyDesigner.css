@@ -1312,291 +1312,195 @@
     0 0 100px rgba(77,208,200,0.35);
 }
 
-/* 14 — Newspaper (Mooney dark, serif headline, teal rules) */
-.mooney-app .hook-newspaper {
+/* 14 — Editorial (eyebrow + headline + accent rule + foot) */
+.mooney-app .hook-editorial {
   padding: 80px 70px;
   justify-content: center;
-  font-family: Georgia, 'Times New Roman', serif;
-  color: var(--text-primary);
 }
-.mooney-app .hook-newspaper-tag {
+.mooney-app .hook-editorial-eyebrow {
   font-size: 26px;
-  font-weight: 900;
+  font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 8px;
-  text-align: center;
-  margin-bottom: 24px;
+  letter-spacing: 6px;
   color: var(--accent);
-  font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
+  margin-bottom: 36px;
 }
-.mooney-app .hook-newspaper-rule {
-  height: 10px;
-  border-top: 3px solid var(--accent);
-  border-bottom: 1px solid var(--accent);
-  margin: 0 0 24px;
-  opacity: 0.85;
-}
-.mooney-app .hook-newspaper-text {
+.mooney-app .hook-editorial-text {
   font-weight: 900;
-  font-family: Georgia, 'Times New Roman', serif;
-  line-height: 1.04;
-  letter-spacing: -2px;
-  text-align: center;
+  line-height: 1.0;
+  letter-spacing: -3px;
   color: var(--text-primary);
+  margin-bottom: 32px;
 }
-.mooney-app .hook-newspaper-byline {
-  font-size: 24px;
-  text-align: center;
+.mooney-app .hook-editorial-rule {
+  width: 96px;
+  height: 5px;
+  background: var(--accent);
+  border-radius: 999px;
+}
+.mooney-app .hook-editorial-foot {
+  font-size: 26px;
+  color: var(--text-secondary);
   font-style: italic;
-  margin-top: 20px;
-  color: var(--accent-dim);
-  letter-spacing: 3px;
-  font-family: Georgia, 'Times New Roman', serif;
+  margin-top: 32px;
+  letter-spacing: 1px;
 }
 
-/* 15 — Receipt (Mooney dark terminal printout, teal monospace) */
-.mooney-app .hook-receipt {
-  padding: 70px 50px;
-  align-items: center;
+/* 15 — Block (brutalist all-caps, fills slide) */
+.mooney-app .hook-block {
+  padding: 60px 56px;
   justify-content: center;
-}
-.mooney-app .hook-receipt-card {
-  background: linear-gradient(180deg, #0e1418 0%, #0a1014 100%);
-  color: #DCEFED;
-  padding: 56px 48px;
-  max-width: 92%;
-  font-family: 'SF Mono', Menlo, Monaco, 'Courier New', monospace;
-  border: 1px solid rgba(77,208,200,0.25);
-  box-shadow:
-    0 30px 60px rgba(0,0,0,0.55),
-    inset 0 0 0 1px rgba(77,208,200,0.05);
-  position: relative;
-}
-.mooney-app .hook-receipt-card::before,
-.mooney-app .hook-receipt-card::after {
-  content: '';
-  position: absolute;
-  left: 0; right: 0; height: 18px;
-  background:
-    radial-gradient(circle at 9px 0, transparent 9px, #0e1418 9px) 0 0/18px 18px;
-}
-.mooney-app .hook-receipt-card::before { top: -14px; transform: rotate(180deg); }
-.mooney-app .hook-receipt-card::after { bottom: -14px; }
-.mooney-app .hook-receipt-head {
-  display: flex;
-  justify-content: space-between;
-  font-size: 22px;
-  font-weight: 700;
-  letter-spacing: 2px;
-  margin-bottom: 14px;
-  color: var(--accent);
-}
-.mooney-app .hook-receipt-divider {
-  text-align: center;
-  font-size: 22px;
-  letter-spacing: -2px;
-  opacity: 0.5;
-  margin: 8px 0;
-  color: var(--accent);
-}
-.mooney-app .hook-receipt-text {
-  font-weight: 700;
-  font-family: 'SF Mono', Menlo, Monaco, 'Courier New', monospace;
-  line-height: 1.28;
-  letter-spacing: -1px;
-  margin: 24px 0;
-  text-align: center;
-  color: #fff;
-}
-.mooney-app .hook-receipt-foot {
-  display: flex;
-  justify-content: space-between;
-  font-size: 28px;
-  font-weight: 800;
-  margin-top: 14px;
-  color: var(--accent);
-}
-.mooney-app .hook-receipt-thanks {
-  text-align: center;
-  font-size: 18px;
-  letter-spacing: 3px;
-  margin-top: 18px;
-  opacity: 0.55;
-  text-transform: lowercase;
-  color: #DCEFED;
-}
-
-/* 16 — Subtitle */
-.mooney-app .hook-variant-16 .cs-bg-gradient {
-  background: linear-gradient(180deg, #0a0a0a 0%, #050505 100%);
-}
-.mooney-app .hook-subtitle {
-  padding: 0;
-  justify-content: flex-end;
   align-items: stretch;
-  padding-bottom: 12%;
 }
-.mooney-app .hook-subtitle-band {
-  background: rgba(0,0,0,0.78);
-  border-top: 2px solid rgba(255,255,255,0.08);
-  border-bottom: 2px solid rgba(255,255,255,0.08);
-  padding: 50px 70px;
-  text-align: center;
+.mooney-app .hook-block-text {
+  font-weight: 900;
+  line-height: 0.94;
+  letter-spacing: -6px;
+  color: var(--text-primary);
 }
-.mooney-app .hook-subtitle-text {
-  font-weight: 700;
-  line-height: 1.15;
-  letter-spacing: -1.5px;
-  color: #fffbe0;
-  text-shadow: 0 0 24px rgba(0,0,0,0.9), 0 2px 0 #000;
-  font-family: 'SF Pro Display', Arial, sans-serif;
+.mooney-app .hook-block-text::first-line {
+  /* gives the first line a teal accent — purely cosmetic */
+  color: var(--accent);
 }
 
-/* 17 — 3D */
-.mooney-app .hook-3d {
+/* 16 — Pillar (vertical teal line + indented headline) */
+.mooney-app .hook-pillar {
+  flex-direction: row !important;
   padding: 100px 70px;
-  justify-content: center;
-  align-items: center;
+  align-items: stretch;
+  justify-content: flex-start;
+  gap: 56px;
 }
-.mooney-app .hook-3d-text {
+.mooney-app .hook-pillar-line {
+  width: 12px;
+  background: linear-gradient(180deg, var(--accent) 0%, var(--accent-dim) 100%);
+  border-radius: 12px;
+  flex-shrink: 0;
+}
+.mooney-app .hook-pillar-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.mooney-app .hook-pillar-eyebrow {
+  font-size: 30px;
+  font-weight: 700;
+  color: var(--accent);
+  text-transform: lowercase;
+  letter-spacing: 1px;
+  margin-bottom: 22px;
+}
+.mooney-app .hook-pillar-text {
+  font-weight: 900;
+  line-height: 1.02;
+  letter-spacing: -3px;
+  color: var(--text-primary);
+}
+.mooney-app .hook-pillar-foot {
+  font-size: 26px;
+  color: var(--text-secondary);
+  font-style: italic;
+  margin-top: 28px;
+  letter-spacing: 2px;
+}
+
+/* 17 — Outlined (hollow text, last word filled teal) */
+.mooney-app .hook-outlined {
+  padding: 80px 70px;
+  justify-content: center;
+}
+.mooney-app .hook-outlined-text {
   font-weight: 900;
   line-height: 1.0;
-  letter-spacing: -4px;
-  text-align: center;
-  color: #fff;
-  text-shadow:
-    1px 1px 0 var(--accent),
-    2px 2px 0 var(--accent),
-    3px 3px 0 var(--accent),
-    4px 4px 0 var(--accent),
-    5px 5px 0 var(--accent),
-    6px 6px 0 var(--accent),
-    7px 7px 0 var(--accent-dim),
-    8px 8px 0 var(--accent-dim),
-    9px 9px 0 var(--accent-dim),
-    10px 10px 0 var(--accent-dim),
-    14px 14px 30px rgba(0,0,0,0.5);
+  letter-spacing: -3px;
+  color: transparent;
+  -webkit-text-stroke: 3px var(--text-primary);
+  text-stroke: 3px var(--text-primary);
 }
-
-/* 18 — Sticky note (Mooney teal note pinned on dark) */
-.mooney-app .hook-sticky {
-  padding: 80px 60px;
-  align-items: center;
-  justify-content: center;
-}
-.mooney-app .hook-sticky-note {
-  position: relative;
-  background: linear-gradient(135deg, #65DDD5 0%, #4DD0C8 55%, #3BA8A1 100%);
-  padding: 80px 60px;
-  max-width: 88%;
-  transform: rotate(4deg);
-  border-radius: 4px;
-  box-shadow:
-    0 30px 60px rgba(0,0,0,0.55),
-    0 12px 24px rgba(0,0,0,0.35),
-    inset 0 -10px 24px rgba(0,0,0,0.10);
-  color: #0a1214;
-}
-.mooney-app .hook-sticky-note::after {
-  /* subtle noise/paper texture overlay */
-  content: '';
-  position: absolute;
-  inset: 0;
-  opacity: 0.08;
-  pointer-events: none;
-  mix-blend-mode: overlay;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-  background-size: 256px;
-}
-.mooney-app .hook-sticky-text {
-  position: relative;
-  z-index: 2;
-  font-weight: 900;
-  line-height: 1.05;
-  letter-spacing: -2px;
-  text-align: center;
-  color: #0a1214;
-}
-.mooney-app .hook-sticky-pin {
-  position: absolute;
-  top: -20px;
-  left: 50%;
-  width: 36px;
-  height: 36px;
-  background:
-    radial-gradient(circle at 35% 32%, #ffffff 0%, #DCEFED 30%, #ffffff 38%, var(--accent) 65%, var(--accent-dim) 100%);
-  border-radius: 50%;
-  transform: translateX(-50%);
-  box-shadow:
-    0 4px 10px rgba(0,0,0,0.5),
-    0 0 0 2px rgba(255,255,255,0.4) inset;
-}
-
-/* 19 — Brackets */
-.mooney-app .hook-brackets {
-  padding: 60px 40px;
-  display: flex;
-  flex-direction: row !important;
-  align-items: center;
-  justify-content: center;
-  gap: 0;
-}
-.mooney-app .hook-brackets-l,
-.mooney-app .hook-brackets-r {
-  font-size: 620px;
-  font-weight: 200;
-  line-height: 0.78;
+.mooney-app .hook-outlined-text .outlined-fill {
   color: var(--accent);
-  font-family: Georgia, 'Times New Roman', serif;
-  flex-shrink: 0;
-  margin-top: -20px;
+  -webkit-text-stroke: 0;
+  text-stroke: 0;
 }
-.mooney-app .hook-brackets-text {
-  flex: 1;
+
+/* 18 — Two-Tone (small intro + massive payoff) */
+.mooney-app .hook-two-tone {
+  padding: 80px 70px;
+  justify-content: center;
+}
+.mooney-app .hook-two-tone-intro {
+  font-size: 38px;
+  font-weight: 600;
+  color: var(--accent);
+  letter-spacing: 0;
+  margin-bottom: 28px;
+  font-style: italic;
+}
+.mooney-app .hook-two-tone-payoff {
   font-weight: 900;
   line-height: 1.0;
   letter-spacing: -4px;
   color: var(--text-primary);
-  text-align: center;
-  padding: 0 10px;
 }
 
-/* 20 — Banner */
-.mooney-app .hook-banner {
-  padding: 0;
-  position: relative;
-  align-items: center;
+/* 19 — Tag (hashtag chip + headline) */
+.mooney-app .hook-tagstyle {
+  padding: 80px 70px;
   justify-content: center;
 }
-.mooney-app .hook-banner-stripe {
-  position: absolute;
-  left: -10%;
-  right: -10%;
-  top: 40%;
-  background: linear-gradient(90deg, #4DD0C8 0%, #3BA8A1 100%);
-  padding: 60px 100px;
-  transform: rotate(-8deg);
+.mooney-app .hook-tag-chip {
+  display: inline-block;
+  align-self: flex-start;
+  background: var(--accent);
+  color: #0a1214;
+  padding: 10px 28px;
+  border-radius: 100px;
+  font-weight: 800;
+  font-size: 36px;
+  letter-spacing: 0.5px;
+  margin-bottom: 32px;
+  box-shadow: 0 10px 30px rgba(77,208,200,0.25);
+}
+.mooney-app .hook-tag-text {
+  font-weight: 900;
+  line-height: 1.0;
+  letter-spacing: -3px;
+  color: var(--text-primary);
+}
+
+/* 20 — Ribbon (clean horizontal teal ribbon with caps) */
+.mooney-app .hook-ribbon {
+  padding: 0;
+  position: relative;
+  align-items: stretch;
+  justify-content: center;
+}
+.mooney-app .hook-ribbon-band {
+  background: linear-gradient(90deg, var(--accent) 0%, #7EEEE6 50%, var(--accent) 100%);
+  padding: 70px 80px;
   box-shadow:
     0 30px 60px rgba(0,0,0,0.5),
-    0 0 0 12px rgba(77,208,200,0.08);
-  border-top: 4px solid rgba(255,255,255,0.25);
-  border-bottom: 4px solid rgba(0,0,0,0.18);
+    inset 0 2px 0 rgba(255,255,255,0.25),
+    inset 0 -2px 0 rgba(0,0,0,0.18);
 }
-.mooney-app .hook-banner-text {
+.mooney-app .hook-ribbon-text {
   font-weight: 900;
-  line-height: 1.05;
-  letter-spacing: -3px;
+  line-height: 1.04;
+  letter-spacing: -2px;
   color: #0a1214;
   text-align: center;
 }
-.mooney-app .hook-banner-mark {
+.mooney-app .hook-ribbon-foot {
   position: absolute;
-  font-size: 200px;
-  color: rgba(77,208,200,0.15);
-  bottom: 6%;
-  right: 8%;
-  pointer-events: none;
-  font-weight: 900;
+  bottom: 8%;
+  left: 0; right: 0;
+  text-align: center;
+  font-size: 24px;
+  color: var(--text-secondary);
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  font-weight: 600;
 }
 
 /* --- Light-theme overrides for new variants --- */
@@ -1640,68 +1544,47 @@
     0 0 36px rgba(42,135,128,0.25);
 }
 
-/* Newspaper / Receipt / Subtitle / 3D / Sticky / Brackets / Banner — light */
-.mooney-app .carousel-slide.theme-light .hook-newspaper { color: var(--cs-light-text); }
-.mooney-app .carousel-slide.theme-light .hook-newspaper-tag { color: var(--cs-light-accent); }
-.mooney-app .carousel-slide.theme-light .hook-newspaper-rule {
-  border-top-color: var(--cs-light-accent);
-  border-bottom-color: var(--cs-light-accent);
-}
-.mooney-app .carousel-slide.theme-light .hook-newspaper-text { color: var(--cs-light-text); }
-.mooney-app .carousel-slide.theme-light .hook-newspaper-byline { color: var(--cs-light-accent); }
+/* Editorial / Block / Pillar / Outlined / Two-Tone / Tag / Ribbon — light */
+.mooney-app .carousel-slide.theme-light .hook-editorial-eyebrow { color: var(--cs-light-accent); }
+.mooney-app .carousel-slide.theme-light .hook-editorial-text { color: var(--cs-light-text); }
+.mooney-app .carousel-slide.theme-light .hook-editorial-rule { background: var(--cs-light-accent); }
+.mooney-app .carousel-slide.theme-light .hook-editorial-foot { color: var(--cs-light-text-sec); }
 
-.mooney-app .carousel-slide.theme-light .hook-receipt-card {
-  background: linear-gradient(180deg, #ffffff 0%, #f7f3e9 100%);
-  color: var(--cs-light-text);
-  border-color: rgba(42,135,128,0.25);
+.mooney-app .carousel-slide.theme-light .hook-block-text { color: var(--cs-light-text); }
+.mooney-app .carousel-slide.theme-light .hook-block-text::first-line { color: var(--cs-light-accent); }
+
+.mooney-app .carousel-slide.theme-light .hook-pillar-line {
+  background: linear-gradient(180deg, var(--cs-light-accent) 0%, var(--cs-light-accent-bright) 100%);
+}
+.mooney-app .carousel-slide.theme-light .hook-pillar-eyebrow { color: var(--cs-light-accent); }
+.mooney-app .carousel-slide.theme-light .hook-pillar-text { color: var(--cs-light-text); }
+.mooney-app .carousel-slide.theme-light .hook-pillar-foot { color: var(--cs-light-text-sec); }
+
+.mooney-app .carousel-slide.theme-light .hook-outlined-text {
+  -webkit-text-stroke-color: var(--cs-light-text);
+}
+.mooney-app .carousel-slide.theme-light .hook-outlined-text .outlined-fill {
+  color: var(--cs-light-accent);
+}
+
+.mooney-app .carousel-slide.theme-light .hook-two-tone-intro { color: var(--cs-light-accent); }
+.mooney-app .carousel-slide.theme-light .hook-two-tone-payoff { color: var(--cs-light-text); }
+
+.mooney-app .carousel-slide.theme-light .hook-tag-chip {
+  background: var(--cs-light-accent);
+  color: #fffefa;
+  box-shadow: 0 8px 24px rgba(42,135,128,0.18);
+}
+.mooney-app .carousel-slide.theme-light .hook-tag-text { color: var(--cs-light-text); }
+
+.mooney-app .carousel-slide.theme-light .hook-ribbon-band {
+  background: linear-gradient(90deg, var(--cs-light-accent) 0%, var(--cs-light-accent-bright) 50%, var(--cs-light-accent) 100%);
   box-shadow:
     0 18px 40px rgba(13,17,23,0.12),
-    inset 0 0 0 1px rgba(42,135,128,0.05);
+    inset 0 2px 0 rgba(255,255,255,0.45),
+    inset 0 -2px 0 rgba(0,0,0,0.12);
 }
-.mooney-app .carousel-slide.theme-light .hook-receipt-card::before,
-.mooney-app .carousel-slide.theme-light .hook-receipt-card::after {
-  background: radial-gradient(circle at 9px 0, transparent 9px, #ffffff 9px) 0 0/18px 18px;
-}
-.mooney-app .carousel-slide.theme-light .hook-receipt-head,
-.mooney-app .carousel-slide.theme-light .hook-receipt-divider,
-.mooney-app .carousel-slide.theme-light .hook-receipt-foot { color: var(--cs-light-accent); }
-.mooney-app .carousel-slide.theme-light .hook-receipt-text { color: var(--cs-light-text); }
-.mooney-app .carousel-slide.theme-light .hook-receipt-thanks { color: var(--cs-light-text-sec); }
-
-.mooney-app .carousel-slide.theme-light .hook-sticky-note {
-  box-shadow:
-    0 22px 40px rgba(13,17,23,0.18),
-    0 8px 16px rgba(13,17,23,0.10),
-    inset 0 -10px 24px rgba(0,0,0,0.08);
-}
-.mooney-app .carousel-slide.theme-light.hook-variant-16 .cs-bg-gradient {
-  background: linear-gradient(180deg, #FBF8F1 0%, #EFE9DA 100%);
-}
-.mooney-app .carousel-slide.theme-light .hook-subtitle-band {
-  background: rgba(13,17,23,0.92);
-  border-color: rgba(13,17,23,0.15);
-}
-.mooney-app .carousel-slide.theme-light .hook-3d-text {
-  color: var(--cs-light-text);
-  text-shadow:
-    1px 1px 0 var(--cs-light-accent),
-    2px 2px 0 var(--cs-light-accent),
-    3px 3px 0 var(--cs-light-accent),
-    4px 4px 0 var(--cs-light-accent),
-    5px 5px 0 var(--cs-light-accent),
-    6px 6px 0 var(--cs-light-accent-bright),
-    7px 7px 0 var(--cs-light-accent-bright),
-    8px 8px 0 var(--cs-light-accent-bright),
-    9px 9px 0 var(--cs-light-accent-bright),
-    10px 10px 0 var(--cs-light-accent-bright),
-    14px 14px 30px rgba(13,17,23,0.15);
-}
-.mooney-app .carousel-slide.theme-light.hook-variant-18 .cs-bg-gradient {
-  background: linear-gradient(180deg, #F4EEDE 0%, #E8DFC6 100%);
-}
-.mooney-app .carousel-slide.theme-light .hook-brackets-l,
-.mooney-app .carousel-slide.theme-light .hook-brackets-r { color: var(--cs-light-accent); }
-.mooney-app .carousel-slide.theme-light .hook-brackets-text { color: var(--cs-light-text); }
+.mooney-app .carousel-slide.theme-light .hook-ribbon-foot { color: var(--cs-light-text-sec); }
 
 /* =============================================
    212 STUDIO BRAND — UI CHROME ONLY
