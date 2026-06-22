@@ -751,6 +751,15 @@
   color: var(--text-primary);
   font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
 }
+
+/* Twemoji injected before export — sized to match cap height, never stretches */
+.mooney-app img.twemoji {
+  height: 1em;
+  width: 1em;
+  margin: 0 0.05em 0 0.05em;
+  vertical-align: -0.15em;
+  display: inline-block;
+}
 .mooney-app .cs-bg-base { position: absolute; inset: 0; background: var(--bg-deepest); z-index: 0; }
 .mooney-app .cs-bg-gradient {
   position: absolute; inset: 0; z-index: 1;

@@ -1,6 +1,30 @@
 import { useState, useRef, useCallback } from 'react'
 import { toPng } from 'html-to-image'
+import twemoji from '@twemoji/api'
 import './MooneyDesigner.css'
+
+/* Replace native emoji codepoints with Twemoji SVGs and wait for them to
+   load. html-to-image renders text via foreignObject which drops the color
+   layer of system emoji fonts, so we swap in <img> tags it can serialize. */
+async function injectTwemoji(element) {
+  twemoji.parse(element, {
+    base: 'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/',
+    folder: 'svg',
+    ext: '.svg',
+    className: 'twemoji',
+  })
+  const imgs = element.querySelectorAll('img.twemoji')
+  await Promise.all(Array.from(imgs).map(img => (
+    img.complete && img.naturalWidth > 0
+      ? Promise.resolve()
+      : new Promise(resolve => {
+          const done = () => resolve()
+          img.addEventListener('load', done, { once: true })
+          img.addEventListener('error', done, { once: true })
+          setTimeout(done, 4000)
+        })
+  )))
+}
 
 const ASSET = (name) => `/mooney/${name}`
 
@@ -1123,6 +1147,7 @@ export default function MooneyDesigner({ onBack }) {
     }
     const w = overrideW ?? fmt.w
     const h = overrideH ?? fmt.h
+    await injectTwemoji(element)
     const dataUrl = await toPng(element, { width: w, height: h, pixelRatio: 2, skipAutoScale: true })
     if (scaler) {
       scaler.style.transform = origTransform
@@ -1137,6 +1162,7 @@ export default function MooneyDesigner({ onBack }) {
   const exportLogo = useCallback(async (element, filename) => {
     if (!element) return
     setExporting(true)
+    await injectTwemoji(element)
     const dataUrl = await toPng(element, { width: 1024, height: 1024, pixelRatio: 2, skipAutoScale: true })
     const link = document.createElement('a')
     link.download = filename
