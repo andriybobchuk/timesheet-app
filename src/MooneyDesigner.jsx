@@ -79,11 +79,11 @@ const DEFAULT_CTA = {
 }
 
 const DEFAULT_SAVE = {
-  eyebrow: "don't scroll past this",
-  headline: 'SAVE THIS',
-  sub: "so you don't lose it tomorrow",
+  eyebrow: "you don't wanna miss this",
+  headline: 'Save & follow to not miss vital facts about your money.',
+  sub: 'I drop a new carousel every week — tap the bookmark, then the plus.',
   handle: '@mooneyapp',
-  followTag: 'follow for more money truth',
+  footnote: 'weekly truth · mooney',
 }
 
 const HOOK_VARIANT_COUNT = 21
@@ -893,7 +893,11 @@ function TakeSlide({ data, format, theme, textMult = 1, slideRef }) {
 function SaveSlide({ data, format, theme, textMult = 1, slideRef }) {
   const fmt = CAROUSEL_FORMATS[format]
   const headLen = (data.headline || '').length
-  const headScale = headLen <= 9 ? 1 : headLen <= 14 ? 0.85 : headLen <= 20 ? 0.7 : 0.58
+  const headScale =
+    headLen <= 24 ? 1 :
+    headLen <= 40 ? 0.85 :
+    headLen <= 60 ? 0.7 :
+    headLen <= 85 ? 0.58 : 0.48
   return (
     <div ref={slideRef} className={`carousel-slide save-slide theme-${theme}`} style={{ width: fmt.w, height: fmt.h }}>
       <div className="cs-bg-base" />
@@ -901,67 +905,27 @@ function SaveSlide({ data, format, theme, textMult = 1, slideRef }) {
       <div className="cs-bg-noise" />
       <div className="cs-bg-orb cs-orb-1" />
       <div className="cs-bg-orb cs-orb-2" />
-      <div className="save-pulse-1" />
-      <div className="save-pulse-2" />
+
+      <div className="save-mark" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="currentColor">
+          <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z" />
+        </svg>
+      </div>
 
       <div className="save-content">
         <div className="save-eyebrow">★ {data.eyebrow}</div>
 
-        <h1 className="save-headline" style={{ fontSize: `${230 * headScale * textMult}px` }}>
-          {(data.headline || '').toUpperCase()}
+        <h1 className="save-headline" style={{ fontSize: `${120 * headScale * textMult}px` }}>
+          {data.headline}
         </h1>
 
-        <div className="save-rule" />
-        <p className="save-sub" style={{ fontSize: `${38 * textMult}px` }}>{data.sub}</p>
+        <p className="save-sub" style={{ fontSize: `${36 * textMult}px` }}>{data.sub}</p>
 
-        <div className="save-actions">
-          <div className="save-action save-action-bookmark">
-            <div className="save-action-icon">
-              <svg viewBox="0 0 24 24" fill="currentColor">
-                <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z" />
-              </svg>
-            </div>
-            <div className="save-action-text">
-              <span className="save-action-label">SAVE</span>
-              <span className="save-action-detail">tap the bookmark</span>
-            </div>
-            <div className="save-action-dot" />
-          </div>
-          <div className="save-action save-action-follow">
-            <div className="save-action-icon">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.8" strokeLinecap="round">
-                <path d="M12 5v14M5 12h14" />
-              </svg>
-            </div>
-            <div className="save-action-text">
-              <span className="save-action-label">FOLLOW</span>
-              <span className="save-action-detail">{data.handle}</span>
-            </div>
-            <div className="save-action-dot" />
-          </div>
+        <div className="save-foot">
+          <div className="save-foot-rule" />
+          <div className="save-handle">{data.handle}</div>
+          <div className="save-footnote">{data.footnote}</div>
         </div>
-
-        <div className="save-tag">{data.followTag}</div>
-      </div>
-
-      <div className="save-arrow">
-        <svg viewBox="0 0 200 200">
-          <defs>
-            <linearGradient id="save-arrow-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stopColor="#7EEEE6" />
-              <stop offset="100%" stopColor="#4DD0C8" />
-            </linearGradient>
-          </defs>
-          <path
-            d="M20 20 Q 80 60 100 120 L 75 110 M 100 120 L 90 95"
-            fill="none"
-            stroke="url(#save-arrow-grad)"
-            strokeWidth="12"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-        </svg>
-        <div className="save-arrow-label">tap here ↘</div>
       </div>
     </div>
   )
@@ -1222,20 +1186,20 @@ function CarouselDesigner({ exportSlide, exporting, setExporting }) {
                   <input className="editor-input" value={save.eyebrow} onChange={e => setSave({ ...save, eyebrow: e.target.value })} />
                 </div>
                 <div className="span-2">
-                  <label className="editor-label">Mega headline (kept all-caps)</label>
-                  <input className="editor-input" value={save.headline} onChange={e => setSave({ ...save, headline: e.target.value })} />
+                  <label className="editor-label">Headline (the actual ask)</label>
+                  <textarea className="editor-textarea" rows={2} value={save.headline} onChange={e => setSave({ ...save, headline: e.target.value })} />
                 </div>
                 <div className="span-2">
-                  <label className="editor-label">Sub line</label>
+                  <label className="editor-label">Sub line (the why)</label>
                   <input className="editor-input" value={save.sub} onChange={e => setSave({ ...save, sub: e.target.value })} />
                 </div>
                 <div>
-                  <label className="editor-label">Follow handle</label>
+                  <label className="editor-label">Handle (big at bottom)</label>
                   <input className="editor-input" value={save.handle} onChange={e => setSave({ ...save, handle: e.target.value })} />
                 </div>
                 <div>
-                  <label className="editor-label">Bottom tag</label>
-                  <input className="editor-input" value={save.followTag} onChange={e => setSave({ ...save, followTag: e.target.value })} />
+                  <label className="editor-label">Footnote (small below handle)</label>
+                  <input className="editor-input" value={save.footnote} onChange={e => setSave({ ...save, footnote: e.target.value })} />
                 </div>
               </div>
             )}
