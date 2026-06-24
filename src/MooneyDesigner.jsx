@@ -153,21 +153,52 @@ const HOOK_STYLE_NAMES = [
 ]
 const isPhotoVariant = (v) => v >= TYPO_VARIANT_COUNT
 
+/* Fonts available across photo styles. Loaded in index.html via Google Fonts. */
+const FONTS = {
+  system: { name: 'System', family: "'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" },
+  archivo: { name: 'Archivo Black', family: "'Archivo Black', 'Helvetica Neue', Arial, sans-serif" },
+  bebas: { name: 'Bebas Neue', family: "'Bebas Neue', Impact, sans-serif" },
+  anton: { name: 'Anton', family: "'Anton', Impact, sans-serif" },
+  inter: { name: 'Inter', family: "'Inter', system-ui, sans-serif" },
+  fraunces: { name: 'Fraunces', family: "'Fraunces', Georgia, serif" },
+  spaceGrotesk: { name: 'Space Grotesk', family: "'Space Grotesk', system-ui, sans-serif" },
+  unbounded: { name: 'Unbounded', family: "'Unbounded', sans-serif" },
+  marker: { name: 'Permanent Marker', family: "'Permanent Marker', cursive" },
+}
+
 const DEFAULT_PHOTO = {
   image: null,
   darkness: 35,
-  /* Hook (style 22) — red-highlighted first line + arrow */
+
+  /* Title (style 21) — one draggable headline */
+  titleText: 'The best AI Apps\nfor 2026',
+  titlePos: { x: 10, y: 38 },
+  titleSize: 110,
+  titleFont: 'system',
+
+  /* Hook (style 22) — draggable heading group + draggable subtitle/arrow row */
   firstLine: 'Got laid off?',
+  bodyText: "Here's the 30-day plan to find a new job using AI.",
   subtitle: 'The exact day-by-day playbook.',
   showArrow: true,
+  hookHeadPos: { x: 5, y: 12 },
+  hookHeadSize: 95,
+  hookSubPos: { x: 5, y: 84 },
+  hookSubSize: 30,
+  hookFont: 'archivo',
+  hookHighlightColor: '#E63946',
+  hookHighlightRadius: 4,
+
   /* Notes (style 23) — two draggable per-line caption blocks */
   note1: {
     text: 'AI tools that help students\nland job interviews in 2026',
     x: 8, y: 14, bg: '#ffffff', color: '#000000',
+    size: 56, radius: 14, font: 'system',
   },
   note2: {
     text: 'Rating the tools I actually use\nfor job applications',
     x: 22, y: 48, bg: '#ffffff', color: '#000000',
+    size: 56, radius: 14, font: 'system',
   },
 }
 
@@ -997,36 +1028,79 @@ function HookSlide({ text, variantIndex, format, theme, textMult = 1, photo, set
           )}
 
           {v === 21 && (
-            /* TITLE — big bold centered white text + dark overlay */
-            <div className="hp-title-stack">
-              <InlineText as="h1" className="hp-title-text" style={sz(110)}
-                value={text} onChange={setHookText} multiline />
-            </div>
+            /* TITLE — draggable headline + adjustable dark overlay */
+            <DraggablePosition
+              position={photo.titlePos}
+              onChange={(pos) => updPhoto('titlePos')({ ...photo.titlePos, ...pos })}
+              className="hp-drag-pad"
+            >
+              <InlineText
+                as="h1"
+                className="hp-title-text"
+                style={{
+                  fontSize: `${(photo.titleSize ?? 110) * textMult}px`,
+                  fontFamily: FONTS[photo.titleFont || 'system'].family,
+                }}
+                value={photo.titleText ?? text}
+                onChange={(v) => updPhoto('titleText')(v)}
+                multiline
+              />
+            </DraggablePosition>
           )}
 
           {v === 22 && (
-            /* HOOK — red highlight on first line + black-stroked rest + arrow */
+            /* HOOK — draggable heading (red highlight + body) + draggable subtitle/arrow */
             <>
-              <div className="hp-hook-stack">
-                <div className="hp-hook-line-wrap">
-                  <InlineText as="span" className="hp-hook-line" style={sz(95)}
-                    value={photo.firstLine} onChange={updPhoto('firstLine')} />
-                </div>
-                <InlineText className="hp-hook-body" style={sz(85)}
-                  value={text} onChange={setHookText} multiline />
-              </div>
-              {photo.showArrow && (
-                <div className="hp-hook-arrow-row">
-                  <InlineText className="hp-hook-sub"
-                    value={photo.subtitle} onChange={updPhoto('subtitle')} />
-                  <svg className="hp-hook-arrow" viewBox="0 0 240 70" aria-hidden="true">
-                    <path
-                      d="M 10 50 Q 70 -5 145 35 Q 175 50 215 28 M 200 18 L 215 28 L 207 44"
-                      stroke="white" strokeWidth="4.5" fill="none"
-                      strokeLinecap="round" strokeLinejoin="round"
+              <DraggablePosition
+                position={photo.hookHeadPos}
+                onChange={(pos) => updPhoto('hookHeadPos')({ ...photo.hookHeadPos, ...pos })}
+                className="hp-drag-pad"
+              >
+                <div className="hp-hook-stack" style={{ fontFamily: FONTS[photo.hookFont || 'archivo'].family }}>
+                  <div className="hp-hook-line-wrap">
+                    <InlineText
+                      as="span"
+                      className="hp-hook-line"
+                      style={{
+                        fontSize: `${(photo.hookHeadSize ?? 95) * textMult}px`,
+                        background: photo.hookHighlightColor || '#E63946',
+                        borderRadius: `${photo.hookHighlightRadius ?? 4}px`,
+                      }}
+                      value={photo.firstLine}
+                      onChange={updPhoto('firstLine')}
                     />
-                  </svg>
+                  </div>
+                  <InlineText
+                    className="hp-hook-body"
+                    style={{ fontSize: `${(photo.hookHeadSize ?? 95) * 0.9 * textMult}px` }}
+                    value={photo.bodyText ?? text}
+                    onChange={updPhoto('bodyText')}
+                    multiline
+                  />
                 </div>
+              </DraggablePosition>
+              {photo.showArrow && (
+                <DraggablePosition
+                  position={photo.hookSubPos}
+                  onChange={(pos) => updPhoto('hookSubPos')({ ...photo.hookSubPos, ...pos })}
+                  className="hp-drag-pad hp-drag-full-row"
+                >
+                  <div className="hp-hook-arrow-row" style={{ fontFamily: FONTS[photo.hookFont || 'archivo'].family }}>
+                    <InlineText
+                      className="hp-hook-sub"
+                      style={{ fontSize: `${(photo.hookSubSize ?? 30) * textMult}px` }}
+                      value={photo.subtitle}
+                      onChange={updPhoto('subtitle')}
+                    />
+                    <svg className="hp-hook-arrow" viewBox="0 0 240 70" aria-hidden="true">
+                      <path
+                        d="M 10 50 Q 70 -5 145 35 Q 175 50 215 28 M 200 18 L 215 28 L 207 44"
+                        stroke="white" strokeWidth="4.5" fill="none"
+                        strokeLinecap="round" strokeLinejoin="round"
+                      />
+                    </svg>
+                  </div>
+                </DraggablePosition>
               )}
             </>
           )}
@@ -1034,34 +1108,32 @@ function HookSlide({ text, variantIndex, format, theme, textMult = 1, photo, set
           {v === 23 && (
             /* NOTES — two draggable per-line highlighted sticker captions */
             <>
-              <DraggablePosition
-                position={photo.note1}
-                onChange={(pos) => updPhoto('note1')({ ...photo.note1, ...pos })}
-                className="hp-note-pos"
-              >
-                <InlineText
-                  as="span"
-                  className="hp-note-text"
-                  style={{ background: photo.note1.bg, color: photo.note1.color }}
-                  value={photo.note1.text}
-                  onChange={(text) => updPhoto('note1')({ ...photo.note1, text })}
-                  multiline
-                />
-              </DraggablePosition>
-              <DraggablePosition
-                position={photo.note2}
-                onChange={(pos) => updPhoto('note2')({ ...photo.note2, ...pos })}
-                className="hp-note-pos"
-              >
-                <InlineText
-                  as="span"
-                  className="hp-note-text"
-                  style={{ background: photo.note2.bg, color: photo.note2.color }}
-                  value={photo.note2.text}
-                  onChange={(text) => updPhoto('note2')({ ...photo.note2, text })}
-                  multiline
-                />
-              </DraggablePosition>
+              {['note1', 'note2'].map(key => {
+                const note = photo[key]
+                return (
+                  <DraggablePosition
+                    key={key}
+                    position={note}
+                    onChange={(pos) => updPhoto(key)({ ...note, ...pos })}
+                    className="hp-drag-pad"
+                  >
+                    <InlineText
+                      as="span"
+                      className="hp-note-text"
+                      style={{
+                        background: note.bg,
+                        color: note.color,
+                        fontSize: `${(note.size ?? 56) * textMult}px`,
+                        borderRadius: `${note.radius ?? 14}px`,
+                        fontFamily: FONTS[note.font || 'system'].family,
+                      }}
+                      value={note.text}
+                      onChange={(text) => updPhoto(key)({ ...note, text })}
+                      multiline
+                    />
+                  </DraggablePosition>
+                )
+              })}
             </>
           )}
         </div>
@@ -1426,75 +1498,179 @@ function CarouselDesigner({ exportSlide, exporting, setExporting }) {
                         <input
                           type="range"
                           className="size-slider"
-                          min="0"
-                          max="90"
-                          step="1"
+                          min="0" max="90" step="1"
                           value={photo.darkness}
                           onChange={e => setPhoto(prev => ({ ...prev, darkness: Number(e.target.value) }))}
                         />
                       </>
                     )}
 
-                    {hookVariant === 22 && (
-                      <label className="editor-toggle-row">
-                        <input
-                          type="checkbox"
-                          checked={photo.showArrow}
-                          onChange={e => setPhoto(prev => ({ ...prev, showArrow: e.target.checked }))}
-                        />
-                        Show "next slide" arrow
-                      </label>
-                    )}
-
-                    {hookVariant === 23 && (
-                      <div className="notes-color-grid">
-                        <div className="notes-color-row">
-                          <span className="notes-color-label">Note 1</span>
-                          <label className="notes-color-swatch" title="Background">
-                            <input
-                              type="color"
-                              value={photo.note1.bg}
-                              onChange={e => setPhoto(prev => ({ ...prev, note1: { ...prev.note1, bg: e.target.value } }))}
-                            />
-                            <span className="notes-color-dot" style={{ background: photo.note1.bg }} />
-                            bg
-                          </label>
-                          <label className="notes-color-swatch" title="Text">
-                            <input
-                              type="color"
-                              value={photo.note1.color}
-                              onChange={e => setPhoto(prev => ({ ...prev, note1: { ...prev.note1, color: e.target.value } }))}
-                            />
-                            <span className="notes-color-dot" style={{ background: photo.note1.color }} />
-                            text
-                          </label>
+                    {hookVariant === 21 && (
+                      <div className="ph-block">
+                        <div className="ph-block-title">Title</div>
+                        <div className="ph-row">
+                          <label className="ph-mini-label">Font</label>
+                          <select
+                            className="editor-input ph-font-select"
+                            value={photo.titleFont || 'system'}
+                            onChange={e => setPhoto(prev => ({ ...prev, titleFont: e.target.value }))}
+                          >
+                            {Object.entries(FONTS).map(([k, v]) => (
+                              <option key={k} value={k} style={{ fontFamily: v.family }}>{v.name}</option>
+                            ))}
+                          </select>
                         </div>
-                        <div className="notes-color-row">
-                          <span className="notes-color-label">Note 2</span>
-                          <label className="notes-color-swatch" title="Background">
-                            <input
-                              type="color"
-                              value={photo.note2.bg}
-                              onChange={e => setPhoto(prev => ({ ...prev, note2: { ...prev.note2, bg: e.target.value } }))}
-                            />
-                            <span className="notes-color-dot" style={{ background: photo.note2.bg }} />
-                            bg
+                        <div className="ph-row">
+                          <label className="ph-mini-label">
+                            Size <span className="size-readout">{photo.titleSize ?? 110}</span>
                           </label>
-                          <label className="notes-color-swatch" title="Text">
-                            <input
-                              type="color"
-                              value={photo.note2.color}
-                              onChange={e => setPhoto(prev => ({ ...prev, note2: { ...prev.note2, color: e.target.value } }))}
-                            />
-                            <span className="notes-color-dot" style={{ background: photo.note2.color }} />
-                            text
-                          </label>
+                          <input
+                            type="range" className="size-slider"
+                            min="40" max="220" step="2"
+                            value={photo.titleSize ?? 110}
+                            onChange={e => setPhoto(prev => ({ ...prev, titleSize: Number(e.target.value) }))}
+                          />
                         </div>
-                        <p className="editor-tip">↔︎ Drag each sticker on the preview to reposition.</p>
                       </div>
                     )}
 
-                    <p className="editor-tip">✏︎ Tap any text on the preview to edit it directly.</p>
+                    {hookVariant === 22 && (
+                      <div className="ph-block">
+                        <div className="ph-block-title">Hook</div>
+                        <div className="ph-row">
+                          <label className="ph-mini-label">Font</label>
+                          <select
+                            className="editor-input ph-font-select"
+                            value={photo.hookFont || 'archivo'}
+                            onChange={e => setPhoto(prev => ({ ...prev, hookFont: e.target.value }))}
+                          >
+                            {Object.entries(FONTS).map(([k, v]) => (
+                              <option key={k} value={k} style={{ fontFamily: v.family }}>{v.name}</option>
+                            ))}
+                          </select>
+                        </div>
+                        <div className="ph-row">
+                          <label className="ph-mini-label">
+                            Heading size <span className="size-readout">{photo.hookHeadSize ?? 95}</span>
+                          </label>
+                          <input
+                            type="range" className="size-slider"
+                            min="40" max="160" step="1"
+                            value={photo.hookHeadSize ?? 95}
+                            onChange={e => setPhoto(prev => ({ ...prev, hookHeadSize: Number(e.target.value) }))}
+                          />
+                        </div>
+                        <div className="ph-row">
+                          <label className="ph-mini-label">
+                            Subtitle size <span className="size-readout">{photo.hookSubSize ?? 30}</span>
+                          </label>
+                          <input
+                            type="range" className="size-slider"
+                            min="14" max="60" step="1"
+                            value={photo.hookSubSize ?? 30}
+                            onChange={e => setPhoto(prev => ({ ...prev, hookSubSize: Number(e.target.value) }))}
+                          />
+                        </div>
+                        <div className="ph-row ph-row-split">
+                          <label className="notes-color-swatch" title="Highlight color">
+                            <input
+                              type="color"
+                              value={photo.hookHighlightColor || '#E63946'}
+                              onChange={e => setPhoto(prev => ({ ...prev, hookHighlightColor: e.target.value }))}
+                            />
+                            <span className="notes-color-dot" style={{ background: photo.hookHighlightColor || '#E63946' }} />
+                            highlight
+                          </label>
+                          <label className="ph-mini-label ph-radius-label">
+                            Corners <span className="size-readout">{photo.hookHighlightRadius ?? 4}</span>
+                          </label>
+                          <input
+                            type="range" className="size-slider"
+                            min="0" max="40" step="1"
+                            value={photo.hookHighlightRadius ?? 4}
+                            onChange={e => setPhoto(prev => ({ ...prev, hookHighlightRadius: Number(e.target.value) }))}
+                          />
+                        </div>
+                        <label className="editor-toggle-row">
+                          <input
+                            type="checkbox"
+                            checked={photo.showArrow}
+                            onChange={e => setPhoto(prev => ({ ...prev, showArrow: e.target.checked }))}
+                          />
+                          Show "next slide" arrow
+                        </label>
+                      </div>
+                    )}
+
+                    {hookVariant === 23 && (
+                      <>
+                        {['note1', 'note2'].map((key, idx) => {
+                          const note = photo[key]
+                          const updateNote = (patch) => setPhoto(prev => ({ ...prev, [key]: { ...prev[key], ...patch } }))
+                          return (
+                            <div key={key} className="ph-block">
+                              <div className="ph-block-title">Note {idx + 1}</div>
+                              <div className="ph-row">
+                                <label className="ph-mini-label">Font</label>
+                                <select
+                                  className="editor-input ph-font-select"
+                                  value={note.font || 'system'}
+                                  onChange={e => updateNote({ font: e.target.value })}
+                                >
+                                  {Object.entries(FONTS).map(([k, v]) => (
+                                    <option key={k} value={k} style={{ fontFamily: v.family }}>{v.name}</option>
+                                  ))}
+                                </select>
+                              </div>
+                              <div className="ph-row ph-row-split">
+                                <label className="notes-color-swatch" title="Background">
+                                  <input
+                                    type="color"
+                                    value={note.bg}
+                                    onChange={e => updateNote({ bg: e.target.value })}
+                                  />
+                                  <span className="notes-color-dot" style={{ background: note.bg }} />
+                                  bg
+                                </label>
+                                <label className="notes-color-swatch" title="Text">
+                                  <input
+                                    type="color"
+                                    value={note.color}
+                                    onChange={e => updateNote({ color: e.target.value })}
+                                  />
+                                  <span className="notes-color-dot" style={{ background: note.color }} />
+                                  text
+                                </label>
+                              </div>
+                              <div className="ph-row">
+                                <label className="ph-mini-label">
+                                  Size <span className="size-readout">{note.size ?? 56}</span>
+                                </label>
+                                <input
+                                  type="range" className="size-slider"
+                                  min="20" max="140" step="1"
+                                  value={note.size ?? 56}
+                                  onChange={e => updateNote({ size: Number(e.target.value) })}
+                                />
+                              </div>
+                              <div className="ph-row">
+                                <label className="ph-mini-label">
+                                  Corners <span className="size-readout">{note.radius ?? 14}</span>
+                                </label>
+                                <input
+                                  type="range" className="size-slider"
+                                  min="0" max="50" step="1"
+                                  value={note.radius ?? 14}
+                                  onChange={e => updateNote({ radius: Number(e.target.value) })}
+                                />
+                              </div>
+                            </div>
+                          )
+                        })}
+                      </>
+                    )}
+
+                    <p className="editor-tip">✏︎ Tap any text on the preview to edit · ↔︎ drag any element to reposition.</p>
                   </div>
                 ) : (
                   <>
