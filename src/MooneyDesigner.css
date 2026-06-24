@@ -1582,17 +1582,14 @@
 }
 
 /* =============================================
-   PHOTO COLLECTION (variants 21–27)
-   Shared shell — image, placeholder, handle, dim layer.
-   Each variant adds its own overlay.
+   PHOTO COLLECTION (variants 21–23)
+   1) Title       — big bold centered text + dark overlay
+   2) Hook        — red highlight on 1st line + outlined rest + arrow
+   3) Notes       — two draggable per-line highlighted sticker captions
    ============================================= */
 .mooney-app .hook-variant-21 .cs-bg-gradient, .mooney-app .hook-variant-21 .cs-bg-base, .mooney-app .hook-variant-21 .cs-bg-noise, .mooney-app .hook-variant-21 .cs-bg-orb,
 .mooney-app .hook-variant-22 .cs-bg-gradient, .mooney-app .hook-variant-22 .cs-bg-base, .mooney-app .hook-variant-22 .cs-bg-noise, .mooney-app .hook-variant-22 .cs-bg-orb,
-.mooney-app .hook-variant-23 .cs-bg-gradient, .mooney-app .hook-variant-23 .cs-bg-base, .mooney-app .hook-variant-23 .cs-bg-noise, .mooney-app .hook-variant-23 .cs-bg-orb,
-.mooney-app .hook-variant-24 .cs-bg-gradient, .mooney-app .hook-variant-24 .cs-bg-base, .mooney-app .hook-variant-24 .cs-bg-noise, .mooney-app .hook-variant-24 .cs-bg-orb,
-.mooney-app .hook-variant-25 .cs-bg-gradient, .mooney-app .hook-variant-25 .cs-bg-base, .mooney-app .hook-variant-25 .cs-bg-noise, .mooney-app .hook-variant-25 .cs-bg-orb,
-.mooney-app .hook-variant-26 .cs-bg-gradient, .mooney-app .hook-variant-26 .cs-bg-base, .mooney-app .hook-variant-26 .cs-bg-noise, .mooney-app .hook-variant-26 .cs-bg-orb,
-.mooney-app .hook-variant-27 .cs-bg-gradient, .mooney-app .hook-variant-27 .cs-bg-base, .mooney-app .hook-variant-27 .cs-bg-noise, .mooney-app .hook-variant-27 .cs-bg-orb {
+.mooney-app .hook-variant-23 .cs-bg-gradient, .mooney-app .hook-variant-23 .cs-bg-base, .mooney-app .hook-variant-23 .cs-bg-noise, .mooney-app .hook-variant-23 .cs-bg-orb {
   display: none;
 }
 
@@ -1632,330 +1629,207 @@
 }
 .mooney-app .hook-photo-placeholder-icon { font-size: 96px; opacity: 0.7; }
 
-/* Optional darkening overlay used by POV / Quote */
-.mooney-app .hook-photo-dim {
+/* Dark overlay used by Title + Hook (opacity comes from inline style) */
+.mooney-app .hp-dark {
   position: absolute;
   inset: 0;
   z-index: 2;
-  background: linear-gradient(180deg, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0.55) 100%);
+  background: #000;
+  pointer-events: none;
 }
 
-/* Shared handle pinned bottom-right (small TikTok-style) */
-.mooney-app .hook-photo-handle {
-  position: absolute;
-  bottom: 36px;
-  right: 48px;
-  z-index: 6;
-  color: #ffffff;
-  font-size: 30px;
-  font-weight: 600;
-  letter-spacing: 0.3px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  text-shadow: 0 2px 8px rgba(0,0,0,0.7), 0 0 4px rgba(0,0,0,0.5);
-}
-.mooney-app .hook-photo-music { font-size: 32px; display: inline-block; transform: translateY(-2px); }
-
-/* --- V21 BUBBLE --- */
-.mooney-app .hook-photo-overlay {
+/* --- V21 TITLE — big bold centered white text + dark overlay --- */
+.mooney-app .hp-title-stack {
   position: relative;
   z-index: 5;
   width: 100%;
   height: 100%;
+  padding: 100px 70px;
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 100px 60px;
   text-align: center;
-  gap: 36px;
+  box-sizing: border-box;
 }
-.mooney-app .hp-bubble-box {
-  background: #ffffff;
-  border-radius: 28px;
-  padding: 44px 56px;
-  max-width: 90%;
-  box-shadow: 0 12px 36px rgba(0,0,0,0.28), 0 4px 12px rgba(0,0,0,0.18);
-}
-.mooney-app .hp-bubble-text {
-  font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+.mooney-app .hp-title-text {
+  font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif;
   font-weight: 900;
   line-height: 1.05;
   letter-spacing: -2.5px;
-  color: #0a0a0a;
-  text-align: center;
-  margin: 0;
-}
-.mooney-app .hp-bubble-caption {
   color: #ffffff;
-  font-weight: 800;
-  line-height: 1.15;
-  letter-spacing: -0.5px;
-  max-width: 92%;
+  margin: 0;
+  /* Subtle 2px black outline */
   text-shadow:
-    -3px -3px 0 #000, 0 -3px 0 #000, 3px -3px 0 #000,
-    -3px  0   0 #000,                3px  0   0 #000,
-    -3px  3px 0 #000, 0  3px 0 #000, 3px  3px 0 #000,
-    -4px  0   0 #000, 4px  0   0 #000,
-    0    -4px 0 #000, 0    4px 0 #000,
-    0 6px 16px rgba(0,0,0,0.5);
+    -2px -2px 0 #000, 0 -2px 0 #000, 2px -2px 0 #000,
+    -2px  0   0 #000,                2px  0   0 #000,
+    -2px  2px 0 #000, 0  2px 0 #000, 2px  2px 0 #000;
 }
 
-/* --- V22 POV --- */
-.mooney-app .hp-pov-stack {
+/* --- V22 HOOK — red highlight on 1st line + outlined body + arrow ---
+   Heavy sans like Helvetica Black / Inter Black.                       */
+.mooney-app .hp-hook-stack {
   position: relative;
   z-index: 5;
   width: 100%;
-  height: 100%;
-  padding: 100px 70px 160px;
+  padding: 110px 50px 0;
   display: flex;
   flex-direction: column;
-  justify-content: flex-end;
-  gap: 24px;
+  align-items: flex-start;
+  gap: 4px;
   box-sizing: border-box;
 }
-.mooney-app .hp-pov-chip {
-  align-self: flex-start;
-  background: var(--accent);
-  color: #0a1214;
-  font-weight: 900;
-  font-size: 56px;
-  padding: 6px 26px;
-  border-radius: 12px;
-  letter-spacing: 1px;
-  box-shadow: 0 12px 30px rgba(77,208,200,0.4);
-}
-.mooney-app .hp-pov-text {
-  color: #ffffff;
-  font-weight: 900;
+.mooney-app .hp-hook-line-wrap {
+  display: inline-block;
   line-height: 1.0;
-  letter-spacing: -3px;
-  margin: 0;
-  text-shadow: 0 6px 24px rgba(0,0,0,0.6), 0 2px 8px rgba(0,0,0,0.5);
 }
-.mooney-app .hp-pov-sub {
-  color: rgba(255,255,255,0.92);
-  font-weight: 600;
-  letter-spacing: 0.5px;
-  text-shadow: 0 2px 12px rgba(0,0,0,0.7);
-  max-width: 92%;
+.mooney-app .hp-hook-line {
+  /* Red highlight just behind the text, no gap, slight rounded corners */
+  display: inline;
+  background: #E63946;
+  color: #ffffff;
+  padding: 6px 14px 8px;
+  border-radius: 4px;
+  font-family: 'Helvetica Neue', Helvetica, Arial, 'SF Pro Display', sans-serif;
+  font-weight: 900;
+  letter-spacing: -1.5px;
+  line-height: 1.0;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
+.mooney-app .hp-hook-body {
+  color: #ffffff;
+  font-family: 'Helvetica Neue', Helvetica, Arial, 'SF Pro Display', sans-serif;
+  font-weight: 900;
+  line-height: 1.02;
+  letter-spacing: -2.5px;
+  margin-top: 18px;
+  /* Thick black stroke around white text */
+  text-shadow:
+    -4px -4px 0 #000, 0 -4px 0 #000, 4px -4px 0 #000,
+    -4px  0   0 #000,                4px  0   0 #000,
+    -4px  4px 0 #000, 0  4px 0 #000, 4px  4px 0 #000,
+    -5px  0   0 #000, 5px  0   0 #000,
+    0    -5px 0 #000, 0    5px 0 #000;
+}
+.mooney-app .hp-hook-arrow-row {
+  position: absolute;
+  bottom: 80px;
+  left: 50px;
+  right: 50px;
+  z-index: 6;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 30px;
+}
+.mooney-app .hp-hook-sub {
+  color: #ffffff;
+  font-size: 30px;
+  font-weight: 500;
+  letter-spacing: 0.3px;
+  flex: 1;
+  text-shadow: 0 2px 10px rgba(0,0,0,0.55);
+}
+.mooney-app .hp-hook-arrow {
+  width: 220px;
+  height: 64px;
+  flex-shrink: 0;
+  filter: drop-shadow(0 3px 10px rgba(0,0,0,0.5));
 }
 
-/* --- V23 CINEMATIC --- */
-.mooney-app .hp-cin-bar {
+/* --- V23 NOTES — draggable per-line sticker captions --- */
+.mooney-app .hp-drag {
   position: absolute;
-  left: 0;
-  right: 0;
   z-index: 5;
-  background: #000;
+  max-width: 75%;
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+}
+.mooney-app .hp-drag:active { cursor: grabbing; }
+.mooney-app .hp-note-pos {
+  /* extra hit area around the text so user can grab the edge */
+  padding: 4px;
+  margin: -4px;
+}
+.mooney-app .hp-note-text {
+  display: inline;
+  font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif;
+  font-weight: 800;
+  font-size: 56px;
+  letter-spacing: -1px;
+  line-height: 1.65;
+  padding: 8px 18px;
+  border-radius: 14px;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+  /* defaults — overridden by inline style from state */
+  background: #ffffff;
+  color: #000000;
+  cursor: text;
+}
+
+/* Editor — notes color picker UI */
+.mooney-app .notes-color-grid {
+  margin: 10px 0 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.mooney-app .notes-color-row {
   display: flex;
   align-items: center;
-  padding: 0 60px;
+  gap: 10px;
+  font-size: 12px;
 }
-.mooney-app .hp-cin-bar-top {
-  top: 0;
-  height: 11%;
-  justify-content: flex-end;
-}
-.mooney-app .hp-cin-bar-bottom {
-  bottom: 0;
-  min-height: 22%;
-  padding-top: 30px;
-  padding-bottom: 30px;
-  flex-direction: column;
-  align-items: flex-start;
-  justify-content: center;
-  gap: 14px;
-}
-.mooney-app .hp-cin-eyebrow {
-  color: rgba(255,255,255,0.65);
-  font-size: 22px;
-  font-weight: 600;
-  letter-spacing: 6px;
+.mooney-app .notes-color-label {
+  font-size: 11px;
+  font-weight: 700;
   text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: var(--text-secondary);
+  width: 56px;
 }
-.mooney-app .hp-cin-text {
-  color: #ffffff;
-  font-family: Georgia, 'Times New Roman', serif;
-  font-weight: 700;
-  line-height: 1.12;
-  letter-spacing: -1.5px;
-  margin: 0;
-  max-width: 95%;
+.mooney-app .notes-color-swatch {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  font-size: 11px;
+  color: var(--text-secondary);
 }
-.mooney-app .hp-cin-handle {
-  color: rgba(255,255,255,0.55);
-  font-size: 24px;
-  letter-spacing: 1px;
-}
-/* Cinematic doesn't want the small bottom-right handle (it has its own) */
-.mooney-app .hook-variant-23 .hook-photo-handle { display: none; }
-
-/* --- V24 DIARY --- */
-.mooney-app .hp-diary-stack {
-  position: relative;
-  z-index: 5;
-  width: 100%;
-  height: 100%;
-  padding: 80px 70px;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  justify-content: flex-start;
-  box-sizing: border-box;
-}
-.mooney-app .hp-diary-text {
-  font-family: Georgia, 'Times New Roman', serif;
-  font-style: italic;
-  font-weight: 700;
-  color: #ffffff;
-  line-height: 1.0;
-  letter-spacing: -3px;
-  transform: rotate(-3deg);
-  max-width: 88%;
-  margin: 0 0 28px;
-  text-shadow: 0 6px 24px rgba(0,0,0,0.55), 0 2px 8px rgba(0,0,0,0.5);
-}
-.mooney-app .hp-diary-date {
-  font-family: Georgia, serif;
-  font-style: italic;
-  color: rgba(255,255,255,0.85);
-  font-size: 32px;
-  letter-spacing: 2px;
-  transform: rotate(-2deg);
-  margin-left: 22px;
-  text-shadow: 0 2px 12px rgba(0,0,0,0.6);
-}
-
-/* --- V25 BOTTOM (reel-style) --- */
-.mooney-app .hp-bot-grad {
+.mooney-app .notes-color-swatch input[type="color"] {
   position: absolute;
-  inset: 0;
-  z-index: 2;
-  background: linear-gradient(180deg, transparent 40%, rgba(0,0,0,0.7) 100%);
+  width: 0; height: 0;
+  opacity: 0;
   pointer-events: none;
 }
-.mooney-app .hp-bot-stack {
+.mooney-app .notes-color-swatch {
   position: relative;
-  z-index: 5;
-  width: 100%;
-  height: 100%;
-  padding: 80px 60px 100px;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-  gap: 18px;
-  box-sizing: border-box;
+  padding: 4px 10px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 6px;
 }
-.mooney-app .hp-bot-text {
-  color: #ffffff;
-  font-weight: 900;
-  line-height: 0.98;
-  letter-spacing: -4px;
-  margin: 0;
-  max-width: 92%;
-  text-shadow: 0 6px 24px rgba(0,0,0,0.5);
-}
-.mooney-app .hp-bot-sub {
-  color: rgba(255,255,255,0.92);
-  font-weight: 500;
-  letter-spacing: 1px;
-  text-shadow: 0 2px 12px rgba(0,0,0,0.6);
+.mooney-app .notes-color-swatch:hover { border-color: rgba(255,255,255,0.18); }
+.mooney-app .notes-color-dot {
+  width: 14px; height: 14px;
+  border-radius: 4px;
+  border: 1px solid rgba(255,255,255,0.18);
+  display: inline-block;
 }
 
-/* --- V26 MAGAZINE --- */
-.mooney-app .hp-mag-top {
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  z-index: 5;
-  padding: 40px 60px;
-  background: linear-gradient(180deg, rgba(0,0,0,0.55) 0%, transparent 100%);
+/* Editor — checkbox toggle row */
+.mooney-app .editor-toggle-row {
   display: flex;
-}
-.mooney-app .hp-mag-masthead {
-  color: #ffffff;
-  font-family: Georgia, 'Times New Roman', serif;
-  font-style: italic;
-  font-weight: 700;
-  font-size: 32px;
-  letter-spacing: 4px;
-  text-transform: uppercase;
-  text-shadow: 0 2px 8px rgba(0,0,0,0.5);
-}
-.mooney-app .hp-mag-stack {
-  position: relative;
-  z-index: 5;
-  width: 100%;
-  height: 100%;
-  padding: 130px 60px 130px;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-  gap: 22px;
-  box-sizing: border-box;
-}
-.mooney-app .hp-mag-title {
-  color: #ffffff;
-  font-family: Georgia, 'Times New Roman', serif;
-  font-weight: 900;
-  line-height: 0.9;
-  letter-spacing: -6px;
-  margin: 0;
-  text-shadow: 0 8px 28px rgba(0,0,0,0.55), 0 2px 8px rgba(0,0,0,0.5);
-}
-.mooney-app .hp-mag-sub {
-  color: rgba(255,255,255,0.92);
-  font-weight: 600;
-  letter-spacing: 3px;
-  text-transform: uppercase;
-  text-shadow: 0 2px 12px rgba(0,0,0,0.6);
-  max-width: 90%;
-}
-
-/* --- V27 QUOTE --- */
-.mooney-app .hp-q-stack {
-  position: relative;
-  z-index: 5;
-  width: 100%;
-  height: 100%;
-  padding: 110px 80px 140px;
-  display: flex;
-  flex-direction: column;
   align-items: center;
-  justify-content: center;
-  text-align: center;
-  gap: 18px;
-  box-sizing: border-box;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--text-primary);
+  cursor: pointer;
+  margin: 10px 0 4px;
 }
-.mooney-app .hp-q-mark {
-  font-family: Georgia, 'Times New Roman', serif;
-  font-size: 300px;
-  color: var(--accent);
-  font-weight: 900;
-  line-height: 0.6;
-  margin-bottom: 10px;
-  text-shadow: 0 8px 24px rgba(0,0,0,0.45);
-}
-.mooney-app .hp-q-text {
-  font-family: Georgia, 'Times New Roman', serif;
-  font-style: italic;
-  font-weight: 700;
-  line-height: 1.18;
-  letter-spacing: -1.2px;
-  color: #ffffff;
-  margin: 0;
-  max-width: 92%;
-  text-shadow: 0 6px 20px rgba(0,0,0,0.55);
-}
-.mooney-app .hp-q-attr {
-  color: rgba(255,255,255,0.85);
-  font-family: Georgia, serif;
-  font-style: italic;
-  font-size: 28px;
-  letter-spacing: 1px;
-  text-shadow: 0 2px 12px rgba(0,0,0,0.6);
-}
+.mooney-app .editor-toggle-row input[type="checkbox"] { accent-color: var(--ui-accent); cursor: pointer; }
 
 /* --- Inline-edit affordance — subtle hover/focus rings on the preview --- */
 .mooney-app .inline-text {
@@ -1963,6 +1837,9 @@
   cursor: text;
   transition: box-shadow 0.12s ease;
   border-radius: 4px;
+}
+.mooney-app .inline-text-multi {
+  white-space: pre-wrap;
 }
 .mooney-app .inline-text:hover:not(:focus) {
   box-shadow: 0 0 0 2px rgba(255,255,255,0.18);

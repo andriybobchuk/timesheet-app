@@ -9,14 +9,18 @@ import './MooneyDesigner.css'
 function InlineText({ value, onChange, as: Tag = 'div', className = '', style, placeholder, multiline = false, ...rest }) {
   const ref = useRef(null)
 
+  /* Render `value` into the element only when it differs from the current
+     visible text. innerText round-trips multi-line correctly (treats <br>
+     and pre-wrap \n the same), so we use it for reads + comparison. */
   useEffect(() => {
     const el = ref.current
     if (!el) return
-    if ((value ?? '') !== el.textContent) el.textContent = value ?? ''
-  }, [value])
+    const current = multiline ? (el.innerText ?? '') : (el.textContent ?? '')
+    if ((value ?? '') !== current) el.textContent = value ?? ''
+  }, [value, multiline])
 
   const handleBlur = () => {
-    const text = ref.current?.textContent ?? ''
+    const text = multiline ? (ref.current?.innerText ?? '') : (ref.current?.textContent ?? '')
     if (text !== value) onChange(text)
   }
   const handlePaste = (e) => {
@@ -25,9 +29,14 @@ function InlineText({ value, onChange, as: Tag = 'div', className = '', style, p
     document.execCommand('insertText', false, text)
   }
   const handleKeyDown = (e) => {
-    if (!multiline && e.key === 'Enter') {
-      e.preventDefault()
-      ref.current?.blur()
+    if (e.key === 'Enter') {
+      if (!multiline) {
+        e.preventDefault()
+        ref.current?.blur()
+      } else {
+        e.preventDefault()
+        document.execCommand('insertLineBreak')
+      }
     }
   }
 
@@ -39,7 +48,7 @@ function InlineText({ value, onChange, as: Tag = 'div', className = '', style, p
       onBlur={handleBlur}
       onPaste={handlePaste}
       onKeyDown={handleKeyDown}
-      className={`inline-text ${className}`}
+      className={`inline-text${multiline ? ' inline-text-multi' : ''} ${className}`}
       style={style}
       data-placeholder={placeholder}
       spellCheck={false}
@@ -132,7 +141,7 @@ const DEFAULT_SAVE = {
 }
 
 const TYPO_VARIANT_COUNT = 21
-const PHOTO_VARIANT_NAMES = ['Bubble', 'POV', 'Cinematic', 'Diary', 'Bottom', 'Magazine', 'Quote']
+const PHOTO_VARIANT_NAMES = ['Title', 'Hook', 'Notes']
 const HOOK_VARIANT_COUNT = TYPO_VARIANT_COUNT + PHOTO_VARIANT_NAMES.length
 const GRAPHIC_VARIANT_COUNT = 14
 
@@ -146,11 +155,75 @@ const isPhotoVariant = (v) => v >= TYPO_VARIANT_COUNT
 
 const DEFAULT_PHOTO = {
   image: null,
-  caption: 'stand out by saying this instead of>>>',
-  handle: '@mooneyapp',
-  eyebrow: 'POV:',
-  attribution: '— mooney',
-  masthead: 'MOONEY · ISSUE 14',
+  darkness: 35,
+  /* Hook (style 22) — red-highlighted first line + arrow */
+  firstLine: 'Got laid off?',
+  subtitle: 'The exact day-by-day playbook.',
+  showArrow: true,
+  /* Notes (style 23) — two draggable per-line caption blocks */
+  note1: {
+    text: 'AI tools that help students\nland job interviews in 2026',
+    x: 8, y: 14, bg: '#ffffff', color: '#000000',
+  },
+  note2: {
+    text: 'Rating the tools I actually use\nfor job applications',
+    x: 22, y: 48, bg: '#ffffff', color: '#000000',
+  },
+}
+
+/* Draggable wrapper — pointer events move children by % within the slide.
+   Ignores drags that start on contentEditable so inline-edit still works. */
+function DraggablePosition({ position, onChange, children, className = '' }) {
+  const ref = useRef(null)
+  const dragRef = useRef(null)
+
+  const handlePointerDown = (e) => {
+    if (e.target.isContentEditable) return
+    if (e.target.closest('[contenteditable="true"]')) return
+    const wrapper = ref.current
+    const slide = wrapper.closest('.carousel-slide')
+    if (!slide) return
+    const slideRect = slide.getBoundingClientRect()
+    const wrapperRect = wrapper.getBoundingClientRect()
+    dragRef.current = {
+      slideRect,
+      offsetX: e.clientX - wrapperRect.left,
+      offsetY: e.clientY - wrapperRect.top,
+    }
+    e.currentTarget.setPointerCapture(e.pointerId)
+    e.preventDefault()
+  }
+
+  const handlePointerMove = (e) => {
+    if (!dragRef.current) return
+    const { slideRect, offsetX, offsetY } = dragRef.current
+    const newX = ((e.clientX - slideRect.left - offsetX) / slideRect.width) * 100
+    const newY = ((e.clientY - slideRect.top - offsetY) / slideRect.height) * 100
+    onChange({
+      x: Math.max(0, Math.min(85, newX)),
+      y: Math.max(0, Math.min(88, newY)),
+    })
+  }
+
+  const handlePointerUp = (e) => {
+    dragRef.current = null
+    if (e.currentTarget.hasPointerCapture(e.pointerId)) {
+      e.currentTarget.releasePointerCapture(e.pointerId)
+    }
+  }
+
+  return (
+    <div
+      ref={ref}
+      className={`hp-drag ${className}`}
+      style={{ left: `${position.x}%`, top: `${position.y}%` }}
+      onPointerDown={handlePointerDown}
+      onPointerMove={handlePointerMove}
+      onPointerUp={handlePointerUp}
+    >
+      {children}
+    </div>
+  )
 }
 
 /* Base sizes bumped up so the slide fills more space by default */
@@ -907,7 +980,7 @@ function HookSlide({ text, variantIndex, format, theme, textMult = 1, photo, set
       )}
 
       {isPhotoVariant(v) && (
-        /* PHOTO COLLECTION — shared shell (image + handle), per-variant overlay */
+        /* PHOTO COLLECTION — 3 styles. Shared shell: full-bleed image. */
         <div className={`hook-content hook-photo hook-photo-${v - TYPO_VARIANT_COUNT}`}>
           {photo?.image ? (
             <img className="hook-photo-bg" src={photo.image} alt="" draggable={false} />
@@ -918,111 +991,79 @@ function HookSlide({ text, variantIndex, format, theme, textMult = 1, photo, set
             </div>
           )}
 
+          {/* Dark overlay (only Title + Hook — Notes lays text directly on photo) */}
+          {(v === 21 || v === 22) && (
+            <div className="hp-dark" style={{ opacity: (photo?.darkness ?? 35) / 100 }} />
+          )}
+
           {v === 21 && (
-            /* BUBBLE — white rounded box + outlined caption */
-            <>
-              <div className="hook-photo-overlay">
-                <div className="hp-bubble-box">
-                  <InlineText as="h1" className="hp-bubble-text" style={sz(78)}
-                    value={text} onChange={setHookText} multiline />
-                </div>
-                <InlineText className="hp-bubble-caption" style={sz(50)}
-                  value={photo.caption} onChange={updPhoto('caption')} multiline />
-              </div>
-            </>
+            /* TITLE — big bold centered white text + dark overlay */
+            <div className="hp-title-stack">
+              <InlineText as="h1" className="hp-title-text" style={sz(110)}
+                value={text} onChange={setHookText} multiline />
+            </div>
           )}
 
           {v === 22 && (
-            /* POV — chip + big outlined statement + caption */
+            /* HOOK — red highlight on first line + black-stroked rest + arrow */
             <>
-              <div className="hook-photo-dim" />
-              <div className="hp-pov-stack">
-                <InlineText className="hp-pov-chip" value={photo.eyebrow} onChange={updPhoto('eyebrow')} />
-                <InlineText as="h1" className="hp-pov-text" style={sz(95)}
+              <div className="hp-hook-stack">
+                <div className="hp-hook-line-wrap">
+                  <InlineText as="span" className="hp-hook-line" style={sz(95)}
+                    value={photo.firstLine} onChange={updPhoto('firstLine')} />
+                </div>
+                <InlineText className="hp-hook-body" style={sz(85)}
                   value={text} onChange={setHookText} multiline />
-                <InlineText className="hp-pov-sub" style={sz(42)}
-                  value={photo.caption} onChange={updPhoto('caption')} multiline />
               </div>
+              {photo.showArrow && (
+                <div className="hp-hook-arrow-row">
+                  <InlineText className="hp-hook-sub"
+                    value={photo.subtitle} onChange={updPhoto('subtitle')} />
+                  <svg className="hp-hook-arrow" viewBox="0 0 240 70" aria-hidden="true">
+                    <path
+                      d="M 10 50 Q 70 -5 145 35 Q 175 50 215 28 M 200 18 L 215 28 L 207 44"
+                      stroke="white" strokeWidth="4.5" fill="none"
+                      strokeLinecap="round" strokeLinejoin="round"
+                    />
+                  </svg>
+                </div>
+              )}
             </>
           )}
 
           {v === 23 && (
-            /* CINEMATIC — letterbox bars top+bottom */
+            /* NOTES — two draggable per-line highlighted sticker captions */
             <>
-              <div className="hp-cin-bar hp-cin-bar-top">
-                <InlineText className="hp-cin-eyebrow" value={photo.eyebrow} onChange={updPhoto('eyebrow')} />
-              </div>
-              <div className="hp-cin-bar hp-cin-bar-bottom">
-                <InlineText as="h1" className="hp-cin-text" style={sz(70)}
-                  value={text} onChange={setHookText} multiline />
-                <InlineText className="hp-cin-handle"
-                  value={photo.handle} onChange={updPhoto('handle')} />
-              </div>
+              <DraggablePosition
+                position={photo.note1}
+                onChange={(pos) => updPhoto('note1')({ ...photo.note1, ...pos })}
+                className="hp-note-pos"
+              >
+                <InlineText
+                  as="span"
+                  className="hp-note-text"
+                  style={{ background: photo.note1.bg, color: photo.note1.color }}
+                  value={photo.note1.text}
+                  onChange={(text) => updPhoto('note1')({ ...photo.note1, text })}
+                  multiline
+                />
+              </DraggablePosition>
+              <DraggablePosition
+                position={photo.note2}
+                onChange={(pos) => updPhoto('note2')({ ...photo.note2, ...pos })}
+                className="hp-note-pos"
+              >
+                <InlineText
+                  as="span"
+                  className="hp-note-text"
+                  style={{ background: photo.note2.bg, color: photo.note2.color }}
+                  value={photo.note2.text}
+                  onChange={(text) => updPhoto('note2')({ ...photo.note2, text })}
+                  multiline
+                />
+              </DraggablePosition>
             </>
           )}
-
-          {v === 24 && (
-            /* DIARY — handwritten serif overlay at top-left, date below */
-            <div className="hp-diary-stack">
-              <InlineText as="h1" className="hp-diary-text" style={sz(105)}
-                value={text} onChange={setHookText} multiline />
-              <InlineText className="hp-diary-date"
-                value={photo.caption} onChange={updPhoto('caption')} />
-            </div>
-          )}
-
-          {v === 25 && (
-            /* BOTTOM — big bold reel-style bottom caption */
-            <>
-              <div className="hp-bot-grad" />
-              <div className="hp-bot-stack">
-                <InlineText as="h1" className="hp-bot-text" style={sz(105)}
-                  value={text} onChange={setHookText} multiline />
-                <InlineText className="hp-bot-sub" style={sz(38)}
-                  value={photo.caption} onChange={updPhoto('caption')} multiline />
-              </div>
-            </>
-          )}
-
-          {v === 26 && (
-            /* MAGAZINE — top masthead + cover title + subtitle */
-            <>
-              <div className="hp-mag-top">
-                <InlineText className="hp-mag-masthead"
-                  value={photo.masthead} onChange={updPhoto('masthead')} />
-              </div>
-              <div className="hp-mag-stack">
-                <InlineText as="h1" className="hp-mag-title" style={sz(160)}
-                  value={text} onChange={setHookText} multiline />
-                <InlineText className="hp-mag-sub" style={sz(36)}
-                  value={photo.caption} onChange={updPhoto('caption')} multiline />
-              </div>
-            </>
-          )}
-
-          {v === 27 && (
-            /* QUOTE — giant ❝ + italic centered quote + attribution */
-            <>
-              <div className="hook-photo-dim" />
-              <div className="hp-q-stack">
-                <div className="hp-q-mark">"</div>
-                <InlineText as="h1" className="hp-q-text" style={sz(75)}
-                  value={text} onChange={setHookText} multiline />
-                <InlineText className="hp-q-attr"
-                  value={photo.attribution} onChange={updPhoto('attribution')} />
-              </div>
-            </>
-          )}
-
-          <div className="hook-photo-handle">
-            <span className="hook-photo-music">♪</span>
-            <InlineText
-              as="span"
-              className="hook-photo-handle-text"
-              value={photo.handle}
-              onChange={updPhoto('handle')}
-            />
-          </div>
         </div>
       )}
     </div>
@@ -1376,6 +1417,83 @@ function CarouselDesigner({ exportSlide, exporting, setExporting }) {
                         </button>
                       )}
                     </div>
+
+                    {(hookVariant === 21 || hookVariant === 22) && (
+                      <>
+                        <label className="editor-label">
+                          Darkness <span className="size-readout">{photo.darkness}%</span>
+                        </label>
+                        <input
+                          type="range"
+                          className="size-slider"
+                          min="0"
+                          max="90"
+                          step="1"
+                          value={photo.darkness}
+                          onChange={e => setPhoto(prev => ({ ...prev, darkness: Number(e.target.value) }))}
+                        />
+                      </>
+                    )}
+
+                    {hookVariant === 22 && (
+                      <label className="editor-toggle-row">
+                        <input
+                          type="checkbox"
+                          checked={photo.showArrow}
+                          onChange={e => setPhoto(prev => ({ ...prev, showArrow: e.target.checked }))}
+                        />
+                        Show "next slide" arrow
+                      </label>
+                    )}
+
+                    {hookVariant === 23 && (
+                      <div className="notes-color-grid">
+                        <div className="notes-color-row">
+                          <span className="notes-color-label">Note 1</span>
+                          <label className="notes-color-swatch" title="Background">
+                            <input
+                              type="color"
+                              value={photo.note1.bg}
+                              onChange={e => setPhoto(prev => ({ ...prev, note1: { ...prev.note1, bg: e.target.value } }))}
+                            />
+                            <span className="notes-color-dot" style={{ background: photo.note1.bg }} />
+                            bg
+                          </label>
+                          <label className="notes-color-swatch" title="Text">
+                            <input
+                              type="color"
+                              value={photo.note1.color}
+                              onChange={e => setPhoto(prev => ({ ...prev, note1: { ...prev.note1, color: e.target.value } }))}
+                            />
+                            <span className="notes-color-dot" style={{ background: photo.note1.color }} />
+                            text
+                          </label>
+                        </div>
+                        <div className="notes-color-row">
+                          <span className="notes-color-label">Note 2</span>
+                          <label className="notes-color-swatch" title="Background">
+                            <input
+                              type="color"
+                              value={photo.note2.bg}
+                              onChange={e => setPhoto(prev => ({ ...prev, note2: { ...prev.note2, bg: e.target.value } }))}
+                            />
+                            <span className="notes-color-dot" style={{ background: photo.note2.bg }} />
+                            bg
+                          </label>
+                          <label className="notes-color-swatch" title="Text">
+                            <input
+                              type="color"
+                              value={photo.note2.color}
+                              onChange={e => setPhoto(prev => ({ ...prev, note2: { ...prev.note2, color: e.target.value } }))}
+                            />
+                            <span className="notes-color-dot" style={{ background: photo.note2.color }} />
+                            text
+                          </label>
+                        </div>
+                        <p className="editor-tip">↔︎ Drag each sticker on the preview to reposition.</p>
+                      </div>
+                    )}
+
                     <p className="editor-tip">✏︎ Tap any text on the preview to edit it directly.</p>
                   </div>
                 ) : (
