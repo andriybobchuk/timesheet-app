@@ -86,14 +86,21 @@ const DEFAULT_SAVE = {
   footnote: 'weekly truth · mooney',
 }
 
-const HOOK_VARIANT_COUNT = 21
+const HOOK_VARIANT_COUNT = 22
 const GRAPHIC_VARIANT_COUNT = 14
 
 const HOOK_STYLE_NAMES = [
   'Bold', 'Question', 'Split', 'Diagonal', 'Quote', 'Highlight',
   'Sticker', 'Stacked', 'Glitch', 'Big Stat', 'POV', 'Tape', 'Card', 'Neon',
   'Editorial', 'Block', 'Pillar', 'Outlined', 'Two-Tone', 'Tag', 'Ribbon',
+  'Photo',
 ]
+
+const DEFAULT_PHOTO = {
+  image: null,
+  caption: 'stand out by saying this instead of>>>',
+  handle: '@mooneyapp',
+}
 
 /* Base sizes bumped up so the slide fills more space by default */
 const TAKE_TITLE_BASE = 118
@@ -607,7 +614,7 @@ function LogoDesigner({ exportLogo, exporting }) {
   )
 }
 
-function HookSlide({ text, variantIndex, format, theme, textMult = 1, slideRef }) {
+function HookSlide({ text, variantIndex, format, theme, textMult = 1, photo, slideRef }) {
   const fmt = CAROUSEL_FORMATS[format]
   const v = variantIndex % HOOK_VARIANT_COUNT
   const words = text.trim().split(/\s+/)
@@ -846,6 +853,31 @@ function HookSlide({ text, variantIndex, format, theme, textMult = 1, slideRef }
           <div className="hook-ribbon-foot">— issue 14 · mooney</div>
         </div>
       )}
+
+      {v === 21 && (
+        /* PHOTO — full-bleed user photo + white text bubble + TikTok caption */
+        <div className="hook-content hook-photo">
+          {photo?.image ? (
+            <img className="hook-photo-bg" src={photo.image} alt="" draggable={false} />
+          ) : (
+            <div className="hook-photo-placeholder">
+              <div className="hook-photo-placeholder-icon">📷</div>
+              <div>tap "upload photo" in the editor</div>
+            </div>
+          )}
+          <div className="hook-photo-overlay">
+            <div className="hook-photo-box">
+              <h1 className="hook-photo-text" style={sz(78)}>{text}</h1>
+            </div>
+            <div className="hook-photo-caption" style={sz(50)}>
+              {photo?.caption}
+            </div>
+          </div>
+          <div className="hook-photo-handle">
+            <span className="hook-photo-music">♪</span>{photo?.handle}
+          </div>
+        </div>
+      )}
     </div>
   )
 }
@@ -978,6 +1010,15 @@ function CarouselDesigner({ exportSlide, exporting, setExporting }) {
   const [takes, setTakes] = useState(DEFAULT_TAKES)
   const [save, setSave] = useState(DEFAULT_SAVE)
   const [cta, setCta] = useState(DEFAULT_CTA)
+  const [photo, setPhoto] = useState(DEFAULT_PHOTO)
+
+  const handlePhotoUpload = (e) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    const reader = new FileReader()
+    reader.onload = () => setPhoto(prev => ({ ...prev, image: reader.result }))
+    reader.readAsDataURL(file)
+  }
   const [format, setFormat] = useState('portrait')
   const [theme, setTheme] = useState('dark')
   const [textMult, setTextMult] = useState(1.0)
@@ -1008,7 +1049,7 @@ function CarouselDesigner({ exportSlide, exporting, setExporting }) {
 
   const renderSlide = (slide, refCb) => {
     if (slide.kind === 'hook') {
-      return <HookSlide text={hookText} variantIndex={hookVariant} format={format} theme={theme} textMult={textMult} slideRef={refCb} />
+      return <HookSlide text={hookText} variantIndex={hookVariant} format={format} theme={theme} textMult={textMult} photo={photo} slideRef={refCb} />
     }
     if (slide.kind === 'take') {
       return <TakeSlide data={takes[slide.index]} format={format} theme={theme} textMult={textMult} slideRef={refCb} />
@@ -1141,8 +1182,47 @@ function CarouselDesigner({ exportSlide, exporting, setExporting }) {
             </div>
             {currentSlideData.kind === 'hook' && (
               <>
-                <label className="editor-label">Hook text — the punchy first line</label>
+                <label className="editor-label">
+                  {hookVariant === 21 ? 'Text inside the white bubble' : 'Hook text — the punchy first line'}
+                </label>
                 <textarea className="editor-textarea" value={hookText} onChange={e => setHookText(e.target.value)} rows={2} />
+                {hookVariant === 21 && (
+                  <div className="photo-controls">
+                    <label className="editor-label">Background photo (kept at full quality)</label>
+                    <div className="photo-upload-row">
+                      <label className="btn btn-accent photo-upload-btn">
+                        📷 {photo.image ? 'Replace photo' : 'Upload photo'}
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={handlePhotoUpload}
+                          style={{ display: 'none' }}
+                        />
+                      </label>
+                      {photo.image && (
+                        <button
+                          type="button"
+                          className="btn"
+                          onClick={() => setPhoto(prev => ({ ...prev, image: null }))}
+                        >
+                          Clear
+                        </button>
+                      )}
+                    </div>
+                    <label className="editor-label">Caption (TikTok-style, below bubble)</label>
+                    <input
+                      className="editor-input"
+                      value={photo.caption}
+                      onChange={e => setPhoto({ ...photo, caption: e.target.value })}
+                    />
+                    <label className="editor-label">Handle (small, bottom-right)</label>
+                    <input
+                      className="editor-input"
+                      value={photo.handle}
+                      onChange={e => setPhoto({ ...photo, handle: e.target.value })}
+                    />
+                  </div>
+                )}
                 <p className="editor-tip">Tip: short and shocking beats long and clever. 1 sentence max.</p>
               </>
             )}
