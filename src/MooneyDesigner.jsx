@@ -1282,6 +1282,7 @@ function CarouselDesigner({ exportSlide, exporting, setExporting }) {
   const [format, setFormat] = useState('portrait')
   const [theme, setTheme] = useState('dark')
   const [textMult, setTextMult] = useState(1.0)
+  const [previewMode, setPreviewMode] = useState('clean')
   const [hookVariant, setHookVariant] = useState(() => Math.floor(Math.random() * HOOK_VARIANT_COUNT))
   const [currentSlide, setCurrentSlide] = useState(0)
   const [showAll, setShowAll] = useState(false)
@@ -1788,6 +1789,18 @@ function CarouselDesigner({ exportSlide, exporting, setExporting }) {
           <span className="preview-mini-label">{slideLabel(currentSlideData)}</span>
           <span className="preview-mini-sep">·</span>
           <span className="preview-mini-info">{fmt.w}×{fmt.h}</span>
+          {!showAll && (
+            <div className="preview-mode-toggle">
+              <button
+                className={previewMode === 'clean' ? 'on' : ''}
+                onClick={() => setPreviewMode('clean')}
+              >Clean</button>
+              <button
+                className={previewMode === 'tiktok' ? 'on' : ''}
+                onClick={() => setPreviewMode('tiktok')}
+              >TikTok</button>
+            </div>
+          )}
         </div>
         {showAll ? (
           <div className="carousel-grid-view">
@@ -1796,6 +1809,22 @@ function CarouselDesigner({ exportSlide, exporting, setExporting }) {
                 {renderSlide(s, el => allRefs.current[i] = el)}
               </div>
             ))}
+          </div>
+        ) : previewMode === 'tiktok' ? (
+          <div className="single-view tt-single-view">
+            <div className="tt-screen-wrap">
+              <TikTokPreview
+                currentSlide={currentSlide}
+                totalSlides={slides.length}
+                bgImage={photo?.image}
+                handle={photo?.handle}
+                slideKindLabel={slideLabel(currentSlideData)}
+              >
+                <div className="carousel-scaler tt-inner" style={{ width: fmt.w, height: fmt.h }}>
+                  {renderSlide(currentSlideData, singleRef)}
+                </div>
+              </TikTokPreview>
+            </div>
           </div>
         ) : (
           <div className="single-view">
@@ -1813,6 +1842,172 @@ const TAB_TITLES = {
   carousels: { title: 'Mooney Carousels', sub: 'Social-media posts for Instagram & TikTok' },
   screenshots: { title: 'App Store Screenshots', sub: '6.7" iPhone & Google Play formats' },
   logo: { title: 'App Icon Designs', sub: '1024 × 1024 — App Store & Google Play' },
+}
+
+/* TikTok app-chrome preview. Wraps the slide with the actual TikTok UI as
+   seen on iOS so you can sense-check copy weight, focal point, and how it
+   competes against the right action rail. Export still grabs the clean
+   carousel-slide via the ref — this overlay is preview-only. */
+function TikTokPreview({ children, currentSlide, totalSlides, bgImage, handle, slideKindLabel }) {
+  return (
+    <div className="tt-screen">
+      {/* Blurred background fill (mimics how TikTok pads non-9:16 photos) */}
+      <div
+        className="tt-bg"
+        style={bgImage ? { backgroundImage: `url(${bgImage})` } : { background: 'linear-gradient(180deg, #1a1a1a 0%, #050505 100%)' }}
+      />
+      <div className="tt-bg-dim" />
+
+      {/* The actual carousel slide, centered at native aspect */}
+      <div className="tt-slide-stage">{children}</div>
+
+      {/* Status bar */}
+      <div className="tt-statusbar">
+        <span className="tt-time">9:41</span>
+        <div className="tt-statusbar-right">
+          <svg className="tt-sb-icon" viewBox="0 0 17 11" aria-hidden="true">
+            <rect x="0"  y="6.5" width="3" height="4.5" rx="0.7" fill="white" />
+            <rect x="4"  y="4.5" width="3" height="6.5" rx="0.7" fill="white" />
+            <rect x="8"  y="2.5" width="3" height="8.5" rx="0.7" fill="white" />
+            <rect x="12" y="0.5" width="3" height="10.5" rx="0.7" fill="white" />
+          </svg>
+          <svg className="tt-sb-icon" viewBox="0 0 16 12" aria-hidden="true">
+            <path d="M8 11.5 a1.4 1.4 0 110-2.8 1.4 1.4 0 010 2.8 z M3.4 7.1 a6.5 6.5 0 019.2 0 l-1.4 1.4 a4.5 4.5 0 00-6.4 0 z M0.6 4.3 a10.5 10.5 0 0114.8 0 l-1.4 1.4 a8.5 8.5 0 00-12 0 z" fill="white"/>
+          </svg>
+          <svg className="tt-sb-icon tt-sb-battery" viewBox="0 0 26 12" aria-hidden="true">
+            <rect x="0.5" y="0.5" width="22" height="11" rx="2.5" ry="2.5" fill="none" stroke="white" strokeWidth="1" opacity="0.6"/>
+            <rect x="2" y="2" width="19" height="8" rx="1.2" ry="1.2" fill="white"/>
+            <rect x="23.5" y="3.5" width="2" height="5" rx="1" ry="1" fill="white" opacity="0.6"/>
+          </svg>
+        </div>
+      </div>
+
+      {/* Top nav */}
+      <div className="tt-topnav">
+        <span className="tt-topnav-tab">Following</span>
+        <span className="tt-topnav-tab tt-topnav-active">For You<span className="tt-topnav-underline" /></span>
+        <svg className="tt-topnav-search" viewBox="0 0 24 24" aria-hidden="true">
+          <circle cx="10" cy="10" r="7" fill="none" stroke="white" strokeWidth="2.4"/>
+          <path d="M15.5 15.5 L21 21" stroke="white" strokeWidth="2.4" strokeLinecap="round"/>
+        </svg>
+      </div>
+
+      {/* Carousel dots — TikTok shows them when post is a photo carousel */}
+      {totalSlides > 1 && (
+        <div className="tt-carousel-dots">
+          {Array.from({ length: totalSlides }).map((_, i) => (
+            <span key={i} className={`tt-dot${i === currentSlide ? ' tt-dot-on' : ''}`} />
+          ))}
+        </div>
+      )}
+
+      {/* Right action rail */}
+      <div className="tt-right-rail">
+        <div className="tt-profile">
+          <div className="tt-profile-img" />
+          <div className="tt-profile-plus">+</div>
+        </div>
+
+        <div className="tt-action">
+          <svg viewBox="0 0 48 48" className="tt-action-icon">
+            <path d="M24 42 C 22 40.5 7 28 4 18 C 1.5 11 6 4 13 4 C 18 4 22 8 24 12 C 26 8 30 4 35 4 C 42 4 46.5 11 44 18 C 41 28 26 40.5 24 42 Z"
+              fill="white"/>
+          </svg>
+          <span className="tt-action-count">123.4K</span>
+        </div>
+
+        <div className="tt-action">
+          <svg viewBox="0 0 48 48" className="tt-action-icon">
+            <path d="M24 6 C13 6 4 13 4 22 C 4 27 6.5 31.5 11 34.5 L 8 42 L 17 38 C 19 38.5 21.5 39 24 39 C 35 39 44 32 44 23 C 44 14 35 6 24 6 Z"
+              fill="white"/>
+          </svg>
+          <span className="tt-action-count">2,341</span>
+        </div>
+
+        <div className="tt-action">
+          <svg viewBox="0 0 48 48" className="tt-action-icon">
+            <path d="M12 6 L 36 6 L 36 42 L 24 33 L 12 42 Z" fill="white"/>
+          </svg>
+          <span className="tt-action-count">891</span>
+        </div>
+
+        <div className="tt-action">
+          <svg viewBox="0 0 48 48" className="tt-action-icon">
+            <path d="M6 26 C 8 14 22 10 32 12 L 32 6 L 44 18 L 32 30 L 32 22 C 22 22 14 26 10 36 Z" fill="white"/>
+          </svg>
+          <span className="tt-action-count">Share</span>
+        </div>
+
+        <div className="tt-music-disc" aria-hidden="true">
+          <svg viewBox="0 0 48 48">
+            <circle cx="24" cy="24" r="20" fill="#000" stroke="white" strokeWidth="2" opacity="0.85"/>
+            <circle cx="24" cy="24" r="14" fill="none" stroke="white" strokeWidth="1" opacity="0.18"/>
+            <circle cx="24" cy="24" r="4" fill="white"/>
+            <path d="M19 18 L 19 30 L 25 30 C 27 30 28 28 28 26 C 28 24 27 22 25 22 L 25 14 L 30 12"
+              fill="none" stroke="white" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+        </div>
+      </div>
+
+      {/* Bottom caption */}
+      <div className="tt-bottom">
+        <div className="tt-username">{handle || '@mooneyapp'} <span className="tt-username-time">· 2h ago</span></div>
+        <div className="tt-caption">{slideKindLabel ? `${slideKindLabel} — ` : ''}save & follow for more money truth 💰</div>
+        <div className="tt-music-row">
+          <svg className="tt-music-row-icon" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M9 18 L 9 8 L 19 6 L 19 16" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round"/>
+            <circle cx="7"  cy="18" r="2.4" fill="white"/>
+            <circle cx="17" cy="16" r="2.4" fill="white"/>
+          </svg>
+          <div className="tt-music-marquee">
+            <span>original sound · {handle || '@mooneyapp'} · viral money tips 2026</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Bottom tab bar */}
+      <div className="tt-tabbar">
+        <div className="tt-tab tt-tab-on">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M3 12 L 12 4 L 21 12 L 21 20 L 14 20 L 14 14 L 10 14 L 10 20 L 3 20 Z" fill="white"/>
+          </svg>
+          <span>Home</span>
+        </div>
+        <div className="tt-tab">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="9" cy="7" r="3.5" fill="none" stroke="white" strokeWidth="1.6" opacity="0.7"/>
+            <path d="M3 21 C 3 16.5 6 13.5 9 13.5 C 12 13.5 15 16.5 15 21" stroke="white" strokeWidth="1.6" fill="none" opacity="0.7"/>
+            <circle cx="17" cy="9" r="2.6" fill="none" stroke="white" strokeWidth="1.4" opacity="0.7"/>
+            <path d="M15 21 C 15 17.5 17 15 19 15 C 21 15 22 17 22 21" stroke="white" strokeWidth="1.4" fill="none" opacity="0.7"/>
+          </svg>
+          <span>Friends</span>
+        </div>
+        <div className="tt-tab-create" aria-hidden="true">
+          <div className="tt-tab-create-bg">
+            <div className="tt-tab-create-slab tt-tab-create-slab-cyan" />
+            <div className="tt-tab-create-slab tt-tab-create-slab-red" />
+            <div className="tt-tab-create-plus">+</div>
+          </div>
+        </div>
+        <div className="tt-tab">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M3 6 L 21 6 L 19 18 L 5 18 Z M3 6 L 12 13 L 21 6" stroke="white" strokeWidth="1.6" fill="none" opacity="0.7" strokeLinejoin="round"/>
+          </svg>
+          <span>Inbox</span>
+        </div>
+        <div className="tt-tab">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="12" cy="8" r="3.8" fill="none" stroke="white" strokeWidth="1.6" opacity="0.7"/>
+            <path d="M4 22 C 4 17 8 14.5 12 14.5 C 16 14.5 20 17 20 22" stroke="white" strokeWidth="1.6" fill="none" opacity="0.7"/>
+          </svg>
+          <span>Profile</span>
+        </div>
+      </div>
+
+      {/* Home indicator */}
+      <div className="tt-home-indicator" />
+    </div>
+  )
 }
 
 export default function MooneyDesigner({ onNavigate }) {
