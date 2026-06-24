@@ -1,152 +1,72 @@
-# Timesheet Pro
+# 212 Studio · Carousel Maker
 
-A stunning, modern timesheet application for tracking work hours with Polish holidays support, built with React, Tailwind CSS, and Firebase.
+A fast, opinionated tool for making **Instagram and TikTok carousels** that don't look like everyone else's. Pick a hook style, write your text, pick a photo, export PNGs ready to upload. No Canva, no Figma, no fiddling — open it, type, ship.
 
-## Features
+> Built and used at [212 Studio](https://github.com/andriybobchuk). Open-source — PRs welcome.
 
-- **Beautiful UI/UX**: Modern, minimalistic design with glassmorphic effects and smooth animations
-- **Mobile-First**: Fully responsive design that looks great on all devices
-- **Polish Holidays**: Automatic detection and highlighting of Polish national holidays
-- **Activity Tracking**: Track different activities (LinkedIn Stuff, Paid Vacation, etc.)
-- **Hour Logging**: Easy hour selection with visual slider (0-12 hours)
-- **Month Navigation**: Browse through different months with ease
-- **Data Export**: Export timesheet data as CSV
-- **Storage Options**: 
-  - Local storage (default) - data stored in browser
-  - Firebase cloud storage (optional) - sync across devices
-- **Visual Indicators**: Different colors for weekends, holidays, and today
-- **Real-time Statistics**: View total hours and daily average
+## What's in the box
 
-## Live Demo
+- **22+ hook styles** for the first slide of a carousel — typography variants (Bold, Question, Split, Diagonal, Quote, Highlight, Sticker, Stacked, Glitch, Big Stat, POV, Tape, Card, Neon, Editorial, Block, Pillar, Outlined, Two-Tone, Tag, Ribbon) and a separate **Photo** collection (Title with dark overlay, Hook with red highlight + arrow, Notes with draggable per-line stickers).
+- **4 tip slides** with auto-generated abstract art (14 styles, 12 positions, 5 palettes — practically infinite combinations).
+- **Save & follow slide** as an editorial banner pinned before the final CTA.
+- **Final CTA** with app icon, gradient headline, app store badge.
+- **Dark and light themes**, slide-level text-size slider, format toggle (Instagram portrait 4:5 / square 1:1).
+- **2× export resolution** so PNGs stay crisp on retina.
+- **Inline editing on the preview** for photo slides — tap any text to edit, drag stickers to reposition, color pickers for note backgrounds.
+- **Twemoji injection on export** so color emojis ✈️ 🌍 actually render in the PNG (`html-to-image` drops the color layer of system fonts).
 
-Visit: [Your Netlify URL will appear here after deployment]
+## Run it locally
 
-## Setup Instructions
-
-### 1. Clone the Repository
 ```bash
-git clone https://github.com/andriybobchuk/timesheet-app.git
+git clone git@github.com:andriybobchuk/timesheet-app.git
 cd timesheet-app
 npm install
-```
-
-### 2. Local Development
-```bash
 npm run dev
 ```
-Visit http://localhost:5173
 
-### 3. Firebase Setup (Optional - for cloud storage)
+Open <http://localhost:5173>. The carousel maker is the default route.
 
-1. Go to [Firebase Console](https://console.firebase.google.com/)
-2. Create a new project
-3. Go to Project Settings > General
-4. Under "Your apps", click "Add app" and select Web (</>)
-5. Register your app and copy the configuration
-6. Create a `.env` file in the root directory:
+## Build
 
-```env
-VITE_FIREBASE_API_KEY=your-api-key
-VITE_FIREBASE_AUTH_DOMAIN=your-auth-domain
-VITE_FIREBASE_PROJECT_ID=your-project-id
-VITE_FIREBASE_STORAGE_BUCKET=your-storage-bucket
-VITE_FIREBASE_MESSAGING_SENDER_ID=your-sender-id
-VITE_FIREBASE_APP_ID=your-app-id
-```
-
-7. In Firebase Console, go to Firestore Database
-8. Create database in production mode
-9. Set up security rules:
-
-```javascript
-rules_version = '2';
-service cloud.firestore {
-  match /databases/{database}/documents {
-    match /timesheets/{document} {
-      allow read, write: if true;
-    }
-  }
-}
-```
-
-### 4. Deploy to Netlify
-
-#### Option A: Deploy with Git (Recommended)
-
-1. Push your code to GitHub
-2. Go to [Netlify](https://app.netlify.com/)
-3. Click "Add new site" > "Import an existing project"
-4. Connect to GitHub and select your repository
-5. Build settings:
-   - Build command: `npm run build`
-   - Publish directory: `dist`
-6. Add environment variables (if using Firebase):
-   - Go to Site Settings > Environment Variables
-   - Add all VITE_FIREBASE_* variables from your .env file
-7. Click "Deploy site"
-
-#### Option B: Manual Deploy
-
-1. Build the project locally:
 ```bash
 npm run build
 ```
-2. Install Netlify CLI:
-```bash
-npm install -g netlify-cli
-```
-3. Deploy:
-```bash
-netlify deploy --prod --dir=dist
-```
 
-## Usage
+Output goes to `dist/`. Drop it on any static host.
 
-1. **Select a Day**: Click on any day in the calendar
-2. **Choose Activity**: Select "LinkedIn Stuff" or "Paid Vacation"
-3. **Set Hours**: Use the slider to set hours (0-12)
-4. **Save**: Click Save to record your entry
-5. **Export Data**: Click the download icon to export current month as CSV
-6. **Toggle Storage**: Click cloud icon to switch between local/cloud storage
+## Deploy
 
-## Technologies Used
+The repo is wired to **Netlify** via `netlify.toml`. Push to `main` and it auto-builds + publishes.
 
-- React 18
-- Vite
-- Tailwind CSS
-- Framer Motion (animations)
-- date-fns (date handling)
-- Firebase (optional cloud storage)
-- Lucide React (icons)
+## Architecture
 
-## Color Legend
+- `src/App.jsx` — top-level router (path-based: `/` → carousel maker).
+- `src/MooneyDesigner.jsx` — the carousel maker itself; all slide components, the variant picker, the editor panel, export logic.
+- `src/MooneyDesigner.css` — every design token. Scoped under `.mooney-app` so it doesn't fight Tailwind.
+- `public/mooney/` — mock app screenshots and app icon used by the screenshots/icon tools.
 
-- 🔵 Blue/Cyan: Weekend days
-- 🟣 Purple/Pink: Polish holidays
-- 🟡 Amber/Orange: Today
-- 🟢 Green: Logged hours
+The other routes (`/inbox`, `/residency`) are personal-use tools used as Submit-to-Notion and visa-tracker; they're hidden in the UI but the routes still work if you want to fork them out.
 
-## Project Structure
+## Contributing
 
-```
-src/
-├── components/
-│   ├── DayCard.jsx         # Individual day component
-│   ├── ActivityModal.jsx   # Modal for activity selection
-│   └── MonthHeader.jsx     # Month navigation header
-├── utils/
-│   └── holidays.js         # Polish holidays calculation
-├── hooks/
-│   └── useFirestore.js     # Firebase integration hook
-├── config/
-│   └── firebase.js         # Firebase configuration
-└── App.jsx                 # Main application component
-```
+Open a PR against `main`. Good first improvements:
+
+- More hook styles (the bar is "does it survive the Instagram feed at thumb-scroll speed").
+- More photo overlay treatments (the Photo collection has 3, lots of room).
+- Drag-to-reposition for typography hook elements too.
+- Color picker for the take slides' accent.
+- A "saved drafts" panel (currently each session is ephemeral).
+
+The CSS uses BEM-ish prefixes per slide kind (`hook-`, `take-`, `save-`, `cta-`, `hp-` for photo). Keep new variants scoped that way.
+
+## Stack
+
+- React 19, Vite
+- `html-to-image` for PNG export
+- `@twemoji/api` for emoji rendering in export
+- `framer-motion` (only on the personal pages)
+- Plain CSS, no Tailwind on the carousel maker
 
 ## License
 
 MIT
-
-## Author
-
-Created for LinkedIn Assistant timesheet tracking# Timesheet Pro - Live Production App

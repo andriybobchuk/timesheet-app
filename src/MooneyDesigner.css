@@ -21,65 +21,101 @@
 }
 
 /* =============================================
-   TOP TOOLBAR
+   TOP TOOLBAR — branded studio logo only
+   Secondary nav (screenshots, icon, inbox, residency)
+   is revealed by double-clicking the logo.
    ============================================= */
 .mooney-toolbar {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-start;
   align-items: center;
-  max-width: 1100px;
-  margin: 0 auto 18px;
+  max-width: 1180px;
+  margin: 0 auto 22px;
   position: relative;
   z-index: 50;
 }
 
-.mooney-back-btn {
+.studio-logo {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
   background: transparent;
-  border: 1px solid rgba(255,255,255,0.12);
-  color: var(--text-secondary);
-  padding: 7px 14px;
-  border-radius: 8px;
-  font-size: 13px;
-  font-weight: 600;
+  border: none;
+  padding: 6px 12px 6px 6px;
+  border-radius: 12px;
   cursor: pointer;
-  transition: all 0.2s;
+  user-select: none;
+  transition: background 0.18s ease;
+  -webkit-user-select: none;
 }
-.mooney-back-btn:hover {
-  color: var(--text-primary);
-  border-color: rgba(77,208,200,0.4);
+.studio-logo:hover { background: rgba(255,255,255,0.04); }
+.studio-logo:active { background: rgba(192,132,252,0.08); }
+.studio-logo-mark {
+  font-size: 32px;
+  font-weight: 900;
+  letter-spacing: -2px;
+  line-height: 1;
+  background: linear-gradient(165deg, #E9D5FF 0%, #C084FC 45%, #7C3AED 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  padding: 0 4px;
+  filter: drop-shadow(0 2px 12px rgba(168,85,247,0.25));
+}
+.studio-logo-stack {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+  gap: 1px;
+}
+.studio-logo-name {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 4px;
+  color: #ffffff;
+  text-transform: uppercase;
+  line-height: 1;
+}
+.studio-logo-tag {
+  font-size: 10px;
+  color: rgba(255,255,255,0.45);
+  font-weight: 500;
+  letter-spacing: 0.6px;
+  line-height: 1;
+}
+.studio-logo-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--ui-accent);
+  box-shadow: 0 0 0 2px rgba(192,132,252,0.18), 0 0 12px rgba(192,132,252,0.55);
+  margin-left: 4px;
+  opacity: 0.7;
+  transition: opacity 0.18s ease, transform 0.18s ease;
+}
+.studio-logo:hover .studio-logo-dot { opacity: 1; transform: scale(1.15); }
+.studio-logo-armed .studio-logo-dot {
+  opacity: 1;
+  transform: scale(1.4);
+  box-shadow: 0 0 0 4px rgba(192,132,252,0.25), 0 0 16px rgba(192,132,252,0.8);
 }
 
-/* "Other tools" dropdown — tucks Screenshots + App Icon out of the main flow */
-.mooney-tool-menu { position: relative; margin-left: auto; }
-.mooney-tool-trigger {
-  background: rgba(255,255,255,0.03);
-  border: 1px solid rgba(255,255,255,0.08);
-  color: var(--text-secondary);
-  padding: 7px 14px;
-  border-radius: 8px;
-  font-size: 13px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-.mooney-tool-trigger:hover {
-  color: var(--text-primary);
-  border-color: rgba(77,208,200,0.4);
-}
+/* Hidden secret-nav dropdown (anchored to logo) */
 .mooney-tool-backdrop {
   position: fixed; inset: 0; z-index: 90;
 }
-.mooney-tool-dropdown {
+.mooney-tool-dropdown.studio-secret-nav {
   position: absolute;
-  top: calc(100% + 6px);
-  right: 0;
+  top: calc(100% + 8px);
+  left: 0;
   z-index: 100;
-  background: #15191e;
-  border: 1px solid rgba(77,208,200,0.18);
-  border-radius: 12px;
+  background: #14181d;
+  border: 1px solid rgba(255,255,255,0.10);
+  border-radius: 14px;
   padding: 8px;
-  min-width: 280px;
-  box-shadow: 0 18px 50px rgba(0,0,0,0.5), 0 4px 12px rgba(0,0,0,0.3);
+  min-width: 290px;
+  box-shadow: 0 24px 60px rgba(0,0,0,0.55), 0 4px 16px rgba(0,0,0,0.35);
 }
 .mooney-tool-dropdown-label {
   font-size: 10px;
@@ -88,6 +124,11 @@
   color: var(--text-secondary);
   padding: 6px 10px 8px;
   font-weight: 700;
+}
+.mooney-tool-dropdown-divider {
+  height: 1px;
+  background: rgba(255,255,255,0.06);
+  margin: 8px 0;
 }
 .mooney-tool-dropdown button {
   display: flex; align-items: center;
@@ -103,10 +144,10 @@
   text-align: left;
   transition: background 0.15s;
 }
-.mooney-tool-dropdown button:hover { background: rgba(77,208,200,0.08); }
+.mooney-tool-dropdown button:hover { background: rgba(255,255,255,0.05); }
 .mooney-tool-dropdown button.on {
-  background: rgba(77,208,200,0.15);
-  color: var(--accent);
+  background: rgba(192,132,252,0.15);
+  color: var(--ui-accent);
 }
 .mooney-tool-dropdown .mtd-hint {
   margin-left: 6px;

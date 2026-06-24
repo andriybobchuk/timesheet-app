@@ -1639,9 +1639,23 @@ const TAB_TITLES = {
   logo: { title: 'App Icon Designs', sub: '1024 × 1024 — App Store & Google Play' },
 }
 
-export default function MooneyDesigner({ onBack }) {
+export default function MooneyDesigner({ onNavigate }) {
   const [tab, setTab] = useState('carousels')
   const [moreOpen, setMoreOpen] = useState(false)
+  const [logoClickCount, setLogoClickCount] = useState(0)
+  const logoClickTimer = useRef(null)
+
+  /* Hidden nav: double-click the studio logo to reveal secondary tools */
+  const handleLogoClick = () => {
+    setLogoClickCount(c => c + 1)
+    if (logoClickTimer.current) clearTimeout(logoClickTimer.current)
+    logoClickTimer.current = setTimeout(() => setLogoClickCount(0), 600)
+    if (logoClickCount + 1 >= 2) {
+      setMoreOpen(true)
+      setLogoClickCount(0)
+      if (logoClickTimer.current) clearTimeout(logoClickTimer.current)
+    }
+  }
   const [currentSlide, setCurrentSlide] = useState(0)
   const [showAll, setShowAll] = useState(false)
   const [format, setFormat] = useState('apple')
@@ -1713,44 +1727,58 @@ export default function MooneyDesigner({ onBack }) {
   return (
     <div className="mooney-app">
       <div className="mooney-toolbar">
-        {onBack && (
-          <button onClick={onBack} className="mooney-back-btn">← Back to inbox</button>
+        <button
+          type="button"
+          className={`studio-logo${logoClickCount === 1 ? ' studio-logo-armed' : ''}`}
+          onClick={handleLogoClick}
+          title="Double-click for more tools"
+        >
+          <span className="studio-logo-mark">212</span>
+          <span className="studio-logo-stack">
+            <span className="studio-logo-name">STUDIO</span>
+            <span className="studio-logo-tag">{tab === 'carousels' ? 'Carousel Maker' : tab === 'screenshots' ? 'App Store Screenshots' : 'App Icon Designs'}</span>
+          </span>
+          <span className="studio-logo-dot" aria-hidden="true" />
+        </button>
+
+        {moreOpen && (
+          <>
+            <div className="mooney-tool-backdrop" onClick={() => setMoreOpen(false)} />
+            <div className="mooney-tool-dropdown studio-secret-nav">
+              <div className="mooney-tool-dropdown-label">Tools in this app</div>
+              <button
+                className={tab === 'carousels' ? 'on' : ''}
+                onClick={() => { setTab('carousels'); setMoreOpen(false) }}
+              >
+                📣 Carousels <span className="mtd-hint">— social posts</span>
+              </button>
+              <button
+                className={tab === 'screenshots' ? 'on' : ''}
+                onClick={() => { setTab('screenshots'); setMoreOpen(false) }}
+              >
+                📱 App Store Screenshots
+              </button>
+              <button
+                className={tab === 'logo' ? 'on' : ''}
+                onClick={() => { setTab('logo'); setMoreOpen(false) }}
+              >
+                🎯 App Icon Designs
+              </button>
+              {onNavigate && (
+                <>
+                  <div className="mooney-tool-dropdown-divider" />
+                  <div className="mooney-tool-dropdown-label">Personal pages</div>
+                  <button onClick={() => { setMoreOpen(false); onNavigate('inbox') }}>
+                    📋 Inbox
+                  </button>
+                  <button onClick={() => { setMoreOpen(false); onNavigate('residency') }}>
+                    🏠 Residency Tracker
+                  </button>
+                </>
+              )}
+            </div>
+          </>
         )}
-        <div className="mooney-studio-mark">Studio · Mooney Designer</div>
-        <div className="mooney-tool-menu">
-          <button
-            className="mooney-tool-trigger"
-            onClick={() => setMoreOpen(o => !o)}
-          >
-            ⋯ Other tools
-          </button>
-          {moreOpen && (
-            <>
-              <div className="mooney-tool-backdrop" onClick={() => setMoreOpen(false)} />
-              <div className="mooney-tool-dropdown">
-                <div className="mooney-tool-dropdown-label">Switch tool</div>
-                <button
-                  className={tab === 'carousels' ? 'on' : ''}
-                  onClick={() => { setTab('carousels'); setMoreOpen(false) }}
-                >
-                  📣 Carousels <span className="mtd-hint">— social posts</span>
-                </button>
-                <button
-                  className={tab === 'screenshots' ? 'on' : ''}
-                  onClick={() => { setTab('screenshots'); setMoreOpen(false) }}
-                >
-                  📱 App Store Screenshots
-                </button>
-                <button
-                  className={tab === 'logo' ? 'on' : ''}
-                  onClick={() => { setTab('logo'); setMoreOpen(false) }}
-                >
-                  🎯 App Icon Designs
-                </button>
-              </div>
-            </>
-          )}
-        </div>
       </div>
 
       <div className="controls">

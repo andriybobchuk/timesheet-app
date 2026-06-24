@@ -6,16 +6,18 @@ import MooneyDesigner from './MooneyDesigner';
 const TAGS = ['Finance', 'LinkedIn', 'Legal', 'Side Quest'];
 
 const VALID_SCREENS = ['inbox', 'residency', 'mooney'];
+const DEFAULT_SCREEN = 'mooney';
 const SCREEN_TITLES = {
   inbox: "Andrii's Inbox",
   residency: 'Residency Tracker',
-  mooney: 'Mooney Designer',
+  mooney: '212 Studio · Carousel Maker',
 };
 
 const getScreenFromPath = () => {
-  if (typeof window === 'undefined') return 'inbox';
+  if (typeof window === 'undefined') return DEFAULT_SCREEN;
   const path = window.location.pathname.replace(/^\/+|\/+$/g, '');
-  return VALID_SCREENS.includes(path) ? path : 'inbox';
+  if (path === '') return DEFAULT_SCREEN;
+  return VALID_SCREENS.includes(path) ? path : DEFAULT_SCREEN;
 };
 
 const i18n = {
@@ -72,7 +74,7 @@ export default function App() {
 
   const setScreen = useCallback((newScreen) => {
     setScreenState(newScreen);
-    const newPath = newScreen === 'inbox' ? '/' : `/${newScreen}`;
+    const newPath = newScreen === DEFAULT_SCREEN ? '/' : `/${newScreen}`;
     if (typeof window !== 'undefined' && window.location.pathname !== newPath) {
       window.history.pushState(null, '', newPath);
     }
@@ -137,11 +139,11 @@ export default function App() {
   };
 
   if (screen === 'residency') {
-    return <ResidencyTracker onBack={() => setScreen('inbox')} />;
+    return <ResidencyTracker onBack={() => setScreen(DEFAULT_SCREEN)} />;
   }
 
   if (screen === 'mooney') {
-    return <MooneyDesigner onBack={() => setScreen('inbox')} />;
+    return <MooneyDesigner onNavigate={setScreen} />;
   }
 
   return (
