@@ -1,7 +1,52 @@
-import { useState, useRef, useCallback } from 'react'
+import { useState, useRef, useCallback, useEffect } from 'react'
 import { toPng } from 'html-to-image'
 import twemoji from '@twemoji/api'
 import './MooneyDesigner.css'
+
+/* Inline-editable text — contentEditable wrapper that doesn't fight React.
+   Only writes to DOM when the external `value` differs from current text,
+   which keeps the cursor still while the user is typing. */
+function InlineText({ value, onChange, as: Tag = 'div', className = '', style, placeholder, multiline = false, ...rest }) {
+  const ref = useRef(null)
+
+  useEffect(() => {
+    const el = ref.current
+    if (!el) return
+    if ((value ?? '') !== el.textContent) el.textContent = value ?? ''
+  }, [value])
+
+  const handleBlur = () => {
+    const text = ref.current?.textContent ?? ''
+    if (text !== value) onChange(text)
+  }
+  const handlePaste = (e) => {
+    e.preventDefault()
+    const text = e.clipboardData.getData('text/plain')
+    document.execCommand('insertText', false, text)
+  }
+  const handleKeyDown = (e) => {
+    if (!multiline && e.key === 'Enter') {
+      e.preventDefault()
+      ref.current?.blur()
+    }
+  }
+
+  return (
+    <Tag
+      ref={ref}
+      contentEditable
+      suppressContentEditableWarning
+      onBlur={handleBlur}
+      onPaste={handlePaste}
+      onKeyDown={handleKeyDown}
+      className={`inline-text ${className}`}
+      style={style}
+      data-placeholder={placeholder}
+      spellCheck={false}
+      {...rest}
+    />
+  )
+}
 
 /* Replace native emoji codepoints with Twemoji SVGs and wait for them to
    load. html-to-image renders text via foreignObject which drops the color
@@ -86,20 +131,26 @@ const DEFAULT_SAVE = {
   footnote: 'weekly truth · mooney',
 }
 
-const HOOK_VARIANT_COUNT = 22
+const TYPO_VARIANT_COUNT = 21
+const PHOTO_VARIANT_NAMES = ['Bubble', 'POV', 'Cinematic', 'Diary', 'Bottom', 'Magazine', 'Quote']
+const HOOK_VARIANT_COUNT = TYPO_VARIANT_COUNT + PHOTO_VARIANT_NAMES.length
 const GRAPHIC_VARIANT_COUNT = 14
 
 const HOOK_STYLE_NAMES = [
   'Bold', 'Question', 'Split', 'Diagonal', 'Quote', 'Highlight',
   'Sticker', 'Stacked', 'Glitch', 'Big Stat', 'POV', 'Tape', 'Card', 'Neon',
   'Editorial', 'Block', 'Pillar', 'Outlined', 'Two-Tone', 'Tag', 'Ribbon',
-  'Photo',
+  ...PHOTO_VARIANT_NAMES,
 ]
+const isPhotoVariant = (v) => v >= TYPO_VARIANT_COUNT
 
 const DEFAULT_PHOTO = {
   image: null,
   caption: 'stand out by saying this instead of>>>',
   handle: '@mooneyapp',
+  eyebrow: 'POV:',
+  attribution: '— mooney',
+  masthead: 'MOONEY · ISSUE 14',
 }
 
 /* Base sizes bumped up so the slide fills more space by default */
@@ -614,7 +665,8 @@ function LogoDesigner({ exportLogo, exporting }) {
   )
 }
 
-function HookSlide({ text, variantIndex, format, theme, textMult = 1, photo, slideRef }) {
+function HookSlide({ text, variantIndex, format, theme, textMult = 1, photo, setHookText, setPhoto, slideRef }) {
+  const updPhoto = (field) => (val) => setPhoto && setPhoto(prev => ({ ...prev, [field]: val }))
   const fmt = CAROUSEL_FORMATS[format]
   const v = variantIndex % HOOK_VARIANT_COUNT
   const words = text.trim().split(/\s+/)
@@ -854,9 +906,9 @@ function HookSlide({ text, variantIndex, format, theme, textMult = 1, photo, sli
         </div>
       )}
 
-      {v === 21 && (
-        /* PHOTO — full-bleed user photo + white text bubble + TikTok caption */
-        <div className="hook-content hook-photo">
+      {isPhotoVariant(v) && (
+        /* PHOTO COLLECTION — shared shell (image + handle), per-variant overlay */
+        <div className={`hook-content hook-photo hook-photo-${v - TYPO_VARIANT_COUNT}`}>
           {photo?.image ? (
             <img className="hook-photo-bg" src={photo.image} alt="" draggable={false} />
           ) : (
@@ -865,16 +917,111 @@ function HookSlide({ text, variantIndex, format, theme, textMult = 1, photo, sli
               <div>tap "upload photo" in the editor</div>
             </div>
           )}
-          <div className="hook-photo-overlay">
-            <div className="hook-photo-box">
-              <h1 className="hook-photo-text" style={sz(78)}>{text}</h1>
+
+          {v === 21 && (
+            /* BUBBLE — white rounded box + outlined caption */
+            <>
+              <div className="hook-photo-overlay">
+                <div className="hp-bubble-box">
+                  <InlineText as="h1" className="hp-bubble-text" style={sz(78)}
+                    value={text} onChange={setHookText} multiline />
+                </div>
+                <InlineText className="hp-bubble-caption" style={sz(50)}
+                  value={photo.caption} onChange={updPhoto('caption')} multiline />
+              </div>
+            </>
+          )}
+
+          {v === 22 && (
+            /* POV — chip + big outlined statement + caption */
+            <>
+              <div className="hook-photo-dim" />
+              <div className="hp-pov-stack">
+                <InlineText className="hp-pov-chip" value={photo.eyebrow} onChange={updPhoto('eyebrow')} />
+                <InlineText as="h1" className="hp-pov-text" style={sz(95)}
+                  value={text} onChange={setHookText} multiline />
+                <InlineText className="hp-pov-sub" style={sz(42)}
+                  value={photo.caption} onChange={updPhoto('caption')} multiline />
+              </div>
+            </>
+          )}
+
+          {v === 23 && (
+            /* CINEMATIC — letterbox bars top+bottom */
+            <>
+              <div className="hp-cin-bar hp-cin-bar-top">
+                <InlineText className="hp-cin-eyebrow" value={photo.eyebrow} onChange={updPhoto('eyebrow')} />
+              </div>
+              <div className="hp-cin-bar hp-cin-bar-bottom">
+                <InlineText as="h1" className="hp-cin-text" style={sz(70)}
+                  value={text} onChange={setHookText} multiline />
+                <InlineText className="hp-cin-handle"
+                  value={photo.handle} onChange={updPhoto('handle')} />
+              </div>
+            </>
+          )}
+
+          {v === 24 && (
+            /* DIARY — handwritten serif overlay at top-left, date below */
+            <div className="hp-diary-stack">
+              <InlineText as="h1" className="hp-diary-text" style={sz(105)}
+                value={text} onChange={setHookText} multiline />
+              <InlineText className="hp-diary-date"
+                value={photo.caption} onChange={updPhoto('caption')} />
             </div>
-            <div className="hook-photo-caption" style={sz(50)}>
-              {photo?.caption}
-            </div>
-          </div>
+          )}
+
+          {v === 25 && (
+            /* BOTTOM — big bold reel-style bottom caption */
+            <>
+              <div className="hp-bot-grad" />
+              <div className="hp-bot-stack">
+                <InlineText as="h1" className="hp-bot-text" style={sz(105)}
+                  value={text} onChange={setHookText} multiline />
+                <InlineText className="hp-bot-sub" style={sz(38)}
+                  value={photo.caption} onChange={updPhoto('caption')} multiline />
+              </div>
+            </>
+          )}
+
+          {v === 26 && (
+            /* MAGAZINE — top masthead + cover title + subtitle */
+            <>
+              <div className="hp-mag-top">
+                <InlineText className="hp-mag-masthead"
+                  value={photo.masthead} onChange={updPhoto('masthead')} />
+              </div>
+              <div className="hp-mag-stack">
+                <InlineText as="h1" className="hp-mag-title" style={sz(160)}
+                  value={text} onChange={setHookText} multiline />
+                <InlineText className="hp-mag-sub" style={sz(36)}
+                  value={photo.caption} onChange={updPhoto('caption')} multiline />
+              </div>
+            </>
+          )}
+
+          {v === 27 && (
+            /* QUOTE — giant ❝ + italic centered quote + attribution */
+            <>
+              <div className="hook-photo-dim" />
+              <div className="hp-q-stack">
+                <div className="hp-q-mark">"</div>
+                <InlineText as="h1" className="hp-q-text" style={sz(75)}
+                  value={text} onChange={setHookText} multiline />
+                <InlineText className="hp-q-attr"
+                  value={photo.attribution} onChange={updPhoto('attribution')} />
+              </div>
+            </>
+          )}
+
           <div className="hook-photo-handle">
-            <span className="hook-photo-music">♪</span>{photo?.handle}
+            <span className="hook-photo-music">♪</span>
+            <InlineText
+              as="span"
+              className="hook-photo-handle-text"
+              value={photo.handle}
+              onChange={updPhoto('handle')}
+            />
           </div>
         </div>
       )}
@@ -1049,7 +1196,7 @@ function CarouselDesigner({ exportSlide, exporting, setExporting }) {
 
   const renderSlide = (slide, refCb) => {
     if (slide.kind === 'hook') {
-      return <HookSlide text={hookText} variantIndex={hookVariant} format={format} theme={theme} textMult={textMult} photo={photo} slideRef={refCb} />
+      return <HookSlide text={hookText} variantIndex={hookVariant} format={format} theme={theme} textMult={textMult} photo={photo} setHookText={setHookText} setPhoto={setPhoto} slideRef={refCb} />
     }
     if (slide.kind === 'take') {
       return <TakeSlide data={takes[slide.index]} format={format} theme={theme} textMult={textMult} slideRef={refCb} />
@@ -1108,7 +1255,8 @@ function CarouselDesigner({ exportSlide, exporting, setExporting }) {
                 Hook style <span className="hint">— first slide layout</span>
               </label>
               <div className="variant-picker">
-                {HOOK_STYLE_NAMES.map((name, i) => (
+                <div className="vp-section-label">Typography</div>
+                {HOOK_STYLE_NAMES.slice(0, TYPO_VARIANT_COUNT).map((name, i) => (
                   <button
                     key={i}
                     className={`vp-btn ${hookVariant === i ? 'on' : ''}`}
@@ -1117,6 +1265,19 @@ function CarouselDesigner({ exportSlide, exporting, setExporting }) {
                     <span className="vp-num">{i + 1}</span> {name}
                   </button>
                 ))}
+                <div className="vp-section-label vp-section-label-photo">Photo · for lifestyle posts</div>
+                {HOOK_STYLE_NAMES.slice(TYPO_VARIANT_COUNT).map((name, idx) => {
+                  const i = TYPO_VARIANT_COUNT + idx
+                  return (
+                    <button
+                      key={i}
+                      className={`vp-btn vp-btn-photo ${hookVariant === i ? 'on' : ''}`}
+                      onClick={() => setHookVariant(i)}
+                    >
+                      <span className="vp-num">★</span> {name}
+                    </button>
+                  )
+                })}
                 <button className="vp-btn vp-dice" onClick={reshuffleHook} title="Random hook style">🎲</button>
               </div>
               <div className="variant-picker-mobile">
@@ -1125,9 +1286,19 @@ function CarouselDesigner({ exportSlide, exporting, setExporting }) {
                   value={hookVariant}
                   onChange={e => setHookVariant(Number(e.target.value))}
                 >
-                  {HOOK_STYLE_NAMES.map((name, i) => (
-                    <option key={i} value={i}>{`${i + 1}. ${name}`}</option>
-                  ))}
+                  <optgroup label="Typography">
+                    {HOOK_STYLE_NAMES.slice(0, TYPO_VARIANT_COUNT).map((name, i) => (
+                      <option key={i} value={i}>{`${i + 1}. ${name}`}</option>
+                    ))}
+                  </optgroup>
+                  <optgroup label="Photo · for lifestyle posts">
+                    {HOOK_STYLE_NAMES.slice(TYPO_VARIANT_COUNT).map((name, idx) => {
+                      const i = TYPO_VARIANT_COUNT + idx
+                      return (
+                        <option key={i} value={i}>{`★ ${name}`}</option>
+                      )
+                    })}
+                  </optgroup>
                 </select>
                 <button className="btn vp-dice-btn" onClick={reshuffleHook} title="Random hook style">🎲</button>
               </div>
@@ -1182,11 +1353,7 @@ function CarouselDesigner({ exportSlide, exporting, setExporting }) {
             </div>
             {currentSlideData.kind === 'hook' && (
               <>
-                <label className="editor-label">
-                  {hookVariant === 21 ? 'Text inside the white bubble' : 'Hook text — the punchy first line'}
-                </label>
-                <textarea className="editor-textarea" value={hookText} onChange={e => setHookText(e.target.value)} rows={2} />
-                {hookVariant === 21 && (
+                {isPhotoVariant(hookVariant) ? (
                   <div className="photo-controls">
                     <label className="editor-label">Background photo (kept at full quality)</label>
                     <div className="photo-upload-row">
@@ -1209,21 +1376,15 @@ function CarouselDesigner({ exportSlide, exporting, setExporting }) {
                         </button>
                       )}
                     </div>
-                    <label className="editor-label">Caption (TikTok-style, below bubble)</label>
-                    <input
-                      className="editor-input"
-                      value={photo.caption}
-                      onChange={e => setPhoto({ ...photo, caption: e.target.value })}
-                    />
-                    <label className="editor-label">Handle (small, bottom-right)</label>
-                    <input
-                      className="editor-input"
-                      value={photo.handle}
-                      onChange={e => setPhoto({ ...photo, handle: e.target.value })}
-                    />
+                    <p className="editor-tip">✏︎ Tap any text on the preview to edit it directly.</p>
                   </div>
+                ) : (
+                  <>
+                    <label className="editor-label">Hook text — the punchy first line</label>
+                    <textarea className="editor-textarea" value={hookText} onChange={e => setHookText(e.target.value)} rows={2} />
+                    <p className="editor-tip">Tip: short and shocking beats long and clever. 1 sentence max.</p>
+                  </>
                 )}
-                <p className="editor-tip">Tip: short and shocking beats long and clever. 1 sentence max.</p>
               </>
             )}
             {isTake && (
@@ -1373,6 +1534,7 @@ export default function MooneyDesigner({ onBack }) {
   const fmt = FORMATS[format]
 
   const exportSlide = useCallback(async (element, filename, overrideW, overrideH) => {
+    if (document.activeElement instanceof HTMLElement) document.activeElement.blur()
     const scaler = element.closest('.slide-scaler, .carousel-scaler')
     let origTransform = ''
     let origMargin = ''
