@@ -135,8 +135,10 @@ const FORMATS = {
 }
 
 const CAROUSEL_FORMATS = {
-  portrait: { name: 'IG Portrait', w: 1080, h: 1350, label: '4:5' },
   square: { name: 'IG Square', w: 1080, h: 1080, label: '1:1' },
+  portrait: { name: 'IG Portrait', w: 1080, h: 1350, label: '4:5' },
+  tall: { name: 'Tall', w: 1080, h: 1620, label: '2:3' },
+  tiktok: { name: 'TikTok / Reels', w: 1080, h: 1920, label: '9:16' },
 }
 
 const DEFAULT_HOOK = "You're losing $300 a month. You just don't see it."
@@ -1838,7 +1840,7 @@ function CarouselDesigner({ exportSlide, exporting, setExporting }) {
           )}
         </div>
         {showAll ? (
-          <div className="carousel-grid-view">
+          <div className="carousel-grid-view" style={{ '--slide-ar': `${fmt.w} / ${fmt.h}` }}>
             {slides.map((s, i) => (
               <div key={i} className="grid-item">
                 {renderSlide(s, el => allRefs.current[i] = el)}

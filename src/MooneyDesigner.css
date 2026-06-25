@@ -402,15 +402,25 @@
     border-bottom: 1px solid rgba(192,132,252,0.12);
   }
   .mooney-app .single-view { justify-content: center; }
+  .mooney-app .carousel-scaler-square {
+    transform: scale(0.34);
+    margin-right: -712.8px;
+    margin-bottom: -712.8px;
+  }
   .mooney-app .carousel-scaler-portrait {
     transform: scale(0.34);
     margin-right: -712.8px;
     margin-bottom: -891px;
   }
-  .mooney-app .carousel-scaler-square {
+  .mooney-app .carousel-scaler-tall {
     transform: scale(0.34);
     margin-right: -712.8px;
-    margin-bottom: -712.8px;
+    margin-bottom: -1069.2px;
+  }
+  .mooney-app .carousel-scaler-tiktok {
+    transform: scale(0.34);
+    margin-right: -712.8px;
+    margin-bottom: -1267.2px;
   }
 }
 
@@ -1127,15 +1137,25 @@
 
 /* Single view scaler — compact 0.4× preview, top-left origin so it tucks */
 .mooney-app .carousel-scaler { transform-origin: top left; }
+.mooney-app .carousel-scaler-square {
+  transform: scale(0.4);
+  margin-right: -648px;
+  margin-bottom: -648px;
+}
 .mooney-app .carousel-scaler-portrait {
   transform: scale(0.4);
   margin-right: -648px;
   margin-bottom: -810px;
 }
-.mooney-app .carousel-scaler-square {
+.mooney-app .carousel-scaler-tall {
   transform: scale(0.4);
   margin-right: -648px;
-  margin-bottom: -648px;
+  margin-bottom: -972px;
+}
+.mooney-app .carousel-scaler-tiktok {
+  transform: scale(0.4);
+  margin-right: -648px;
+  margin-bottom: -1152px;
 }
 .mooney-app .single-view {
   justify-content: flex-start;
@@ -1153,10 +1173,8 @@
 .mooney-app .carousel-grid-view .carousel-slide {
   width: 100% !important; height: auto !important;
 }
-.mooney-app .carousel-grid-view .carousel-slide.hook-slide,
-.mooney-app .carousel-grid-view .carousel-slide.take-slide,
-.mooney-app .carousel-grid-view .carousel-slide.cta-slide {
-  aspect-ratio: 1080 / 1350;
+.mooney-app .carousel-grid-view .carousel-slide {
+  aspect-ratio: var(--slide-ar, 1080 / 1350);
 }
 
 /* =============================================
@@ -2692,15 +2710,25 @@
     letter-spacing: 1px;
     padding: 2px 0;
   }
+  .mooney-app .carousel-scaler-square {
+    transform: scale(0.32);
+    margin-right: -734.4px;
+    margin-bottom: -734.4px;
+  }
   .mooney-app .carousel-scaler-portrait {
     transform: scale(0.32);
     margin-right: -734.4px;
     margin-bottom: -918px;
   }
-  .mooney-app .carousel-scaler-square {
+  .mooney-app .carousel-scaler-tall {
     transform: scale(0.32);
     margin-right: -734.4px;
-    margin-bottom: -734.4px;
+    margin-bottom: -1101.6px;
+  }
+  .mooney-app .carousel-scaler-tiktok {
+    transform: scale(0.32);
+    margin-right: -734.4px;
+    margin-bottom: -1305.6px;
   }
 
   /* Sections — tighter rhythm */
@@ -2814,14 +2842,24 @@
 
 /* Very small phones — slightly smaller preview */
 @media (max-width: 380px) {
+  .mooney-app .carousel-scaler-square {
+    transform: scale(0.28);
+    margin-right: -777.6px;
+    margin-bottom: -777.6px;
+  }
   .mooney-app .carousel-scaler-portrait {
     transform: scale(0.28);
     margin-right: -777.6px;
     margin-bottom: -972px;
   }
-  .mooney-app .carousel-scaler-square {
+  .mooney-app .carousel-scaler-tall {
     transform: scale(0.28);
     margin-right: -777.6px;
-    margin-bottom: -777.6px;
+    margin-bottom: -1166.4px;
+  }
+  .mooney-app .carousel-scaler-tiktok {
+    transform: scale(0.28);
+    margin-right: -777.6px;
+    margin-bottom: -1382.4px;
   }
 }
