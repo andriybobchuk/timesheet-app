@@ -2206,6 +2206,61 @@
   display: inline-block;
 }
 
+/* Hex color picker — swatch (native picker hidden behind) + hex text input */
+.mooney-app .hex-input {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(0,0,0,0.35);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 7px;
+  padding: 5px 8px 5px 5px;
+  cursor: pointer;
+  transition: border-color 0.15s ease;
+}
+.mooney-app .hex-input:hover { border-color: rgba(255,255,255,0.18); }
+.mooney-app .hex-input:focus-within {
+  border-color: var(--ui-accent);
+  box-shadow: 0 0 0 2px rgba(168,85,247,0.22);
+}
+.mooney-app .hex-input-native {
+  position: absolute;
+  width: 0; height: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+.mooney-app .hex-input-dot {
+  width: 22px;
+  height: 22px;
+  border-radius: 5px;
+  border: 1px solid rgba(255,255,255,0.18);
+  flex-shrink: 0;
+}
+.mooney-app .hex-input-hash {
+  color: var(--text-secondary);
+  font-size: 13px;
+  font-weight: 700;
+  font-family: 'SF Mono', Menlo, monospace;
+}
+.mooney-app .hex-input-text {
+  background: transparent;
+  border: none;
+  outline: none;
+  width: 72px;
+  font-family: 'SF Mono', Menlo, monospace;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  color: var(--text-primary);
+  text-transform: uppercase;
+  padding: 0;
+}
+.mooney-app .hex-input-label {
+  font-size: 11px;
+  color: var(--text-secondary);
+  margin-left: 4px;
+}
+
 /* Editor — checkbox toggle row */
 .mooney-app .editor-toggle-row {
   display: flex;

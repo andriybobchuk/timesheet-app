@@ -3,6 +3,53 @@ import { toPng } from 'html-to-image'
 import twemoji from '@twemoji/api'
 import './MooneyDesigner.css'
 
+/* Color picker that accepts hex input (e.g. "FF004F"). Visual swatch opens
+   the native color dialog; text field beside it takes manual hex (any case,
+   leading # optional). Updates only commit when 6 hex chars are present. */
+function HexColorInput({ value, onChange, label }) {
+  const [draft, setDraft] = useState((value || '').replace('#', '').toUpperCase())
+
+  useEffect(() => {
+    setDraft((value || '').replace('#', '').toUpperCase())
+  }, [value])
+
+  const handleHexChange = (e) => {
+    const cleaned = e.target.value.replace(/[^0-9A-Fa-f]/g, '').toUpperCase().slice(0, 6)
+    setDraft(cleaned)
+    if (cleaned.length === 6) onChange('#' + cleaned)
+  }
+  const handleHexBlur = () => {
+    if (draft.length !== 6) setDraft((value || '').replace('#', '').toUpperCase())
+  }
+
+  return (
+    <label className="hex-input">
+      <input
+        type="color"
+        value={value}
+        onChange={e => onChange(e.target.value)}
+        className="hex-input-native"
+      />
+      <span className="hex-input-dot" style={{ background: value }} />
+      <span className="hex-input-hash">#</span>
+      <input
+        type="text"
+        value={draft}
+        onChange={handleHexChange}
+        onBlur={handleHexBlur}
+        placeholder="FF004F"
+        maxLength={6}
+        spellCheck={false}
+        autoCapitalize="characters"
+        autoComplete="off"
+        className="hex-input-text"
+        onPointerDown={e => e.stopPropagation()}
+      />
+      {label && <span className="hex-input-label">{label}</span>}
+    </label>
+  )
+}
+
 /* Inline-editable text — contentEditable wrapper that doesn't fight React.
    Only writes to DOM when the external `value` differs from current text,
    which keeps the cursor still while the user is typing. */
@@ -186,7 +233,7 @@ const DEFAULT_PHOTO = {
   hookSubPos: { x: 5, y: 84 },
   hookSubSize: 30,
   hookFont: 'archivo',
-  hookHighlightColor: '#E63946',
+  hookHighlightColor: '#FF004F',
   hookHighlightRadius: 4,
 
   /* Notes (style 23) — two draggable per-line caption blocks */
@@ -1063,7 +1110,7 @@ function HookSlide({ text, variantIndex, format, theme, textMult = 1, photo, set
                       className="hp-hook-line"
                       style={{
                         fontSize: `${(photo.hookHeadSize ?? 95) * textMult}px`,
-                        background: photo.hookHighlightColor || '#E63946',
+                        background: photo.hookHighlightColor || '#FF004F',
                         borderRadius: `${photo.hookHighlightRadius ?? 4}px`,
                       }}
                       value={photo.firstLine}
@@ -1568,17 +1615,15 @@ function CarouselDesigner({ exportSlide, exporting, setExporting }) {
                             onChange={e => setPhoto(prev => ({ ...prev, hookSubSize: Number(e.target.value) }))}
                           />
                         </div>
-                        <div className="ph-row ph-row-split">
-                          <label className="notes-color-swatch" title="Highlight color">
-                            <input
-                              type="color"
-                              value={photo.hookHighlightColor || '#E63946'}
-                              onChange={e => setPhoto(prev => ({ ...prev, hookHighlightColor: e.target.value }))}
-                            />
-                            <span className="notes-color-dot" style={{ background: photo.hookHighlightColor || '#E63946' }} />
-                            highlight
-                          </label>
-                          <label className="ph-mini-label ph-radius-label">
+                        <div className="ph-row">
+                          <label className="ph-mini-label">Highlight color</label>
+                          <HexColorInput
+                            value={photo.hookHighlightColor || '#FF004F'}
+                            onChange={(v) => setPhoto(prev => ({ ...prev, hookHighlightColor: v }))}
+                          />
+                        </div>
+                        <div className="ph-row">
+                          <label className="ph-mini-label">
                             Corners <span className="size-readout">{photo.hookHighlightRadius ?? 4}</span>
                           </label>
                           <input
@@ -1619,25 +1664,19 @@ function CarouselDesigner({ exportSlide, exporting, setExporting }) {
                                   ))}
                                 </select>
                               </div>
-                              <div className="ph-row ph-row-split">
-                                <label className="notes-color-swatch" title="Background">
-                                  <input
-                                    type="color"
-                                    value={note.bg}
-                                    onChange={e => updateNote({ bg: e.target.value })}
-                                  />
-                                  <span className="notes-color-dot" style={{ background: note.bg }} />
-                                  bg
-                                </label>
-                                <label className="notes-color-swatch" title="Text">
-                                  <input
-                                    type="color"
-                                    value={note.color}
-                                    onChange={e => updateNote({ color: e.target.value })}
-                                  />
-                                  <span className="notes-color-dot" style={{ background: note.color }} />
-                                  text
-                                </label>
+                              <div className="ph-row">
+                                <label className="ph-mini-label">Background</label>
+                                <HexColorInput
+                                  value={note.bg}
+                                  onChange={(v) => updateNote({ bg: v })}
+                                />
+                              </div>
+                              <div className="ph-row">
+                                <label className="ph-mini-label">Text</label>
+                                <HexColorInput
+                                  value={note.color}
+                                  onChange={(v) => updateNote({ color: v })}
+                                />
                               </div>
                               <div className="ph-row">
                                 <label className="ph-mini-label">
