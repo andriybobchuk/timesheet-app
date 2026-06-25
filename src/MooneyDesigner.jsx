@@ -1022,8 +1022,8 @@ function HookSlide({ text, variantIndex, format, theme, textMult = 1, photo, set
             </div>
           )}
 
-          {/* Dark overlay (only Title + Hook — Notes lays text directly on photo) */}
-          {(v === 21 || v === 22) && (
+          {/* Adjustable dark overlay — available on every photo variant */}
+          {isPhotoVariant(v) && (
             <div className="hp-dark" style={{ opacity: (photo?.darkness ?? 35) / 100 }} />
           )}
 
@@ -1491,20 +1491,16 @@ function CarouselDesigner({ exportSlide, exporting, setExporting }) {
                       )}
                     </div>
 
-                    {(hookVariant === 21 || hookVariant === 22) && (
-                      <>
-                        <label className="editor-label">
-                          Darkness <span className="size-readout">{photo.darkness}%</span>
-                        </label>
-                        <input
-                          type="range"
-                          className="size-slider"
-                          min="0" max="90" step="1"
-                          value={photo.darkness}
-                          onChange={e => setPhoto(prev => ({ ...prev, darkness: Number(e.target.value) }))}
-                        />
-                      </>
-                    )}
+                    <label className="editor-label">
+                      Photo darkness <span className="size-readout">{photo.darkness}%</span>
+                    </label>
+                    <input
+                      type="range"
+                      className="size-slider"
+                      min="0" max="90" step="1"
+                      value={photo.darkness}
+                      onChange={e => setPhoto(prev => ({ ...prev, darkness: Number(e.target.value) }))}
+                    />
 
                     {hookVariant === 21 && (
                       <div className="ph-block">
