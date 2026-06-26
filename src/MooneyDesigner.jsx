@@ -3,6 +3,69 @@ import { toPng } from 'html-to-image'
 import twemoji from '@twemoji/api'
 import './MooneyDesigner.css'
 
+/* html-to-image renders the slide into an SVG <foreignObject>. It tries to
+   inline @font-face rules from document.styleSheets, but Google Fonts is
+   cross-origin so reading cssRules throws SecurityError and the @font-face
+   rules vanish — the renderer then falls back to system fonts and the export
+   looks wrong vs the live preview. Fix: fetch the Google Fonts stylesheet
+   ourselves, inline every woff2 as a base64 data URI, and pass the result
+   to toPng via its fontEmbedCSS option. Cached per session. */
+const GOOGLE_FONTS_URL =
+  'https://fonts.googleapis.com/css2?family=Anton&family=Archivo+Black&family=Bebas+Neue&family=Fraunces:wght@600;900&family=Inter:wght@700;900&family=Permanent+Marker&family=Space+Grotesk:wght@400;500;700;800;900&family=Unbounded:wght@700;900&display=swap'
+
+let _fontEmbedCssCache = null
+let _fontEmbedCssPromise = null
+
+function bufferToBase64(buf) {
+  const bytes = new Uint8Array(buf)
+  let binary = ''
+  const chunk = 0x8000
+  for (let i = 0; i < bytes.length; i += chunk) {
+    binary += String.fromCharCode.apply(null, bytes.subarray(i, i + chunk))
+  }
+  return btoa(binary)
+}
+
+async function getFontEmbedCss() {
+  if (_fontEmbedCssCache) return _fontEmbedCssCache
+  if (_fontEmbedCssPromise) return _fontEmbedCssPromise
+  _fontEmbedCssPromise = (async () => {
+    try {
+      const res = await fetch(GOOGLE_FONTS_URL)
+      let css = await res.text()
+      const urlMatches = [...css.matchAll(/url\((https?:\/\/[^)]+)\)/g)]
+      const uniqueUrls = [...new Set(urlMatches.map(m => m[1]))]
+      const inlined = {}
+      await Promise.all(uniqueUrls.map(async (url) => {
+        try {
+          const fontRes = await fetch(url)
+          const buf = await fontRes.arrayBuffer()
+          const ext = url.match(/\.(woff2|woff|ttf|otf)/i)?.[1]?.toLowerCase() || 'woff2'
+          const mime = ext === 'woff2' ? 'font/woff2'
+                     : ext === 'woff'  ? 'font/woff'
+                     : ext === 'ttf'   ? 'font/ttf'
+                     : 'font/otf'
+          inlined[url] = `data:${mime};base64,${bufferToBase64(buf)}`
+        } catch (e) {
+          console.warn('Font inline failed:', url, e)
+        }
+      }))
+      for (const [url, dataUri] of Object.entries(inlined)) {
+        // Escape regex specials in the URL
+        const re = new RegExp(url.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g')
+        css = css.replace(re, dataUri)
+      }
+      _fontEmbedCssCache = css
+      return css
+    } catch (e) {
+      console.warn('Could not build font embed CSS:', e)
+      _fontEmbedCssCache = ''
+      return ''
+    }
+  })()
+  return _fontEmbedCssPromise
+}
+
 /* Folder sync via File System Access API. Works in Chrome/Edge/Arc.
    Apple has no public iCloud Drive web API, but FSAA lets the user pick the
    "iCloud Drive" folder mounted in Finder — anything written there syncs
@@ -2269,7 +2332,8 @@ export default function MooneyDesigner({ onNavigate }) {
     const w = overrideW ?? fmt.w
     const h = overrideH ?? fmt.h
     await injectTwemoji(element)
-    const dataUrl = await toPng(element, { width: w, height: h, pixelRatio: 2, skipAutoScale: true })
+    const fontEmbedCSS = await getFontEmbedCss()
+    const dataUrl = await toPng(element, { width: w, height: h, pixelRatio: 2, skipAutoScale: true, fontEmbedCSS })
     if (scaler) {
       scaler.style.transform = origTransform
       scaler.style.marginBottom = origMargin
@@ -2290,7 +2354,8 @@ export default function MooneyDesigner({ onNavigate }) {
     if (!element) return
     setExporting(true)
     await injectTwemoji(element)
-    const dataUrl = await toPng(element, { width: 1024, height: 1024, pixelRatio: 2, skipAutoScale: true })
+    const fontEmbedCSS = await getFontEmbedCss()
+    const dataUrl = await toPng(element, { width: 1024, height: 1024, pixelRatio: 2, skipAutoScale: true, fontEmbedCSS })
     const link = document.createElement('a')
     link.download = filename
     link.href = dataUrl
