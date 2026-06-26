@@ -2132,12 +2132,6 @@
   line-height: 1.02;
   letter-spacing: -2.5px;
   margin-top: 18px;
-  text-shadow:
-    -4px -4px 0 #000, 0 -4px 0 #000, 4px -4px 0 #000,
-    -4px  0   0 #000,                4px  0   0 #000,
-    -4px  4px 0 #000, 0  4px 0 #000, 4px  4px 0 #000,
-    -5px  0   0 #000, 5px  0   0 #000,
-    0    -5px 0 #000, 0    5px 0 #000;
 }
 .mooney-app .hp-hook-arrow-row {
   display: flex;
