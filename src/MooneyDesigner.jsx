@@ -3,6 +3,66 @@ import { toPng } from 'html-to-image'
 import twemoji from '@twemoji/api'
 import './MooneyDesigner.css'
 
+/* Folder sync via File System Access API. Works in Chrome/Edge/Arc.
+   Apple has no public iCloud Drive web API, but FSAA lets the user pick the
+   "iCloud Drive" folder mounted in Finder — anything written there syncs
+   to iCloud automatically. Safari/Firefox: not supported yet. */
+function useFolderSync() {
+  const [folderHandle, setFolderHandle] = useState(null)
+  const [folderName, setFolderName] = useState(null)
+  const supported = typeof window !== 'undefined' && 'showDirectoryPicker' in window
+
+  const pickFolder = useCallback(async () => {
+    if (!supported) return null
+    try {
+      const handle = await window.showDirectoryPicker({ mode: 'readwrite' })
+      setFolderHandle(handle)
+      setFolderName(handle.name)
+      return handle
+    } catch (e) {
+      if (e.name !== 'AbortError') console.error(e)
+      return null
+    }
+  }, [supported])
+
+  const listImages = useCallback(async () => {
+    if (!folderHandle) return []
+    const images = []
+    try {
+      for await (const entry of folderHandle.values()) {
+        if (entry.kind === 'file') {
+          const file = await entry.getFile()
+          if (file.type.startsWith('image/')) {
+            images.push({ name: entry.name, file })
+          }
+        }
+      }
+    } catch (e) { console.error(e) }
+    return images.sort((a, b) => b.file.lastModified - a.file.lastModified)
+  }, [folderHandle])
+
+  const writeFile = useCallback(async (blob, filename) => {
+    if (!folderHandle) return false
+    try {
+      const fileHandle = await folderHandle.getFileHandle(filename, { create: true })
+      const writable = await fileHandle.createWritable()
+      await writable.write(blob)
+      await writable.close()
+      return true
+    } catch (e) {
+      console.error(e)
+      return false
+    }
+  }, [folderHandle])
+
+  const disconnect = () => {
+    setFolderHandle(null)
+    setFolderName(null)
+  }
+
+  return { folderHandle, folderName, supported, pickFolder, listImages, writeFile, disconnect }
+}
+
 /* Color picker that accepts hex input (e.g. "FF004F"). Visual swatch opens
    the native color dialog; text field beside it takes manual hex (any case,
    leading # optional). Updates only commit when 6 hex chars are present. */
@@ -1321,6 +1381,33 @@ function CarouselDesigner({ exportSlide, exporting, setExporting }) {
   const [cta, setCta] = useState(DEFAULT_CTA)
   const [photo, setPhoto] = useState(DEFAULT_PHOTO)
 
+  /* Folder sync (iCloud-friendly via File System Access API) */
+  const folder = useFolderSync()
+  const [folderImages, setFolderImages] = useState([])
+  const [folderPickerOpen, setFolderPickerOpen] = useState(false)
+
+  const refreshFolderImages = useCallback(async () => {
+    const imgs = await folder.listImages()
+    setFolderImages(imgs)
+  }, [folder])
+
+  const openFolderPicker = async () => {
+    if (!folder.folderHandle) {
+      const handle = await folder.pickFolder()
+      if (!handle) return
+    }
+    const imgs = await folder.listImages()
+    setFolderImages(imgs)
+    setFolderPickerOpen(true)
+  }
+
+  const selectFolderImage = (img) => {
+    const reader = new FileReader()
+    reader.onload = () => setPhoto(prev => ({ ...prev, image: reader.result }))
+    reader.readAsDataURL(img.file)
+    setFolderPickerOpen(false)
+  }
+
   const handlePhotoUpload = (e) => {
     const file = e.target.files?.[0]
     if (!file) return
@@ -1370,25 +1457,35 @@ function CarouselDesigner({ exportSlide, exporting, setExporting }) {
     return <CTASlide data={cta} format={format} theme={theme} textMult={textMult} slideRef={refCb} />
   }
 
+  const folderOpts = folder.folderHandle
+    ? { toFolder: true, folderWrite: folder.writeFile }
+    : {}
+
   const exportCurrent = useCallback(async () => {
     if (!singleRef.current) return
     setExporting(true)
-    const name = `mooney_carousel_${String(currentSlide + 1).padStart(2, '0')}.png`
-    await exportSlide(singleRef.current, name, fmt.w, fmt.h)
+    const stamp = new Date().toISOString().slice(0, 16).replace(/[-T:]/g, '')
+    const name = folder.folderHandle
+      ? `mooney_${stamp}_${String(currentSlide + 1).padStart(2, '0')}.png`
+      : `mooney_carousel_${String(currentSlide + 1).padStart(2, '0')}.png`
+    await exportSlide(singleRef.current, name, fmt.w, fmt.h, folderOpts)
     setExporting(false)
-  }, [currentSlide, fmt, exportSlide, setExporting])
+  }, [currentSlide, fmt, exportSlide, setExporting, folder.folderHandle, folderOpts])
 
   const exportAll = useCallback(async () => {
     setExporting(true)
+    const stamp = new Date().toISOString().slice(0, 16).replace(/[-T:]/g, '')
     for (let i = 0; i < allRefs.current.length; i++) {
       const el = allRefs.current[i]
       if (!el) continue
-      const name = `mooney_carousel_${String(i + 1).padStart(2, '0')}.png`
-      await exportSlide(el, name, fmt.w, fmt.h)
-      await new Promise(r => setTimeout(r, 300))
+      const name = folder.folderHandle
+        ? `mooney_${stamp}_${String(i + 1).padStart(2, '0')}.png`
+        : `mooney_carousel_${String(i + 1).padStart(2, '0')}.png`
+      await exportSlide(el, name, fmt.w, fmt.h, folderOpts)
+      await new Promise(r => setTimeout(r, 200))
     }
     setExporting(false)
-  }, [fmt, exportSlide, setExporting])
+  }, [fmt, exportSlide, setExporting, folder.folderHandle, folderOpts])
 
   const currentSlideData = slides[currentSlide]
   const isTake = currentSlideData.kind === 'take'
@@ -1520,7 +1617,7 @@ function CarouselDesigner({ exportSlide, exporting, setExporting }) {
                   <div className="photo-controls">
                     <label className="editor-label">Background photo (kept at full quality)</label>
                     <div className="photo-upload-row">
-                      <label className="btn btn-accent photo-upload-btn">
+                      <label className="brut-btn brut-btn-primary photo-upload-btn">
                         📷 {photo.image ? 'Replace photo' : 'Upload photo'}
                         <input
                           type="file"
@@ -1529,10 +1626,20 @@ function CarouselDesigner({ exportSlide, exporting, setExporting }) {
                           style={{ display: 'none' }}
                         />
                       </label>
+                      {folder.supported && (
+                        <button
+                          type="button"
+                          className="brut-btn"
+                          onClick={openFolderPicker}
+                          title={folder.folderHandle ? `Browse /${folder.folderName}` : 'Connect a folder'}
+                        >
+                          📂 Browse
+                        </button>
+                      )}
                       {photo.image && (
                         <button
                           type="button"
-                          className="btn"
+                          className="brut-btn"
                           onClick={() => setPhoto(prev => ({ ...prev, image: null }))}
                         >
                           Clear
@@ -1807,14 +1914,40 @@ function CarouselDesigner({ exportSlide, exporting, setExporting }) {
           </div>
         )}
 
+        <div className="ctrl-section sync-section">
+          <div className="ctrl-section-title">Sync folder</div>
+          {folder.supported ? (
+            folder.folderHandle ? (
+              <div className="sync-connected">
+                <span className="sync-dot" />
+                <span className="sync-folder-name">/{folder.folderName}</span>
+                <button className="brut-btn brut-btn-sm" onClick={folder.disconnect}>Disconnect</button>
+              </div>
+            ) : (
+              <>
+                <button className="brut-btn brut-btn-block" onClick={folder.pickFolder}>
+                  📁 Connect a folder (iCloud-friendly)
+                </button>
+                <p className="ctrl-section-hint">Pick any folder — including your <b>iCloud Drive</b> — and saved PNGs go straight there. Images in that folder show up when you tap Browse on photo slides.</p>
+              </>
+            )
+          ) : (
+            <p className="ctrl-section-hint">Sync needs Chrome / Edge / Arc. Safari and Firefox don't support file-system access yet.</p>
+          )}
+        </div>
+
         <div className="ctrl-section export-section">
           <div className="export-row">
             <button
-              className="btn btn-export btn-big"
+              className="brut-btn brut-btn-primary brut-btn-block"
               onClick={showAll ? exportAll : exportCurrent}
               disabled={exporting}
             >
-              {exporting ? 'Exporting…' : showAll ? `⬇ Export all ${slides.length} slides as PNG` : `⬇ Export this slide (${slideLabel(currentSlideData)})`}
+              {exporting
+                ? 'EXPORTING…'
+                : folder.folderHandle
+                  ? (showAll ? `↗ Save all ${slides.length} to /${folder.folderName}` : `↗ Save to /${folder.folderName}`)
+                  : (showAll ? `↓ Export all ${slides.length} as PNG` : `↓ Export this slide`)}
             </button>
             <p className="ctrl-section-hint">{fmt.w} × {fmt.h}px · {fmt.label} · {fmt.name}</p>
           </div>
@@ -1871,8 +2004,57 @@ function CarouselDesigner({ exportSlide, exporting, setExporting }) {
           </div>
         )}
       </div>
+
+      {folderPickerOpen && (
+        <div className="folder-modal" onClick={() => setFolderPickerOpen(false)}>
+          <div className="folder-modal-card" onClick={e => e.stopPropagation()}>
+            <div className="folder-modal-head">
+              <div>
+                <div className="folder-modal-eyebrow">From folder</div>
+                <div className="folder-modal-name">/{folder.folderName}</div>
+              </div>
+              <div className="folder-modal-actions">
+                <button className="brut-btn brut-btn-sm" onClick={refreshFolderImages}>↻ Refresh</button>
+                <button className="brut-btn brut-btn-sm" onClick={() => setFolderPickerOpen(false)}>Close ×</button>
+              </div>
+            </div>
+            {folderImages.length === 0 ? (
+              <div className="folder-modal-empty">
+                <div style={{ fontSize: 48, marginBottom: 12 }}>📭</div>
+                No images in this folder yet.<br />
+                Drop a photo into it from Finder and hit <b>Refresh</b>.
+              </div>
+            ) : (
+              <div className="folder-modal-grid">
+                {folderImages.map((img, i) => (
+                  <button
+                    key={i}
+                    className="folder-tile"
+                    onClick={() => selectFolderImage(img)}
+                    title={img.name}
+                  >
+                    <FolderThumb file={img.file} />
+                    <span className="folder-tile-name">{img.name}</span>
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   )
+}
+
+/* Lazy thumbnail — reads file into a data URL on mount, releases on unmount */
+function FolderThumb({ file }) {
+  const [src, setSrc] = useState(null)
+  useEffect(() => {
+    const url = URL.createObjectURL(file)
+    setSrc(url)
+    return () => URL.revokeObjectURL(url)
+  }, [file])
+  return src ? <img className="folder-tile-img" src={src} alt="" /> : <div className="folder-tile-img" />
 }
 
 const TAB_TITLES = {
@@ -2073,7 +2255,7 @@ export default function MooneyDesigner({ onNavigate }) {
 
   const fmt = FORMATS[format]
 
-  const exportSlide = useCallback(async (element, filename, overrideW, overrideH) => {
+  const exportSlide = useCallback(async (element, filename, overrideW, overrideH, opts = {}) => {
     if (document.activeElement instanceof HTMLElement) document.activeElement.blur()
     const scaler = element.closest('.slide-scaler, .carousel-scaler')
     let origTransform = ''
@@ -2092,10 +2274,16 @@ export default function MooneyDesigner({ onNavigate }) {
       scaler.style.transform = origTransform
       scaler.style.marginBottom = origMargin
     }
+    if (opts.toFolder && opts.folderWrite) {
+      const res = await fetch(dataUrl)
+      const blob = await res.blob()
+      return await opts.folderWrite(blob, filename)
+    }
     const link = document.createElement('a')
     link.download = filename
     link.href = dataUrl
     link.click()
+    return true
   }, [fmt])
 
   const exportLogo = useCallback(async (element, filename) => {

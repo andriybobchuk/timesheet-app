@@ -2863,3 +2863,547 @@
     margin-bottom: -1382.4px;
   }
 }
+
+/* =============================================
+   NEO-BRUTALISM REDESIGN (app chrome only)
+   Cream paper, hard black borders, hard solid
+   drop-shadows, hot-pink accent. Slides themselves
+   are unchanged — they're the output.
+   ============================================= */
+.mooney-app {
+  --brut-bg: #F2EFE6;
+  --brut-card: #FFFFFF;
+  --brut-ink: #0A0A0A;
+  --brut-muted: #6B6862;
+  --brut-pink: #FF004F;
+  --brut-yellow: #FCEC52;
+  background: var(--brut-bg);
+  color: var(--brut-ink);
+  font-family: 'Space Grotesk', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+/* --- LAYOUT: preview top-centered, controls below --- */
+.mooney-app .carousel-layout {
+  grid-template-columns: 1fr;
+  grid-template-areas: "preview" "controls";
+  gap: 22px;
+  max-width: 920px;
+  padding-bottom: 40px;
+}
+.mooney-app .carousel-preview-col {
+  grid-area: preview;
+  position: static;
+  background: var(--brut-card);
+  border: 3px solid var(--brut-ink);
+  box-shadow: 6px 6px 0 0 var(--brut-ink);
+  padding: 14px 14px 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+.mooney-app .carousel-controls-col { grid-area: controls; }
+.mooney-app .single-view { justify-content: center; }
+.mooney-app .tt-single-view { justify-content: center; }
+.mooney-app .preview-mini-bar {
+  margin-bottom: 8px;
+  padding-bottom: 8px;
+  border-bottom: 2px dashed var(--brut-ink);
+  color: var(--brut-ink);
+}
+.mooney-app .preview-mini-label { color: var(--brut-pink); font-weight: 800; }
+
+/* --- HEADER + LOGO --- */
+.mooney-app .mooney-toolbar { max-width: 920px; }
+.mooney-app .studio-logo {
+  background: var(--brut-ink);
+  border: 3px solid var(--brut-ink);
+  border-radius: 0;
+  padding: 8px 12px 8px 8px;
+  box-shadow: 5px 5px 0 0 var(--brut-pink);
+  transition: transform 0.06s ease, box-shadow 0.06s ease;
+}
+.mooney-app .studio-logo:hover {
+  background: var(--brut-ink);
+  transform: translate(-1px, -1px);
+  box-shadow: 6px 6px 0 0 var(--brut-pink);
+}
+.mooney-app .studio-logo:active {
+  transform: translate(5px, 5px);
+  box-shadow: 0 0 0 0 var(--brut-pink);
+}
+.mooney-app .studio-logo-mark {
+  background: none;
+  -webkit-text-fill-color: initial;
+  color: var(--brut-pink);
+  filter: none;
+}
+.mooney-app .studio-logo-name { color: #FFFFFF; }
+.mooney-app .studio-logo-tag { color: #FFFFFF; opacity: 0.55; }
+.mooney-app .studio-logo-dot { background: var(--brut-pink); box-shadow: none; }
+
+/* Secret nav dropdown */
+.mooney-app .mooney-tool-dropdown.studio-secret-nav {
+  background: var(--brut-card);
+  border: 3px solid var(--brut-ink);
+  border-radius: 0;
+  box-shadow: 6px 6px 0 0 var(--brut-ink);
+}
+.mooney-app .mooney-tool-dropdown button { border-radius: 0; color: var(--brut-ink); font-weight: 700; }
+.mooney-app .mooney-tool-dropdown button:hover { background: var(--brut-yellow); }
+.mooney-app .mooney-tool-dropdown button.on { background: var(--brut-pink); color: #fff; }
+.mooney-app .mooney-tool-dropdown-label { color: var(--brut-muted); }
+.mooney-app .mooney-tool-dropdown-divider { background: var(--brut-ink); height: 2px; }
+
+/* --- REUSABLE BRUTAL BUTTON --- */
+.mooney-app .brut-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: var(--brut-card);
+  color: var(--brut-ink);
+  border: 3px solid var(--brut-ink);
+  border-radius: 0;
+  padding: 11px 16px;
+  font-weight: 800;
+  font-size: 12.5px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  cursor: pointer;
+  box-shadow: 4px 4px 0 0 var(--brut-ink);
+  transition: transform 0.06s ease, box-shadow 0.06s ease;
+  font-family: inherit;
+}
+.mooney-app .brut-btn:hover:not(:disabled) {
+  transform: translate(-1px, -1px);
+  box-shadow: 5px 5px 0 0 var(--brut-ink);
+}
+.mooney-app .brut-btn:active:not(:disabled) {
+  transform: translate(4px, 4px);
+  box-shadow: 0 0 0 0 var(--brut-ink);
+}
+.mooney-app .brut-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+.mooney-app .brut-btn-primary { background: var(--brut-pink); color: #FFFFFF; }
+.mooney-app .brut-btn-block { display: flex; width: 100%; }
+.mooney-app .brut-btn-sm { padding: 6px 10px; font-size: 10.5px; box-shadow: 3px 3px 0 0 var(--brut-ink); }
+.mooney-app .brut-btn-sm:hover:not(:disabled) {
+  transform: translate(-1px, -1px);
+  box-shadow: 4px 4px 0 0 var(--brut-ink);
+}
+.mooney-app .brut-btn-sm:active:not(:disabled) {
+  transform: translate(3px, 3px);
+  box-shadow: 0 0 0 0 var(--brut-ink);
+}
+
+/* --- LEGACY BUTTONS RECAST AS BRUTAL --- */
+.mooney-app .btn,
+.mooney-app .btn-export,
+.mooney-app .btn-accent {
+  background: var(--brut-card);
+  color: var(--brut-ink);
+  border: 3px solid var(--brut-ink);
+  border-radius: 0;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  box-shadow: 4px 4px 0 0 var(--brut-ink);
+  padding: 9px 14px;
+  font-size: 12px;
+  font-family: inherit;
+}
+.mooney-app .btn:hover:not(:disabled) {
+  background: var(--brut-card);
+  border-color: var(--brut-ink);
+  transform: translate(-1px, -1px);
+  box-shadow: 5px 5px 0 0 var(--brut-ink);
+}
+.mooney-app .btn:active:not(:disabled) {
+  transform: translate(4px, 4px);
+  box-shadow: 0 0 0 0 var(--brut-ink);
+}
+.mooney-app .btn-export {
+  background: var(--brut-pink);
+  color: #FFFFFF;
+  border-color: var(--brut-ink);
+}
+.mooney-app .btn-export:hover:not(:disabled) {
+  background: var(--brut-pink);
+  border-color: var(--brut-ink);
+}
+.mooney-app .btn.btn-accent { background: var(--brut-yellow); color: var(--brut-ink); }
+
+/* --- CARDS --- */
+.mooney-app .control-card,
+.mooney-app .editor-panel,
+.mooney-app .ph-block {
+  background: var(--brut-card);
+  border: 3px solid var(--brut-ink);
+  border-radius: 0;
+  box-shadow: 4px 4px 0 0 var(--brut-ink);
+  padding: 12px 14px;
+}
+.mooney-app .editor-panel-title { color: var(--brut-pink); }
+.mooney-app .ph-block-title { color: var(--brut-pink); }
+.mooney-app .editor-label,
+.mooney-app .control-card-label,
+.mooney-app .ph-mini-label {
+  color: var(--brut-muted);
+}
+.mooney-app .ctrl-section-title { color: var(--brut-ink); font-weight: 900; letter-spacing: 2px; }
+.mooney-app .ctrl-section-hint { color: var(--brut-muted); }
+.mooney-app .ctrl-section-hint b { color: var(--brut-ink); }
+
+/* --- SEGMENTED TOGGLES --- */
+.mooney-app .seg-toggle {
+  background: var(--brut-ink);
+  padding: 3px;
+  border-radius: 0;
+}
+.mooney-app .seg-toggle button {
+  border-radius: 0;
+  background: transparent;
+  color: #FFFFFF;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+.mooney-app .seg-toggle button.on {
+  background: var(--brut-pink);
+  color: #FFFFFF;
+  box-shadow: none;
+}
+.mooney-app .seg-toggle button:hover:not(.on) { color: var(--brut-yellow); }
+
+/* --- VARIANT PICKER CHIPS --- */
+.mooney-app .vp-btn {
+  background: var(--brut-card);
+  color: var(--brut-ink);
+  border: 2px solid var(--brut-ink);
+  border-radius: 0;
+  font-weight: 700;
+  box-shadow: 3px 3px 0 0 var(--brut-ink);
+}
+.mooney-app .vp-btn:hover:not(.on) {
+  border-color: var(--brut-ink);
+  transform: translate(-1px, -1px);
+  box-shadow: 4px 4px 0 0 var(--brut-ink);
+}
+.mooney-app .vp-btn.on {
+  background: var(--brut-pink);
+  color: #FFFFFF;
+  border-color: var(--brut-ink);
+}
+.mooney-app .vp-btn .vp-num {
+  background: var(--brut-ink);
+  color: #FFFFFF;
+  border-radius: 0;
+}
+.mooney-app .vp-btn.on .vp-num { background: var(--brut-ink); color: var(--brut-pink); }
+.mooney-app .vp-section-label { color: var(--brut-muted); border-color: var(--brut-ink); }
+.mooney-app .vp-section-label-photo { color: var(--brut-pink); }
+
+/* --- SLIDE STRIP --- */
+.mooney-app .slide-chip {
+  background: var(--brut-card);
+  color: var(--brut-ink);
+  border: 2px solid var(--brut-ink);
+  border-radius: 0;
+  font-weight: 800;
+  box-shadow: 3px 3px 0 0 var(--brut-ink);
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+.mooney-app .slide-chip:hover:not(.on) {
+  border-color: var(--brut-ink);
+  transform: translate(-1px, -1px);
+  box-shadow: 4px 4px 0 0 var(--brut-ink);
+  color: var(--brut-ink);
+}
+.mooney-app .slide-chip.on {
+  background: var(--brut-ink);
+  color: var(--brut-yellow);
+  border-color: var(--brut-ink);
+}
+.mooney-app .slide-chip.showall-chip {
+  background: var(--brut-yellow);
+  color: var(--brut-ink);
+  border-color: var(--brut-ink);
+}
+
+/* --- INPUTS --- */
+.mooney-app .editor-input,
+.mooney-app .editor-textarea {
+  background: var(--brut-bg);
+  color: var(--brut-ink);
+  border: 2px solid var(--brut-ink);
+  border-radius: 0;
+  font-weight: 600;
+  font-family: inherit;
+}
+.mooney-app .editor-input:focus,
+.mooney-app .editor-textarea:focus {
+  border-color: var(--brut-pink);
+  background: #FFFFFF;
+  box-shadow: 3px 3px 0 0 var(--brut-pink);
+}
+
+/* --- SLIDERS --- */
+.mooney-app .size-slider {
+  background: var(--brut-ink);
+  height: 6px;
+  border-radius: 0;
+}
+.mooney-app .size-slider::-webkit-slider-thumb {
+  width: 20px; height: 20px;
+  background: var(--brut-pink);
+  border: 3px solid var(--brut-ink);
+  border-radius: 0;
+  box-shadow: 2px 2px 0 0 var(--brut-ink);
+}
+.mooney-app .size-slider::-moz-range-thumb {
+  width: 20px; height: 20px;
+  background: var(--brut-pink);
+  border: 3px solid var(--brut-ink);
+  border-radius: 0;
+  box-shadow: 2px 2px 0 0 var(--brut-ink);
+}
+.mooney-app .control-card-label .size-readout {
+  background: var(--brut-pink);
+  color: #FFFFFF;
+  border: 2px solid var(--brut-ink);
+  border-radius: 0;
+  padding: 1px 6px;
+  font-weight: 800;
+}
+
+/* --- HEX COLOR INPUT --- */
+.mooney-app .hex-input {
+  background: var(--brut-bg);
+  border: 2px solid var(--brut-ink);
+  border-radius: 0;
+}
+.mooney-app .hex-input:hover { border-color: var(--brut-ink); }
+.mooney-app .hex-input:focus-within {
+  border-color: var(--brut-pink);
+  box-shadow: 3px 3px 0 0 var(--brut-pink);
+}
+.mooney-app .hex-input-dot {
+  border: 2px solid var(--brut-ink);
+  border-radius: 0;
+}
+.mooney-app .hex-input-hash { color: var(--brut-muted); }
+.mooney-app .hex-input-text { color: var(--brut-ink); }
+
+/* --- PREVIEW-MODE TOGGLE (Clean/TikTok) --- */
+.mooney-app .preview-mode-toggle {
+  background: var(--brut-ink);
+  border-radius: 0;
+  padding: 2px;
+}
+.mooney-app .preview-mode-toggle button {
+  border-radius: 0;
+  color: rgba(255,255,255,0.65);
+}
+.mooney-app .preview-mode-toggle button.on {
+  background: var(--brut-pink);
+  color: #FFFFFF;
+}
+
+/* --- SYNC FOLDER SECTION --- */
+.mooney-app .sync-section { margin-top: 6px; }
+.mooney-app .sync-connected {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #FFFFFF;
+  border: 3px solid var(--brut-ink);
+  box-shadow: 4px 4px 0 0 var(--brut-ink);
+  padding: 10px 12px;
+}
+.mooney-app .sync-dot {
+  width: 12px; height: 12px;
+  background: var(--brut-pink);
+  border: 2px solid var(--brut-ink);
+  flex-shrink: 0;
+}
+.mooney-app .sync-folder-name {
+  flex: 1;
+  font-family: 'SF Mono', Menlo, monospace;
+  font-weight: 700;
+  font-size: 13px;
+  color: var(--brut-ink);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* --- FOLDER PICKER MODAL --- */
+.mooney-app .folder-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(10,10,10,0.6);
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+.mooney-app .folder-modal-card {
+  background: var(--brut-card);
+  border: 3px solid var(--brut-ink);
+  box-shadow: 8px 8px 0 0 var(--brut-pink);
+  max-width: 900px;
+  width: 100%;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.mooney-app .folder-modal-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 18px;
+  border-bottom: 3px solid var(--brut-ink);
+  background: var(--brut-yellow);
+}
+.mooney-app .folder-modal-eyebrow {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--brut-muted);
+  margin-bottom: 4px;
+}
+.mooney-app .folder-modal-name {
+  font-family: 'SF Mono', Menlo, monospace;
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--brut-ink);
+}
+.mooney-app .folder-modal-actions { display: flex; gap: 8px; }
+.mooney-app .folder-modal-grid {
+  flex: 1;
+  overflow-y: auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 14px;
+  padding: 18px;
+}
+.mooney-app .folder-tile {
+  background: var(--brut-card);
+  border: 2px solid var(--brut-ink);
+  box-shadow: 3px 3px 0 0 var(--brut-ink);
+  padding: 0;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  font-family: inherit;
+  text-align: left;
+  transition: transform 0.06s ease, box-shadow 0.06s ease;
+}
+.mooney-app .folder-tile:hover {
+  transform: translate(-1px, -1px);
+  box-shadow: 4px 4px 0 0 var(--brut-pink);
+  border-color: var(--brut-ink);
+}
+.mooney-app .folder-tile-img {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  background: var(--brut-bg);
+  display: block;
+  border-bottom: 2px solid var(--brut-ink);
+}
+.mooney-app .folder-tile-name {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--brut-ink);
+  padding: 6px 8px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.mooney-app .folder-modal-empty {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  text-align: center;
+  color: var(--brut-muted);
+  font-weight: 600;
+  line-height: 1.6;
+}
+
+/* --- EDITOR TIPS --- */
+.mooney-app .editor-tip {
+  color: var(--brut-muted);
+  font-style: normal;
+  font-weight: 600;
+  background: var(--brut-bg);
+  border-left: 3px solid var(--brut-pink);
+  padding: 6px 10px;
+  margin-top: 8px;
+}
+
+/* --- SCALER ORIGINS — center instead of top-left to play nice with centered preview --- */
+.mooney-app .carousel-scaler { transform-origin: top center; }
+.mooney-app .carousel-scaler-square,
+.mooney-app .carousel-scaler-portrait,
+.mooney-app .carousel-scaler-tall,
+.mooney-app .carousel-scaler-tiktok { margin-right: 0; }
+
+.mooney-app .carousel-scaler-square { margin-bottom: -648px; }
+.mooney-app .carousel-scaler-portrait { margin-bottom: -810px; }
+.mooney-app .carousel-scaler-tall { margin-bottom: -972px; }
+.mooney-app .carousel-scaler-tiktok { margin-bottom: -1152px; }
+
+.mooney-app .tt-screen-wrap { transform-origin: top center; margin-right: 0; }
+
+/* Responsive: tablet — keep stacked, center origins */
+@media (max-width: 1024px) {
+  .mooney-app .carousel-preview-col {
+    position: static;
+    margin: 0;
+    padding: 12px;
+    background: var(--brut-card);
+  }
+  .mooney-app .carousel-scaler-square,
+  .mooney-app .carousel-scaler-portrait,
+  .mooney-app .carousel-scaler-tall,
+  .mooney-app .carousel-scaler-tiktok { margin-right: 0; }
+  .mooney-app .carousel-scaler-square { margin-bottom: -712.8px; }
+  .mooney-app .carousel-scaler-portrait { margin-bottom: -891px; }
+  .mooney-app .carousel-scaler-tall { margin-bottom: -1069.2px; }
+  .mooney-app .carousel-scaler-tiktok { margin-bottom: -1267.2px; }
+}
+@media (max-width: 640px) {
+  .mooney-app { padding: 10px; }
+  .mooney-app .carousel-preview-col {
+    background: var(--brut-card);
+    border-radius: 0;
+    margin: 0 -2px;
+    box-shadow: 4px 4px 0 0 var(--brut-ink);
+  }
+  .mooney-app .carousel-scaler-square,
+  .mooney-app .carousel-scaler-portrait,
+  .mooney-app .carousel-scaler-tall,
+  .mooney-app .carousel-scaler-tiktok { margin-right: 0; }
+  .mooney-app .carousel-scaler-square { margin-bottom: -734.4px; }
+  .mooney-app .carousel-scaler-portrait { margin-bottom: -918px; }
+  .mooney-app .carousel-scaler-tall { margin-bottom: -1101.6px; }
+  .mooney-app .carousel-scaler-tiktok { margin-bottom: -1305.6px; }
+}
+@media (max-width: 380px) {
+  .mooney-app .carousel-scaler-square { margin-bottom: -777.6px; }
+  .mooney-app .carousel-scaler-portrait { margin-bottom: -972px; }
+  .mooney-app .carousel-scaler-tall { margin-bottom: -1166.4px; }
+  .mooney-app .carousel-scaler-tiktok { margin-bottom: -1382.4px; }
+}
+
+/* Title text now matches brutal vibe */
+.mooney-app .controls-title { font-weight: 900; letter-spacing: -0.5px; color: var(--brut-ink); }
+.mooney-app .controls-tagline { color: var(--brut-muted); }
