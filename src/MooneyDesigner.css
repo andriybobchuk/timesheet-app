@@ -2120,7 +2120,7 @@
   display: inline;
   color: #ffffff;
   padding: 6px 14px 8px;
-  font-weight: 900;
+  font-weight: 400;
   letter-spacing: -1.5px;
   line-height: 1.0;
   -webkit-box-decoration-break: clone;
@@ -2128,7 +2128,7 @@
 }
 .mooney-app .hp-hook-body {
   color: #ffffff;
-  font-weight: 900;
+  font-weight: 400;
   line-height: 1.02;
   letter-spacing: -2.5px;
   margin-top: 18px;
