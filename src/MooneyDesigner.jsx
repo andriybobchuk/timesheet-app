@@ -11,7 +11,7 @@ import './MooneyDesigner.css'
    ourselves, inline every woff2 as a base64 data URI, and pass the result
    to toPng via its fontEmbedCSS option. Cached per session. */
 const GOOGLE_FONTS_URL =
-  'https://fonts.googleapis.com/css2?family=Anton&family=Archivo+Black&family=Bebas+Neue&family=Fraunces:wght@600;900&family=Inter:wght@700;900&family=Permanent+Marker&family=Space+Grotesk:wght@400;500;700;800;900&family=Unbounded:wght@700;900&display=swap'
+  'https://fonts.googleapis.com/css2?family=Anton&family=Archivo+Black&family=Bebas+Neue&family=Fraunces:wght@600;900&family=Inter:wght@700;900&family=Permanent+Marker&family=Space+Grotesk:wght@400;500;700;800;900&family=TikTok+Sans:wght@400;700;800;900&family=Unbounded:wght@700;900&display=swap'
 
 let _fontEmbedCssCache = null
 let _fontEmbedCssPromise = null
@@ -327,6 +327,7 @@ const isPhotoVariant = (v) => v >= TYPO_VARIANT_COUNT
 
 /* Fonts available across photo styles. Loaded in index.html via Google Fonts. */
 const FONTS = {
+  tiktok: { name: 'TikTok Sans', family: "'TikTok Sans', Arial, Tahoma, 'PingFang SC', sans-serif" },
   system: { name: 'System', family: "'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" },
   archivo: { name: 'Archivo Black', family: "'Archivo Black', 'Helvetica Neue', Arial, sans-serif" },
   bebas: { name: 'Bebas Neue', family: "'Bebas Neue', Impact, sans-serif" },
@@ -357,7 +358,7 @@ const DEFAULT_PHOTO = {
   hookHeadSize: 95,
   hookSubPos: { x: 5, y: 84 },
   hookSubSize: 30,
-  hookFont: 'archivo',
+  hookFont: 'tiktok',
   hookHighlightColor: '#FF004F',
   hookHighlightRadius: 4,
 
