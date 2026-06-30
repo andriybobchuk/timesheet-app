@@ -3401,3 +3401,378 @@
 /* Title text now matches brutal vibe */
 .mooney-app .controls-title { font-weight: 900; letter-spacing: -0.5px; color: var(--brut-ink); }
 .mooney-app .controls-tagline { color: var(--brut-muted); }
+
+/* =============================================
+   GOOGLE PLAY FEATURE GRAPHIC (1024×500)
+   ============================================= */
+.mooney-app .fg-designer { max-width: 1200px; margin: 0 auto; }
+.mooney-app .fg-editor {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  background: #FFFFFF;
+  border: 3px solid #0A0A0A;
+  box-shadow: 4px 4px 0 0 #0A0A0A;
+  padding: 14px;
+  margin-bottom: 22px;
+}
+.mooney-app .fg-editor-row { display: flex; flex-direction: column; gap: 5px; }
+.mooney-app .fg-editor-row label {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  font-weight: 800;
+  color: #6B6862;
+}
+.mooney-app .fg-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 18px;
+}
+.mooney-app .fg-grid-item { display: flex; flex-direction: column; gap: 8px; }
+.mooney-app .fg-preview {
+  width: 100%;
+  aspect-ratio: 1024 / 500;
+  overflow: hidden;
+  border: 3px solid #0A0A0A;
+  box-shadow: 5px 5px 0 0 #0A0A0A;
+  background: #060A0E;
+}
+.mooney-app .fg-canvas {
+  width: 1024px;
+  height: 500px;
+  position: relative;
+  transform: scale(calc(1 / 1024 * var(--fg-w, 600)));
+  transform-origin: top left;
+  color: #F0F0F0;
+  font-family: 'TikTok Sans', 'SF Pro Display', system-ui, sans-serif;
+  overflow: hidden;
+}
+/* Container query trick: scale canvas to fill .fg-preview width.
+   Since .fg-preview can be any width, we approximate with CSS px in a
+   wrapper using container query units. Fallback: use 50% scale so it
+   roughly fits the 2-column grid at desktop widths. */
+@supports (container-type: inline-size) {
+  .mooney-app .fg-preview { container-type: inline-size; }
+  .mooney-app .fg-canvas {
+    transform: scale(calc(100cqw / 1024));
+    margin-bottom: calc(500px * (-1 + 100cqw / 1024));
+  }
+}
+@supports not (container-type: inline-size) {
+  .mooney-app .fg-canvas {
+    transform: scale(0.55);
+    margin-bottom: -225px;
+  }
+}
+
+.mooney-app .fg-item-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 4px;
+}
+.mooney-app .fg-item-name {
+  font-size: 13px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: #0A0A0A;
+}
+
+/* --- BACKGROUND LAYERS --- */
+.mooney-app .fg-bg {
+  position: absolute; inset: 0;
+  background: #060A0E;
+  z-index: 0;
+}
+.mooney-app .fg-bg-grad {
+  position: absolute; inset: 0; z-index: 1;
+  background:
+    radial-gradient(ellipse 60% 80% at 0% 50%, rgba(77,208,200,0.30) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 70% at 100% 100%, rgba(126,238,230,0.15) 0%, transparent 55%),
+    linear-gradient(120deg, #0a1a22 0%, #060a0e 60%, #0a1418 100%);
+}
+.mooney-app .fg-bg-noise {
+  position: absolute; inset: 0; z-index: 2; opacity: 0.04;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 256px;
+}
+.mooney-app .fg-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(60px);
+  z-index: 1;
+  pointer-events: none;
+}
+.mooney-app .fg-orb-1 {
+  width: 380px; height: 380px;
+  background: rgba(77,208,200,0.24);
+  top: -80px; right: -100px;
+}
+.mooney-app .fg-orb-2 {
+  width: 280px; height: 280px;
+  background: rgba(126,238,230,0.18);
+  bottom: -100px; left: -80px;
+}
+
+/* --- SHARED ELEMENTS --- */
+.mooney-app .fg-app-icon {
+  width: 72px; height: 72px;
+  border-radius: 18px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.45), 0 0 30px rgba(77,208,200,0.18);
+  margin-bottom: 18px;
+}
+.mooney-app .fg-app-icon-lg {
+  width: 112px; height: 112px;
+  border-radius: 26px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5), 0 0 40px rgba(77,208,200,0.25);
+}
+.mooney-app .fg-headline {
+  font-size: 76px;
+  font-weight: 900;
+  line-height: 0.95;
+  letter-spacing: -3px;
+  background: linear-gradient(135deg, #FFFFFF 0%, #C2F5F0 60%, #4DD0C8 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin: 0 0 10px;
+}
+.mooney-app .fg-tagline {
+  font-size: 22px;
+  font-weight: 500;
+  color: rgba(255,255,255,0.85);
+  line-height: 1.25;
+  max-width: 92%;
+}
+.mooney-app .fg-eyebrow {
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: 4px;
+  color: #4DD0C8;
+  text-transform: uppercase;
+  margin-bottom: 18px;
+}
+.mooney-app .fg-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 100px;
+  padding: 8px 16px;
+  margin-top: 18px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #FFFFFF;
+  backdrop-filter: blur(8px);
+}
+.mooney-app .fg-phone {
+  width: 100%;
+  display: block;
+  border-radius: 22px;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.6), 0 0 60px rgba(77,208,200,0.18);
+}
+.mooney-app .fg-phone-tilt {
+  transform: rotate(6deg);
+}
+
+/* --- V1: HERO LEFT --- */
+.mooney-app .fg-variant-hero-left .fg-left {
+  position: absolute;
+  top: 0; bottom: 0; left: 0;
+  width: 58%;
+  z-index: 10;
+  padding: 50px 50px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.mooney-app .fg-variant-hero-left .fg-phone-wrap {
+  position: absolute;
+  top: 50%; right: 30px;
+  transform: translateY(-50%);
+  width: 38%;
+  z-index: 5;
+}
+.mooney-app .fg-variant-hero-left .fg-phone {
+  transform: rotate(-4deg);
+}
+.mooney-app .fg-variant-hero-left .fg-phone-glow {
+  position: absolute;
+  inset: -20%;
+  background: radial-gradient(ellipse, rgba(77,208,200,0.35) 0%, transparent 65%);
+  filter: blur(40px);
+  z-index: -1;
+}
+
+/* --- V2: CENTER STACK --- */
+.mooney-app .fg-variant-center .fg-center-stack {
+  position: absolute; inset: 0;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 40px;
+  gap: 16px;
+}
+.mooney-app .fg-headline-mega {
+  font-size: 110px;
+  font-weight: 900;
+  line-height: 0.9;
+  letter-spacing: -5px;
+  background: linear-gradient(135deg, #FFFFFF 0%, #7EEEE6 60%, #4DD0C8 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin: 0;
+}
+.mooney-app .fg-tagline-center {
+  font-size: 26px;
+  font-weight: 500;
+  color: rgba(255,255,255,0.85);
+  max-width: 80%;
+  line-height: 1.25;
+  margin: 0;
+}
+
+/* --- V3: SPLIT DIAGONAL --- */
+.mooney-app .fg-variant-split .fg-split-slab {
+  position: absolute;
+  top: -10%;
+  left: 40%;
+  width: 25%;
+  height: 120%;
+  background: linear-gradient(135deg, #4DD0C8 0%, #3BA8A1 100%);
+  transform: skewX(-12deg);
+  z-index: 3;
+  box-shadow: -30px 0 60px rgba(0,0,0,0.4);
+}
+.mooney-app .fg-variant-split .fg-split-left {
+  position: absolute;
+  top: 0; bottom: 0; left: 0;
+  width: 45%;
+  z-index: 10;
+  padding: 50px 50px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.mooney-app .fg-variant-split .fg-split-right {
+  position: absolute;
+  top: 50%; right: 40px;
+  transform: translateY(-50%);
+  width: 38%;
+  z-index: 10;
+}
+
+/* --- V4: BIG M --- */
+.mooney-app .fg-variant-big-m .fg-big-m {
+  position: absolute;
+  left: 30px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 420px;
+  font-weight: 900;
+  line-height: 0.78;
+  letter-spacing: -28px;
+  background: linear-gradient(160deg, #FFFFFF 0%, #4DD0C8 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-family: 'TikTok Sans', 'SF Pro Display', sans-serif;
+  z-index: 10;
+}
+.mooney-app .fg-variant-big-m .fg-big-m-dot {
+  display: inline-block;
+  width: 50px; height: 50px;
+  border-radius: 50%;
+  background: #4DD0C8;
+  margin-left: -20px;
+  vertical-align: baseline;
+  box-shadow: 0 0 40px rgba(77,208,200,0.6);
+}
+.mooney-app .fg-variant-big-m .fg-big-m-right {
+  position: absolute;
+  right: 50px; top: 50%;
+  transform: translateY(-50%);
+  width: 50%;
+  z-index: 10;
+  text-align: right;
+}
+.mooney-app .fg-variant-big-m .fg-headline {
+  font-size: 64px;
+}
+
+/* --- V5: MINIMAL --- */
+.mooney-app .fg-variant-minimal .fg-minimal {
+  position: absolute; inset: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 38px;
+  padding: 50px 70px;
+}
+.mooney-app .fg-variant-minimal .fg-app-icon {
+  margin-bottom: 0;
+  width: 140px; height: 140px;
+  border-radius: 32px;
+}
+.mooney-app .fg-variant-minimal .fg-minimal-text { flex: 1; }
+.mooney-app .fg-variant-minimal .fg-headline { font-size: 84px; }
+.mooney-app .fg-variant-minimal .fg-tagline { font-size: 24px; }
+
+/* --- V6: GLOW BAND --- */
+.mooney-app .fg-variant-glow .fg-glow-band {
+  position: absolute;
+  top: 50%;
+  left: 0; right: 0;
+  height: 240px;
+  background: linear-gradient(90deg, transparent 0%, rgba(77,208,200,0.32) 50%, transparent 100%);
+  transform: translateY(-50%) skewY(-3deg);
+  filter: blur(15px);
+  z-index: 3;
+}
+.mooney-app .fg-variant-glow .fg-glow-content {
+  position: absolute;
+  top: 50%;
+  left: 50px;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  z-index: 10;
+}
+.mooney-app .fg-variant-glow .fg-headline-glow {
+  font-size: 64px;
+  font-weight: 900;
+  line-height: 0.95;
+  letter-spacing: -2.5px;
+  color: #FFFFFF;
+  margin: 0 0 6px;
+  text-shadow: 0 4px 20px rgba(77,208,200,0.4);
+}
+.mooney-app .fg-variant-glow .fg-tagline-glow {
+  font-size: 20px;
+  color: rgba(255,255,255,0.85);
+  margin: 0;
+}
+.mooney-app .fg-variant-glow .fg-phone-glow-right {
+  position: absolute;
+  right: 40px;
+  top: 50%;
+  transform: translateY(-50%) rotate(8deg);
+  width: 24%;
+  z-index: 8;
+  border-radius: 18px;
+  box-shadow: 0 18px 40px rgba(0,0,0,0.5);
+}
+
+/* Mobile: stack feature grid */
+@media (max-width: 800px) {
+  .mooney-app .fg-grid { grid-template-columns: 1fr; }
+  .mooney-app .fg-editor { grid-template-columns: 1fr; }
+}

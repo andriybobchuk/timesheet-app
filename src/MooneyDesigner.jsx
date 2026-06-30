@@ -942,6 +942,170 @@ function LogoDesigner({ exportLogo, exporting }) {
   )
 }
 
+/* =============================================
+   GOOGLE PLAY FEATURE GRAPHIC
+   1024 × 500 horizontal banner. Avoid critical
+   content in the center safe-zone — Play crops it
+   on certain placements (carousel, search results).
+   ============================================= */
+
+const FEATURE_VARIANTS = [
+  { id: 'hero-left',  name: 'Hero left' },
+  { id: 'center',     name: 'Center stack' },
+  { id: 'split',      name: 'Split diagonal' },
+  { id: 'big-m',      name: 'Big M' },
+  { id: 'minimal',    name: 'Minimal' },
+  { id: 'glow',       name: 'Glow band' },
+]
+
+function FeatureGraphic({ variantId, headline, tagline, mockImage, fgRef }) {
+  return (
+    <div ref={fgRef} className={`fg-canvas fg-variant-${variantId}`}>
+      <div className="fg-bg" />
+      <div className="fg-bg-grad" />
+      <div className="fg-bg-noise" />
+      <div className="fg-orb fg-orb-1" />
+      <div className="fg-orb fg-orb-2" />
+
+      {variantId === 'hero-left' && (
+        <>
+          <div className="fg-left">
+            <img src={ASSET('mooney-tiktok.png')} alt="" className="fg-app-icon" />
+            <h1 className="fg-headline">{headline}</h1>
+            <p className="fg-tagline">{tagline}</p>
+            <div className="fg-badge">
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="#fff">
+                <path d="M3 20.5V3.5l13.5 8.5L3 20.5zM14 14l3.6-2.3-3.6-2.3v4.6z" />
+              </svg>
+              <span>Google Play</span>
+            </div>
+          </div>
+          <div className="fg-phone-wrap">
+            <div className="fg-phone-glow" />
+            <img src={mockImage} alt="" className="fg-phone" />
+          </div>
+        </>
+      )}
+
+      {variantId === 'center' && (
+        <div className="fg-center-stack">
+          <img src={ASSET('mooney-tiktok.png')} alt="" className="fg-app-icon-lg" />
+          <h1 className="fg-headline-mega">{headline}</h1>
+          <p className="fg-tagline-center">{tagline}</p>
+        </div>
+      )}
+
+      {variantId === 'split' && (
+        <>
+          <div className="fg-split-slab" />
+          <div className="fg-split-left">
+            <img src={ASSET('mooney-tiktok.png')} alt="" className="fg-app-icon" />
+            <h1 className="fg-headline">{headline}</h1>
+            <p className="fg-tagline">{tagline}</p>
+          </div>
+          <div className="fg-split-right">
+            <img src={mockImage} alt="" className="fg-phone fg-phone-tilt" />
+          </div>
+        </>
+      )}
+
+      {variantId === 'big-m' && (
+        <>
+          <div className="fg-big-m">M<span className="fg-big-m-dot" /></div>
+          <div className="fg-big-m-right">
+            <div className="fg-eyebrow">★ ON GOOGLE PLAY</div>
+            <h1 className="fg-headline">{headline}</h1>
+            <p className="fg-tagline">{tagline}</p>
+          </div>
+        </>
+      )}
+
+      {variantId === 'minimal' && (
+        <div className="fg-minimal">
+          <img src={ASSET('mooney-tiktok.png')} alt="" className="fg-app-icon" />
+          <div className="fg-minimal-text">
+            <h1 className="fg-headline">{headline}</h1>
+            <p className="fg-tagline">{tagline}</p>
+          </div>
+        </div>
+      )}
+
+      {variantId === 'glow' && (
+        <>
+          <div className="fg-glow-band" />
+          <div className="fg-glow-content">
+            <img src={ASSET('mooney-tiktok.png')} alt="" className="fg-app-icon-lg" />
+            <div>
+              <h1 className="fg-headline-glow">{headline}</h1>
+              <p className="fg-tagline-glow">{tagline}</p>
+            </div>
+          </div>
+          <img src={mockImage} alt="" className="fg-phone fg-phone-glow-right" />
+        </>
+      )}
+    </div>
+  )
+}
+
+function FeatureDesigner({ exportFeature, exporting }) {
+  const [headline, setHeadline] = useState('Mooney')
+  const [tagline, setTagline] = useState('Finally smart with your money.')
+  const [mockImage, setMockImage] = useState(ASSET('mock_analytics.png'))
+  const fgRefs = useRef([])
+  return (
+    <div className="fg-designer">
+      <p className="controls-subtitle">1024 × 500px · Google Play Feature Graphic</p>
+      <div className="fg-editor">
+        <div className="fg-editor-row">
+          <label>Headline</label>
+          <input value={headline} onChange={e => setHeadline(e.target.value)} className="editor-input" />
+        </div>
+        <div className="fg-editor-row">
+          <label>Tagline</label>
+          <input value={tagline} onChange={e => setTagline(e.target.value)} className="editor-input" />
+        </div>
+        <div className="fg-editor-row">
+          <label>Mock screenshot</label>
+          <select value={mockImage} onChange={e => setMockImage(e.target.value)} className="editor-input">
+            <option value={ASSET('mock_transactions.png')}>Transactions</option>
+            <option value={ASSET('mock_assets.png')}>Assets</option>
+            <option value={ASSET('mock_analytics.png')}>Analytics</option>
+            <option value={ASSET('mock_categories.png')}>Categories</option>
+            <option value={ASSET('mock_goals.png')}>Goals</option>
+            <option value={ASSET('mock_recurring.png')}>Recurring</option>
+            <option value={ASSET('mock_add_transaction.png')}>Add transaction</option>
+          </select>
+        </div>
+      </div>
+      <div className="fg-grid">
+        {FEATURE_VARIANTS.map((v, i) => (
+          <div key={v.id} className="fg-grid-item">
+            <div className="fg-preview">
+              <FeatureGraphic
+                variantId={v.id}
+                headline={headline}
+                tagline={tagline}
+                mockImage={mockImage}
+                fgRef={el => (fgRefs.current[i] = el)}
+              />
+            </div>
+            <div className="fg-item-footer">
+              <span className="fg-item-name">{v.name}</span>
+              <button
+                className="btn btn-export btn-sm"
+                onClick={() => exportFeature(fgRefs.current[i], `mooney_feature_${v.id}.png`)}
+                disabled={exporting}
+              >
+                Export
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
 function HookSlide({ text, variantIndex, format, theme, textMult = 1, photo, setHookText, setPhoto, slideRef }) {
   const updPhoto = (field) => (val) => setPhoto && setPhoto(prev => ({ ...prev, [field]: val }))
   const fmt = CAROUSEL_FORMATS[format]
@@ -2125,6 +2289,7 @@ const TAB_TITLES = {
   carousels: { title: 'Mooney Carousels', sub: 'Social-media posts for Instagram & TikTok' },
   screenshots: { title: 'App Store Screenshots', sub: '6.7" iPhone & Google Play formats' },
   logo: { title: 'App Icon Designs', sub: '1024 × 1024 — App Store & Google Play' },
+  feature: { title: 'Google Play Feature Graphic', sub: '1024 × 500 — required hero banner' },
 }
 
 /* TikTok app-chrome preview. Wraps the slide with the actual TikTok UI as
@@ -2364,6 +2529,19 @@ export default function MooneyDesigner({ onNavigate }) {
     setExporting(false)
   }, [])
 
+  const exportFeature = useCallback(async (element, filename) => {
+    if (!element) return
+    setExporting(true)
+    await injectTwemoji(element)
+    const fontEmbedCSS = await getFontEmbedCss()
+    const dataUrl = await toPng(element, { width: 1024, height: 500, pixelRatio: 2, skipAutoScale: true, fontEmbedCSS })
+    const link = document.createElement('a')
+    link.download = filename
+    link.href = dataUrl
+    link.click()
+    setExporting(false)
+  }, [])
+
   const handleExportCurrent = useCallback(async () => {
     if (!slideRef.current) return
     setExporting(true)
@@ -2398,7 +2576,7 @@ export default function MooneyDesigner({ onNavigate }) {
           <span className="studio-logo-mark">212</span>
           <span className="studio-logo-stack">
             <span className="studio-logo-name">STUDIO</span>
-            <span className="studio-logo-tag">{tab === 'carousels' ? 'Carousel Maker' : tab === 'screenshots' ? 'App Store Screenshots' : 'App Icon Designs'}</span>
+            <span className="studio-logo-tag">{tab === 'carousels' ? 'Carousel Maker' : tab === 'screenshots' ? 'App Store Screenshots' : tab === 'logo' ? 'App Icon Designs' : 'Feature Graphic'}</span>
           </span>
           <span className="studio-logo-dot" aria-hidden="true" />
         </button>
@@ -2425,6 +2603,12 @@ export default function MooneyDesigner({ onNavigate }) {
                 onClick={() => { setTab('logo'); setMoreOpen(false) }}
               >
                 🎯 App Icon Designs
+              </button>
+              <button
+                className={tab === 'feature' ? 'on' : ''}
+                onClick={() => { setTab('feature'); setMoreOpen(false) }}
+              >
+                🎬 Google Play Feature Graphic
               </button>
               {onNavigate && (
                 <>
@@ -2499,6 +2683,9 @@ export default function MooneyDesigner({ onNavigate }) {
       )}
       {tab === 'logo' && (
         <LogoDesigner exportLogo={exportLogo} exporting={exporting} />
+      )}
+      {tab === 'feature' && (
+        <FeatureDesigner exportFeature={exportFeature} exporting={exporting} />
       )}
     </div>
   )
