@@ -2570,14 +2570,28 @@ export default function MooneyDesigner({ onNavigate }) {
   const exportFeature = useCallback(async (element, filename) => {
     if (!element) return
     setExporting(true)
-    await injectTwemoji(element)
-    const fontEmbedCSS = await getFontEmbedCss()
-    const dataUrl = await toPng(element, { width: 1024, height: 500, pixelRatio: 2, skipAutoScale: true, fontEmbedCSS })
-    const link = document.createElement('a')
-    link.download = filename
-    link.href = dataUrl
-    link.click()
-    setExporting(false)
+    /* .fg-canvas is CSS-scaled (transform: scale(...) + negative margin) so
+       it can fit a smaller preview cell. We must reset that scale and the
+       collapse-margin on the element itself before toPng captures it, or
+       the rendered PNG ends up with the content squashed into the top-left
+       and empty space below. */
+    const origTransform = element.style.transform
+    const origMargin = element.style.marginBottom
+    element.style.transform = 'none'
+    element.style.marginBottom = '0'
+    try {
+      await injectTwemoji(element)
+      const fontEmbedCSS = await getFontEmbedCss()
+      const dataUrl = await toPng(element, { width: 1024, height: 500, pixelRatio: 2, skipAutoScale: true, fontEmbedCSS })
+      const link = document.createElement('a')
+      link.download = filename
+      link.href = dataUrl
+      link.click()
+    } finally {
+      element.style.transform = origTransform
+      element.style.marginBottom = origMargin
+      setExporting(false)
+    }
   }, [])
 
   const handleExportCurrent = useCallback(async () => {
