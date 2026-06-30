@@ -977,10 +977,7 @@ function FeatureGraphic({ variantId, headline, tagline, mockImage, fgRef }) {
           </div>
           <div className="fg-phone-stage fg-phone-stage-right">
             <div className="fg-halo" />
-            <div className="fg-phone-wrap fg-phone-tilt-r">
-              <img src={mockImage} alt="" className="fg-phone" />
-              <div className="fg-phone-shine" />
-            </div>
+            <img src={mockImage} alt="" className="fg-mock fg-mock-tilt-r" />
           </div>
         </>
       )}
@@ -994,10 +991,7 @@ function FeatureGraphic({ variantId, headline, tagline, mockImage, fgRef }) {
           </div>
           <div className="fg-phone-stage fg-phone-stage-center">
             <div className="fg-halo fg-halo-bright" />
-            <div className="fg-phone-wrap">
-              <img src={mockImage} alt="" className="fg-phone" />
-              <div className="fg-phone-shine" />
-            </div>
+            <img src={mockImage} alt="" className="fg-mock" />
           </div>
           <p className="fg-spotlight-tagline">{tagline}</p>
         </>
@@ -1008,10 +1002,7 @@ function FeatureGraphic({ variantId, headline, tagline, mockImage, fgRef }) {
         <>
           <div className="fg-phone-stage fg-phone-stage-twin">
             <div className="fg-halo" />
-            <div className="fg-phone-wrap">
-              <img src={mockImage} alt="" className="fg-phone" />
-              <div className="fg-phone-shine" />
-            </div>
+            <img src={mockImage} alt="" className="fg-mock" />
           </div>
           <div className="fg-twin-caption">
             <img src={ASSET('mooney-tiktok.png')} alt="" className="fg-icon-sm" />
@@ -1028,10 +1019,7 @@ function FeatureGraphic({ variantId, headline, tagline, mockImage, fgRef }) {
         <>
           <div className="fg-phone-stage fg-phone-stage-left">
             <div className="fg-halo" />
-            <div className="fg-phone-wrap fg-phone-tilt-l">
-              <img src={mockImage} alt="" className="fg-phone" />
-              <div className="fg-phone-shine" />
-            </div>
+            <img src={mockImage} alt="" className="fg-mock fg-mock-tilt-l" />
           </div>
           <div className="fg-pane fg-pane-right">
             <div className="fg-pane-icon-row">
@@ -1054,10 +1042,7 @@ function FeatureGraphic({ variantId, headline, tagline, mockImage, fgRef }) {
           </div>
           <div className="fg-phone-stage fg-phone-stage-bleed">
             <div className="fg-halo" />
-            <div className="fg-phone-wrap fg-phone-tilt-r">
-              <img src={mockImage} alt="" className="fg-phone" />
-              <div className="fg-phone-shine" />
-            </div>
+            <img src={mockImage} alt="" className="fg-mock fg-mock-tilt-r" />
           </div>
         </>
       )}
@@ -1067,10 +1052,7 @@ function FeatureGraphic({ variantId, headline, tagline, mockImage, fgRef }) {
         <>
           <div className="fg-phone-stage fg-phone-stage-center fg-phone-stage-showcase">
             <div className="fg-halo fg-halo-soft" />
-            <div className="fg-phone-wrap">
-              <img src={mockImage} alt="" className="fg-phone" />
-              <div className="fg-phone-shine" />
-            </div>
+            <img src={mockImage} alt="" className="fg-mock" />
           </div>
           <div className="fg-showcase-pill">
             <img src={ASSET('mooney-tiktok.png')} alt="" className="fg-icon-sm" />
@@ -2582,7 +2564,8 @@ export default function MooneyDesigner({ onNavigate }) {
     try {
       await injectTwemoji(element)
       const fontEmbedCSS = await getFontEmbedCss()
-      const dataUrl = await toPng(element, { width: 1024, height: 500, pixelRatio: 2, skipAutoScale: true, fontEmbedCSS })
+      /* Google Play requires 1024 × 500 px exactly. pixelRatio: 1. */
+      const dataUrl = await toPng(element, { width: 1024, height: 500, pixelRatio: 1, skipAutoScale: true, fontEmbedCSS })
       const link = document.createElement('a')
       link.download = filename
       link.href = dataUrl

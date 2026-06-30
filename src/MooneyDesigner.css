@@ -3530,7 +3530,9 @@
 .mooney-app .fg-h1-right { text-align: right; }
 .mooney-app .fg-sub-right { text-align: right; margin-left: auto; }
 
-/* --- PHONE STAGE — Apple-style depth (multi-layer shadow + inner highlight) --- */
+/* --- PHONE STAGE — the mock PNG is already a finished phone mockup
+   (bezel, Dynamic Island, rounded corners). Don't add border-radius or
+   shine — they collide with the mock's own corners and look broken. --- */
 .mooney-app .fg-phone-stage {
   position: absolute;
   z-index: 5;
@@ -3540,13 +3542,13 @@
 }
 .mooney-app .fg-phone-stage-right {
   top: 0; bottom: 0;
-  right: 30px;
-  width: 42%;
+  right: 0;
+  width: 50%;
 }
 .mooney-app .fg-phone-stage-left {
   top: 0; bottom: 0;
-  left: 30px;
-  width: 42%;
+  left: 0;
+  width: 50%;
 }
 .mooney-app .fg-phone-stage-center {
   top: 0; bottom: 0;
@@ -3554,61 +3556,57 @@
 }
 .mooney-app .fg-phone-stage-bleed {
   top: -10%;
-  bottom: -10%;
-  right: -8%;
-  width: 46%;
+  bottom: -15%;
+  right: -12%;
+  width: 56%;
+  align-items: flex-start;
+  padding-top: 6%;
 }
 .mooney-app .fg-phone-stage-twin {
   top: 0;
   left: 0; right: 0;
-  height: 70%;
+  height: 100%;
+  padding-bottom: 100px;
 }
 .mooney-app .fg-phone-stage-showcase {
   top: 0;
   left: 0; right: 0;
-  height: 72%;
+  height: 100%;
+  padding-bottom: 80px;
 }
 
-.mooney-app .fg-phone-wrap {
-  position: relative;
-  width: 78%;
-  max-width: 240px;
-  border-radius: 26px;
-  box-shadow:
-    0 30px 50px rgba(0,0,0,0.55),
-    0 12px 24px rgba(0,0,0,0.4),
-    0 0 0 1px rgba(255,255,255,0.04);
-}
-.mooney-app .fg-phone {
-  width: 100%;
+.mooney-app .fg-mock {
+  height: 88%;
+  width: auto;
+  max-width: 100%;
+  object-fit: contain;
   display: block;
-  border-radius: 26px;
+  filter: drop-shadow(0 28px 40px rgba(0,0,0,0.55))
+          drop-shadow(0 8px 18px rgba(0,0,0,0.45));
+  position: relative;
+  z-index: 2;
 }
-.mooney-app .fg-phone-shine {
-  position: absolute;
-  inset: 0;
-  border-radius: 26px;
-  background: linear-gradient(135deg, rgba(255,255,255,0.10) 0%, rgba(255,255,255,0) 28%);
-  pointer-events: none;
-}
-.mooney-app .fg-phone-tilt-r { transform: rotate(-5deg); }
-.mooney-app .fg-phone-tilt-l { transform: rotate(5deg); }
+.mooney-app .fg-mock-tilt-r { transform: rotate(-5deg); }
+.mooney-app .fg-mock-tilt-l { transform: rotate(5deg); }
 
-/* Subtle teal halo behind every phone */
+/* Subtle teal halo behind every phone — separate element so it doesn't
+   interact with the mock's own rounded corners. */
 .mooney-app .fg-halo {
   position: absolute;
-  width: 110%;
-  height: 110%;
-  background: radial-gradient(ellipse, rgba(77,208,200,0.22) 0%, transparent 60%);
+  width: 70%;
+  height: 80%;
+  top: 10%; left: 15%;
+  background: radial-gradient(ellipse, rgba(77,208,200,0.28) 0%, transparent 60%);
   filter: blur(50px);
-  z-index: -1;
+  z-index: 1;
+  pointer-events: none;
 }
 .mooney-app .fg-halo-bright {
-  background: radial-gradient(ellipse, rgba(77,208,200,0.32) 0%, transparent 62%);
+  background: radial-gradient(ellipse, rgba(77,208,200,0.36) 0%, transparent 62%);
   filter: blur(40px);
 }
 .mooney-app .fg-halo-soft {
-  background: radial-gradient(ellipse, rgba(77,208,200,0.16) 0%, transparent 64%);
+  background: radial-gradient(ellipse, rgba(77,208,200,0.20) 0%, transparent 64%);
 }
 
 /* --- PANE LAYOUTS --- */
@@ -3625,60 +3623,60 @@
 .mooney-app .fg-pane-right { right: 0; width: 58%; align-items: flex-end; }
 .mooney-app .fg-pane-icon-row { display: flex; }
 
-/* --- V1: HERO --- */
-.mooney-app .fg-variant-hero .fg-pane-left { padding-right: 0; }
+/* --- V1: HERO — pane-left text + bigger phone right --- */
+.mooney-app .fg-variant-hero .fg-pane-left { width: 52%; padding: 50px 40px 50px 60px; }
+.mooney-app .fg-variant-hero .fg-phone-stage { width: 48%; }
+.mooney-app .fg-variant-hero .fg-mock { height: 95%; }
 
-/* --- V2: SPOTLIGHT --- */
+/* --- V2: SPOTLIGHT — phone perfectly centered, brand at top, tagline at bottom --- */
 .mooney-app .fg-variant-spotlight .fg-spotlight-top {
   position: absolute;
-  top: 30px;
+  top: 28px;
   left: 0; right: 0;
   z-index: 10;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 14px;
+  gap: 12px;
 }
+.mooney-app .fg-variant-spotlight .fg-icon-sm { width: 34px; height: 34px; border-radius: 9px; }
 .mooney-app .fg-variant-spotlight .fg-spotlight-name {
   font-family: 'TikTok Sans', 'SF Pro Display', sans-serif;
   font-size: 22px;
   font-weight: 700;
-  letter-spacing: -0.6px;
+  letter-spacing: -0.5px;
   color: #FFFFFF;
 }
 .mooney-app .fg-variant-spotlight .fg-spotlight-tagline {
   position: absolute;
-  bottom: 26px;
+  bottom: 28px;
   left: 0; right: 0;
   z-index: 10;
   text-align: center;
   font-family: 'TikTok Sans', 'SF Pro Display', sans-serif;
-  font-size: 16px;
+  font-size: 18px;
   font-weight: 400;
   letter-spacing: -0.2px;
-  color: rgba(255,255,255,0.62);
+  color: rgba(255,255,255,0.70);
   margin: 0;
 }
-.mooney-app .fg-variant-spotlight .fg-phone-wrap { max-width: 200px; width: 90%; }
-.mooney-app .fg-variant-spotlight .fg-icon-sm { width: 32px; height: 32px; border-radius: 8px; }
+.mooney-app .fg-variant-spotlight .fg-phone-stage { padding-top: 70px; padding-bottom: 70px; }
+.mooney-app .fg-variant-spotlight .fg-mock { height: 100%; }
 
-/* --- V3: TWIN — phone top, caption below --- */
-.mooney-app .fg-variant-twin .fg-phone-wrap {
-  max-width: 200px;
-  width: 88%;
-}
+/* --- V3: TWIN — phone hero, caption at the bottom --- */
+.mooney-app .fg-variant-twin .fg-mock { height: 96%; max-height: 420px; }
 .mooney-app .fg-twin-caption {
   position: absolute;
   bottom: 0;
   left: 0; right: 0;
-  height: 30%;
+  height: 88px;
   z-index: 10;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 18px;
   padding: 0 60px;
-  background: linear-gradient(180deg, transparent 0%, rgba(0,0,0,0.35) 100%);
+  background: linear-gradient(180deg, transparent 0%, rgba(0,0,0,0.6) 70%);
 }
 .mooney-app .fg-twin-text {
   display: flex;
@@ -3687,9 +3685,9 @@
 }
 .mooney-app .fg-twin-name {
   font-family: 'TikTok Sans', 'SF Pro Display', sans-serif;
-  font-size: 26px;
+  font-size: 24px;
   font-weight: 700;
-  letter-spacing: -0.8px;
+  letter-spacing: -0.7px;
   color: #FFFFFF;
   line-height: 1.0;
 }
@@ -3698,63 +3696,65 @@
   font-size: 15px;
   font-weight: 400;
   letter-spacing: -0.2px;
-  color: rgba(255,255,255,0.65);
+  color: rgba(255,255,255,0.7);
 }
+.mooney-app .fg-variant-twin .fg-icon-sm { width: 40px; height: 40px; border-radius: 10px; }
 
-/* --- V4: REVERSE (mirror of HERO) --- */
-.mooney-app .fg-variant-reverse .fg-pane-right { padding-left: 0; }
+/* --- V4: REVERSE — mirror of Hero --- */
+.mooney-app .fg-variant-reverse .fg-pane-right { width: 52%; padding: 50px 60px 50px 40px; }
+.mooney-app .fg-variant-reverse .fg-phone-stage { width: 48%; }
+.mooney-app .fg-variant-reverse .fg-mock { height: 95%; }
 
-/* --- V5: EDITORIAL — magazine spread --- */
+/* --- V5: EDITORIAL — magazine spread, phone bleeds off the right edge --- */
 .mooney-app .fg-variant-editorial .fg-editorial-left {
   position: absolute;
   top: 0; bottom: 0; left: 0;
-  width: 54%;
+  width: 58%;
   z-index: 10;
-  padding: 60px 50px;
+  padding: 60px 60px;
   display: flex;
   flex-direction: column;
   justify-content: center;
 }
 .mooney-app .fg-editorial-eyebrow {
   font-family: 'TikTok Sans', 'SF Pro Display', sans-serif;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 700;
   letter-spacing: 4px;
   color: rgba(77,208,200,0.9);
   text-transform: uppercase;
-  margin-bottom: 22px;
+  margin-bottom: 18px;
 }
 .mooney-app .fg-editorial-h1 {
   font-family: 'TikTok Sans', 'SF Pro Display', sans-serif;
-  font-size: 64px;
+  font-size: 60px;
   font-weight: 800;
-  letter-spacing: -2.6px;
-  line-height: 0.96;
+  letter-spacing: -2.4px;
+  line-height: 0.95;
   color: #FFFFFF;
   margin: 0 0 14px;
 }
 .mooney-app .fg-editorial-sub {
-  font-size: 19px;
+  font-size: 18px;
   font-weight: 400;
   color: rgba(255,255,255,0.72);
   letter-spacing: -0.3px;
   line-height: 1.4;
   max-width: 92%;
-  margin: 0 0 30px;
+  margin: 0 0 24px;
 }
 .mooney-app .fg-editorial-icon {
-  width: 56px; height: 56px;
-  border-radius: 14px;
+  width: 52px; height: 52px;
+  border-radius: 13px;
+  margin-bottom: 0;
 }
+.mooney-app .fg-variant-editorial .fg-mock { height: 110%; }
 
 /* --- V6: SHOWCASE — phone center, glass pill below --- */
-.mooney-app .fg-variant-showcase .fg-phone-wrap {
-  max-width: 200px;
-  width: 88%;
-}
+.mooney-app .fg-variant-showcase .fg-mock { height: 100%; }
 .mooney-app .fg-showcase-pill {
   position: absolute;
-  bottom: 28px;
+  bottom: 26px;
   left: 50%;
   transform: translateX(-50%);
   z-index: 12;
@@ -3762,13 +3762,14 @@
   align-items: center;
   gap: 14px;
   padding: 10px 22px 10px 12px;
-  background: rgba(255,255,255,0.08);
-  border: 1px solid rgba(255,255,255,0.12);
+  background: rgba(255,255,255,0.10);
+  border: 1px solid rgba(255,255,255,0.16);
   border-radius: 100px;
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   box-shadow: 0 10px 30px rgba(0,0,0,0.35);
 }
+.mooney-app .fg-variant-showcase .fg-icon-sm { width: 36px; height: 36px; border-radius: 9px; }
 .mooney-app .fg-showcase-pill-text {
   display: flex;
   flex-direction: column;
@@ -3786,7 +3787,7 @@
   font-size: 12px;
   font-weight: 400;
   letter-spacing: -0.1px;
-  color: rgba(255,255,255,0.62);
+  color: rgba(255,255,255,0.65);
   line-height: 1.2;
 }
 
