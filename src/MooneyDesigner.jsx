@@ -950,12 +950,12 @@ function LogoDesigner({ exportLogo, exporting }) {
    ============================================= */
 
 const FEATURE_VARIANTS = [
-  { id: 'hero-left',  name: 'Hero left' },
-  { id: 'center',     name: 'Center stack' },
-  { id: 'split',      name: 'Split diagonal' },
-  { id: 'big-m',      name: 'Big M' },
-  { id: 'minimal',    name: 'Minimal' },
-  { id: 'glow',       name: 'Glow band' },
+  { id: 'hero',      name: 'Hero' },
+  { id: 'spotlight', name: 'Spotlight' },
+  { id: 'twin',      name: 'Twin' },
+  { id: 'reverse',   name: 'Reverse' },
+  { id: 'editorial', name: 'Editorial' },
+  { id: 'showcase',  name: 'Showcase' },
 ]
 
 function FeatureGraphic({ variantId, headline, tagline, mockImage, fgRef }) {
@@ -967,80 +967,118 @@ function FeatureGraphic({ variantId, headline, tagline, mockImage, fgRef }) {
       <div className="fg-orb fg-orb-1" />
       <div className="fg-orb fg-orb-2" />
 
-      {variantId === 'hero-left' && (
+      {variantId === 'hero' && (
+        /* HERO — text left, single tilted phone right, generous space */
         <>
-          <div className="fg-left">
-            <img src={ASSET('mooney-tiktok.png')} alt="" className="fg-app-icon" />
-            <h1 className="fg-headline">{headline}</h1>
-            <p className="fg-tagline">{tagline}</p>
-            <div className="fg-badge">
-              <svg viewBox="0 0 24 24" width="22" height="22" fill="#fff">
-                <path d="M3 20.5V3.5l13.5 8.5L3 20.5zM14 14l3.6-2.3-3.6-2.3v4.6z" />
-              </svg>
-              <span>Google Play</span>
+          <div className="fg-pane fg-pane-left">
+            <img src={ASSET('mooney-tiktok.png')} alt="" className="fg-icon-md" />
+            <h1 className="fg-h1">{headline}</h1>
+            <p className="fg-sub">{tagline}</p>
+          </div>
+          <div className="fg-phone-stage fg-phone-stage-right">
+            <div className="fg-halo" />
+            <div className="fg-phone-wrap fg-phone-tilt-r">
+              <img src={mockImage} alt="" className="fg-phone" />
+              <div className="fg-phone-shine" />
             </div>
           </div>
-          <div className="fg-phone-wrap">
-            <div className="fg-phone-glow" />
-            <img src={mockImage} alt="" className="fg-phone" />
-          </div>
         </>
       )}
 
-      {variantId === 'center' && (
-        <div className="fg-center-stack">
-          <img src={ASSET('mooney-tiktok.png')} alt="" className="fg-app-icon-lg" />
-          <h1 className="fg-headline-mega">{headline}</h1>
-          <p className="fg-tagline-center">{tagline}</p>
-        </div>
-      )}
-
-      {variantId === 'split' && (
+      {variantId === 'spotlight' && (
+        /* SPOTLIGHT — phone perfectly centered, subtle glow halo, text top + bottom */
         <>
-          <div className="fg-split-slab" />
-          <div className="fg-split-left">
-            <img src={ASSET('mooney-tiktok.png')} alt="" className="fg-app-icon" />
-            <h1 className="fg-headline">{headline}</h1>
-            <p className="fg-tagline">{tagline}</p>
+          <div className="fg-spotlight-top">
+            <img src={ASSET('mooney-tiktok.png')} alt="" className="fg-icon-sm" />
+            <span className="fg-spotlight-name">{headline}</span>
           </div>
-          <div className="fg-split-right">
-            <img src={mockImage} alt="" className="fg-phone fg-phone-tilt" />
-          </div>
-        </>
-      )}
-
-      {variantId === 'big-m' && (
-        <>
-          <div className="fg-big-m">M<span className="fg-big-m-dot" /></div>
-          <div className="fg-big-m-right">
-            <div className="fg-eyebrow">★ ON GOOGLE PLAY</div>
-            <h1 className="fg-headline">{headline}</h1>
-            <p className="fg-tagline">{tagline}</p>
-          </div>
-        </>
-      )}
-
-      {variantId === 'minimal' && (
-        <div className="fg-minimal">
-          <img src={ASSET('mooney-tiktok.png')} alt="" className="fg-app-icon" />
-          <div className="fg-minimal-text">
-            <h1 className="fg-headline">{headline}</h1>
-            <p className="fg-tagline">{tagline}</p>
-          </div>
-        </div>
-      )}
-
-      {variantId === 'glow' && (
-        <>
-          <div className="fg-glow-band" />
-          <div className="fg-glow-content">
-            <img src={ASSET('mooney-tiktok.png')} alt="" className="fg-app-icon-lg" />
-            <div>
-              <h1 className="fg-headline-glow">{headline}</h1>
-              <p className="fg-tagline-glow">{tagline}</p>
+          <div className="fg-phone-stage fg-phone-stage-center">
+            <div className="fg-halo fg-halo-bright" />
+            <div className="fg-phone-wrap">
+              <img src={mockImage} alt="" className="fg-phone" />
+              <div className="fg-phone-shine" />
             </div>
           </div>
-          <img src={mockImage} alt="" className="fg-phone fg-phone-glow-right" />
+          <p className="fg-spotlight-tagline">{tagline}</p>
+        </>
+      )}
+
+      {variantId === 'twin' && (
+        /* TWIN — phone upper, refined caption strip below */
+        <>
+          <div className="fg-phone-stage fg-phone-stage-twin">
+            <div className="fg-halo" />
+            <div className="fg-phone-wrap">
+              <img src={mockImage} alt="" className="fg-phone" />
+              <div className="fg-phone-shine" />
+            </div>
+          </div>
+          <div className="fg-twin-caption">
+            <img src={ASSET('mooney-tiktok.png')} alt="" className="fg-icon-sm" />
+            <div className="fg-twin-text">
+              <span className="fg-twin-name">{headline}</span>
+              <span className="fg-twin-sub">{tagline}</span>
+            </div>
+          </div>
+        </>
+      )}
+
+      {variantId === 'reverse' && (
+        /* REVERSE — mirrored hero, phone left + text right */
+        <>
+          <div className="fg-phone-stage fg-phone-stage-left">
+            <div className="fg-halo" />
+            <div className="fg-phone-wrap fg-phone-tilt-l">
+              <img src={mockImage} alt="" className="fg-phone" />
+              <div className="fg-phone-shine" />
+            </div>
+          </div>
+          <div className="fg-pane fg-pane-right">
+            <div className="fg-pane-icon-row">
+              <img src={ASSET('mooney-tiktok.png')} alt="" className="fg-icon-md" />
+            </div>
+            <h1 className="fg-h1 fg-h1-right">{headline}</h1>
+            <p className="fg-sub fg-sub-right">{tagline}</p>
+          </div>
+        </>
+      )}
+
+      {variantId === 'editorial' && (
+        /* EDITORIAL — magazine-spread: oversized phone right-edge, refined headline left */
+        <>
+          <div className="fg-editorial-left">
+            <div className="fg-editorial-eyebrow">— MOONEY</div>
+            <h1 className="fg-editorial-h1">{headline}</h1>
+            <p className="fg-editorial-sub">{tagline}</p>
+            <img src={ASSET('mooney-tiktok.png')} alt="" className="fg-icon-md fg-editorial-icon" />
+          </div>
+          <div className="fg-phone-stage fg-phone-stage-bleed">
+            <div className="fg-halo" />
+            <div className="fg-phone-wrap fg-phone-tilt-r">
+              <img src={mockImage} alt="" className="fg-phone" />
+              <div className="fg-phone-shine" />
+            </div>
+          </div>
+        </>
+      )}
+
+      {variantId === 'showcase' && (
+        /* SHOWCASE — phone center, app icon + name in a glass pill below */
+        <>
+          <div className="fg-phone-stage fg-phone-stage-center fg-phone-stage-showcase">
+            <div className="fg-halo fg-halo-soft" />
+            <div className="fg-phone-wrap">
+              <img src={mockImage} alt="" className="fg-phone" />
+              <div className="fg-phone-shine" />
+            </div>
+          </div>
+          <div className="fg-showcase-pill">
+            <img src={ASSET('mooney-tiktok.png')} alt="" className="fg-icon-sm" />
+            <div className="fg-showcase-pill-text">
+              <span className="fg-showcase-name">{headline}</span>
+              <span className="fg-showcase-sub">{tagline}</span>
+            </div>
+          </div>
         </>
       )}
     </div>

@@ -3480,295 +3480,314 @@
   color: #0A0A0A;
 }
 
-/* --- BACKGROUND LAYERS --- */
+/* --- BACKGROUND LAYERS (refined, Apple-style — less saturation, more breathing) --- */
 .mooney-app .fg-bg {
   position: absolute; inset: 0;
-  background: #060A0E;
+  background: #050a0e;
   z-index: 0;
 }
 .mooney-app .fg-bg-grad {
   position: absolute; inset: 0; z-index: 1;
   background:
-    radial-gradient(ellipse 60% 80% at 0% 50%, rgba(77,208,200,0.30) 0%, transparent 60%),
-    radial-gradient(ellipse 50% 70% at 100% 100%, rgba(126,238,230,0.15) 0%, transparent 55%),
-    linear-gradient(120deg, #0a1a22 0%, #060a0e 60%, #0a1418 100%);
+    radial-gradient(ellipse 90% 110% at 50% 50%, rgba(77,208,200,0.10) 0%, transparent 60%),
+    linear-gradient(170deg, #0c1820 0%, #060a0e 70%, #08121a 100%);
 }
-.mooney-app .fg-bg-noise {
-  position: absolute; inset: 0; z-index: 2; opacity: 0.04;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-  background-size: 256px;
+.mooney-app .fg-bg-noise { display: none; }
+.mooney-app .fg-orb { display: none; }
+
+/* --- SHARED TYPE + UI (refined) --- */
+.mooney-app .fg-icon-sm {
+  width: 48px; height: 48px;
+  border-radius: 12px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.42);
+  display: block;
 }
-.mooney-app .fg-orb {
+.mooney-app .fg-icon-md {
+  width: 72px; height: 72px;
+  border-radius: 17px;
+  box-shadow: 0 10px 28px rgba(0,0,0,0.5), 0 0 32px rgba(77,208,200,0.10);
+  display: block;
+}
+.mooney-app .fg-h1 {
+  font-family: 'TikTok Sans', 'SF Pro Display', system-ui, sans-serif;
+  font-size: 60px;
+  font-weight: 700;
+  letter-spacing: -2.2px;
+  line-height: 1.0;
+  color: #FFFFFF;
+  margin: 22px 0 12px;
+}
+.mooney-app .fg-sub {
+  font-family: 'TikTok Sans', 'SF Pro Display', system-ui, sans-serif;
+  font-size: 20px;
+  font-weight: 400;
+  letter-spacing: -0.3px;
+  line-height: 1.4;
+  color: rgba(255,255,255,0.72);
+  max-width: 95%;
+  margin: 0;
+}
+.mooney-app .fg-h1-right { text-align: right; }
+.mooney-app .fg-sub-right { text-align: right; margin-left: auto; }
+
+/* --- PHONE STAGE — Apple-style depth (multi-layer shadow + inner highlight) --- */
+.mooney-app .fg-phone-stage {
   position: absolute;
-  border-radius: 50%;
-  filter: blur(60px);
-  z-index: 1;
-  pointer-events: none;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
-.mooney-app .fg-orb-1 {
-  width: 380px; height: 380px;
-  background: rgba(77,208,200,0.24);
-  top: -80px; right: -100px;
+.mooney-app .fg-phone-stage-right {
+  top: 0; bottom: 0;
+  right: 30px;
+  width: 42%;
 }
-.mooney-app .fg-orb-2 {
-  width: 280px; height: 280px;
-  background: rgba(126,238,230,0.18);
-  bottom: -100px; left: -80px;
+.mooney-app .fg-phone-stage-left {
+  top: 0; bottom: 0;
+  left: 30px;
+  width: 42%;
+}
+.mooney-app .fg-phone-stage-center {
+  top: 0; bottom: 0;
+  left: 0; right: 0;
+}
+.mooney-app .fg-phone-stage-bleed {
+  top: -10%;
+  bottom: -10%;
+  right: -8%;
+  width: 46%;
+}
+.mooney-app .fg-phone-stage-twin {
+  top: 0;
+  left: 0; right: 0;
+  height: 70%;
+}
+.mooney-app .fg-phone-stage-showcase {
+  top: 0;
+  left: 0; right: 0;
+  height: 72%;
 }
 
-/* --- SHARED ELEMENTS --- */
-.mooney-app .fg-app-icon {
-  width: 72px; height: 72px;
-  border-radius: 18px;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.45), 0 0 30px rgba(77,208,200,0.18);
-  margin-bottom: 18px;
-}
-.mooney-app .fg-app-icon-lg {
-  width: 112px; height: 112px;
+.mooney-app .fg-phone-wrap {
+  position: relative;
+  width: 78%;
+  max-width: 240px;
   border-radius: 26px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.5), 0 0 40px rgba(77,208,200,0.25);
-}
-.mooney-app .fg-headline {
-  font-size: 76px;
-  font-weight: 900;
-  line-height: 0.95;
-  letter-spacing: -3px;
-  background: linear-gradient(135deg, #FFFFFF 0%, #C2F5F0 60%, #4DD0C8 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  margin: 0 0 10px;
-}
-.mooney-app .fg-tagline {
-  font-size: 22px;
-  font-weight: 500;
-  color: rgba(255,255,255,0.85);
-  line-height: 1.25;
-  max-width: 92%;
-}
-.mooney-app .fg-eyebrow {
-  font-size: 14px;
-  font-weight: 800;
-  letter-spacing: 4px;
-  color: #4DD0C8;
-  text-transform: uppercase;
-  margin-bottom: 18px;
-}
-.mooney-app .fg-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  background: rgba(255,255,255,0.08);
-  border: 1px solid rgba(255,255,255,0.12);
-  border-radius: 100px;
-  padding: 8px 16px;
-  margin-top: 18px;
-  font-size: 14px;
-  font-weight: 700;
-  color: #FFFFFF;
-  backdrop-filter: blur(8px);
+  box-shadow:
+    0 30px 50px rgba(0,0,0,0.55),
+    0 12px 24px rgba(0,0,0,0.4),
+    0 0 0 1px rgba(255,255,255,0.04);
 }
 .mooney-app .fg-phone {
   width: 100%;
   display: block;
-  border-radius: 22px;
-  box-shadow: 0 20px 50px rgba(0,0,0,0.6), 0 0 60px rgba(77,208,200,0.18);
+  border-radius: 26px;
 }
-.mooney-app .fg-phone-tilt {
-  transform: rotate(6deg);
+.mooney-app .fg-phone-shine {
+  position: absolute;
+  inset: 0;
+  border-radius: 26px;
+  background: linear-gradient(135deg, rgba(255,255,255,0.10) 0%, rgba(255,255,255,0) 28%);
+  pointer-events: none;
 }
+.mooney-app .fg-phone-tilt-r { transform: rotate(-5deg); }
+.mooney-app .fg-phone-tilt-l { transform: rotate(5deg); }
 
-/* --- V1: HERO LEFT --- */
-.mooney-app .fg-variant-hero-left .fg-left {
+/* Subtle teal halo behind every phone */
+.mooney-app .fg-halo {
   position: absolute;
-  top: 0; bottom: 0; left: 0;
-  width: 58%;
-  z-index: 10;
-  padding: 50px 50px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-}
-.mooney-app .fg-variant-hero-left .fg-phone-wrap {
-  position: absolute;
-  top: 50%; right: 30px;
-  transform: translateY(-50%);
-  width: 38%;
-  z-index: 5;
-}
-.mooney-app .fg-variant-hero-left .fg-phone {
-  transform: rotate(-4deg);
-}
-.mooney-app .fg-variant-hero-left .fg-phone-glow {
-  position: absolute;
-  inset: -20%;
-  background: radial-gradient(ellipse, rgba(77,208,200,0.35) 0%, transparent 65%);
-  filter: blur(40px);
+  width: 110%;
+  height: 110%;
+  background: radial-gradient(ellipse, rgba(77,208,200,0.22) 0%, transparent 60%);
+  filter: blur(50px);
   z-index: -1;
 }
+.mooney-app .fg-halo-bright {
+  background: radial-gradient(ellipse, rgba(77,208,200,0.32) 0%, transparent 62%);
+  filter: blur(40px);
+}
+.mooney-app .fg-halo-soft {
+  background: radial-gradient(ellipse, rgba(77,208,200,0.16) 0%, transparent 64%);
+}
 
-/* --- V2: CENTER STACK --- */
-.mooney-app .fg-variant-center .fg-center-stack {
-  position: absolute; inset: 0;
+/* --- PANE LAYOUTS --- */
+.mooney-app .fg-pane {
+  position: absolute;
+  top: 0; bottom: 0;
   z-index: 10;
   display: flex;
   flex-direction: column;
+  justify-content: center;
+  padding: 50px 60px;
+}
+.mooney-app .fg-pane-left { left: 0; width: 58%; }
+.mooney-app .fg-pane-right { right: 0; width: 58%; align-items: flex-end; }
+.mooney-app .fg-pane-icon-row { display: flex; }
+
+/* --- V1: HERO --- */
+.mooney-app .fg-variant-hero .fg-pane-left { padding-right: 0; }
+
+/* --- V2: SPOTLIGHT --- */
+.mooney-app .fg-variant-spotlight .fg-spotlight-top {
+  position: absolute;
+  top: 30px;
+  left: 0; right: 0;
+  z-index: 10;
+  display: flex;
   align-items: center;
   justify-content: center;
+  gap: 14px;
+}
+.mooney-app .fg-variant-spotlight .fg-spotlight-name {
+  font-family: 'TikTok Sans', 'SF Pro Display', sans-serif;
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -0.6px;
+  color: #FFFFFF;
+}
+.mooney-app .fg-variant-spotlight .fg-spotlight-tagline {
+  position: absolute;
+  bottom: 26px;
+  left: 0; right: 0;
+  z-index: 10;
   text-align: center;
-  padding: 40px;
-  gap: 16px;
-}
-.mooney-app .fg-headline-mega {
-  font-size: 110px;
-  font-weight: 900;
-  line-height: 0.9;
-  letter-spacing: -5px;
-  background: linear-gradient(135deg, #FFFFFF 0%, #7EEEE6 60%, #4DD0C8 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  font-family: 'TikTok Sans', 'SF Pro Display', sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  letter-spacing: -0.2px;
+  color: rgba(255,255,255,0.62);
   margin: 0;
 }
-.mooney-app .fg-tagline-center {
+.mooney-app .fg-variant-spotlight .fg-phone-wrap { max-width: 200px; width: 90%; }
+.mooney-app .fg-variant-spotlight .fg-icon-sm { width: 32px; height: 32px; border-radius: 8px; }
+
+/* --- V3: TWIN — phone top, caption below --- */
+.mooney-app .fg-variant-twin .fg-phone-wrap {
+  max-width: 200px;
+  width: 88%;
+}
+.mooney-app .fg-twin-caption {
+  position: absolute;
+  bottom: 0;
+  left: 0; right: 0;
+  height: 30%;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  padding: 0 60px;
+  background: linear-gradient(180deg, transparent 0%, rgba(0,0,0,0.35) 100%);
+}
+.mooney-app .fg-twin-text {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.mooney-app .fg-twin-name {
+  font-family: 'TikTok Sans', 'SF Pro Display', sans-serif;
   font-size: 26px;
-  font-weight: 500;
-  color: rgba(255,255,255,0.85);
-  max-width: 80%;
-  line-height: 1.25;
-  margin: 0;
+  font-weight: 700;
+  letter-spacing: -0.8px;
+  color: #FFFFFF;
+  line-height: 1.0;
+}
+.mooney-app .fg-twin-sub {
+  font-family: 'TikTok Sans', 'SF Pro Display', sans-serif;
+  font-size: 15px;
+  font-weight: 400;
+  letter-spacing: -0.2px;
+  color: rgba(255,255,255,0.65);
 }
 
-/* --- V3: SPLIT DIAGONAL --- */
-.mooney-app .fg-variant-split .fg-split-slab {
-  position: absolute;
-  top: -10%;
-  left: 40%;
-  width: 25%;
-  height: 120%;
-  background: linear-gradient(135deg, #4DD0C8 0%, #3BA8A1 100%);
-  transform: skewX(-12deg);
-  z-index: 3;
-  box-shadow: -30px 0 60px rgba(0,0,0,0.4);
-}
-.mooney-app .fg-variant-split .fg-split-left {
+/* --- V4: REVERSE (mirror of HERO) --- */
+.mooney-app .fg-variant-reverse .fg-pane-right { padding-left: 0; }
+
+/* --- V5: EDITORIAL — magazine spread --- */
+.mooney-app .fg-variant-editorial .fg-editorial-left {
   position: absolute;
   top: 0; bottom: 0; left: 0;
-  width: 45%;
+  width: 54%;
   z-index: 10;
-  padding: 50px 50px;
+  padding: 60px 50px;
   display: flex;
   flex-direction: column;
   justify-content: center;
 }
-.mooney-app .fg-variant-split .fg-split-right {
-  position: absolute;
-  top: 50%; right: 40px;
-  transform: translateY(-50%);
-  width: 38%;
-  z-index: 10;
-}
-
-/* --- V4: BIG M --- */
-.mooney-app .fg-variant-big-m .fg-big-m {
-  position: absolute;
-  left: 30px;
-  top: 50%;
-  transform: translateY(-50%);
-  font-size: 420px;
-  font-weight: 900;
-  line-height: 0.78;
-  letter-spacing: -28px;
-  background: linear-gradient(160deg, #FFFFFF 0%, #4DD0C8 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+.mooney-app .fg-editorial-eyebrow {
   font-family: 'TikTok Sans', 'SF Pro Display', sans-serif;
-  z-index: 10;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 4px;
+  color: rgba(77,208,200,0.9);
+  text-transform: uppercase;
+  margin-bottom: 22px;
 }
-.mooney-app .fg-variant-big-m .fg-big-m-dot {
-  display: inline-block;
-  width: 50px; height: 50px;
-  border-radius: 50%;
-  background: #4DD0C8;
-  margin-left: -20px;
-  vertical-align: baseline;
-  box-shadow: 0 0 40px rgba(77,208,200,0.6);
-}
-.mooney-app .fg-variant-big-m .fg-big-m-right {
-  position: absolute;
-  right: 50px; top: 50%;
-  transform: translateY(-50%);
-  width: 50%;
-  z-index: 10;
-  text-align: right;
-}
-.mooney-app .fg-variant-big-m .fg-headline {
+.mooney-app .fg-editorial-h1 {
+  font-family: 'TikTok Sans', 'SF Pro Display', sans-serif;
   font-size: 64px;
-}
-
-/* --- V5: MINIMAL --- */
-.mooney-app .fg-variant-minimal .fg-minimal {
-  position: absolute; inset: 0;
-  z-index: 10;
-  display: flex;
-  align-items: center;
-  gap: 38px;
-  padding: 50px 70px;
-}
-.mooney-app .fg-variant-minimal .fg-app-icon {
-  margin-bottom: 0;
-  width: 140px; height: 140px;
-  border-radius: 32px;
-}
-.mooney-app .fg-variant-minimal .fg-minimal-text { flex: 1; }
-.mooney-app .fg-variant-minimal .fg-headline { font-size: 84px; }
-.mooney-app .fg-variant-minimal .fg-tagline { font-size: 24px; }
-
-/* --- V6: GLOW BAND --- */
-.mooney-app .fg-variant-glow .fg-glow-band {
-  position: absolute;
-  top: 50%;
-  left: 0; right: 0;
-  height: 240px;
-  background: linear-gradient(90deg, transparent 0%, rgba(77,208,200,0.32) 50%, transparent 100%);
-  transform: translateY(-50%) skewY(-3deg);
-  filter: blur(15px);
-  z-index: 3;
-}
-.mooney-app .fg-variant-glow .fg-glow-content {
-  position: absolute;
-  top: 50%;
-  left: 50px;
-  transform: translateY(-50%);
-  display: flex;
-  align-items: center;
-  gap: 28px;
-  z-index: 10;
-}
-.mooney-app .fg-variant-glow .fg-headline-glow {
-  font-size: 64px;
-  font-weight: 900;
-  line-height: 0.95;
-  letter-spacing: -2.5px;
+  font-weight: 800;
+  letter-spacing: -2.6px;
+  line-height: 0.96;
   color: #FFFFFF;
-  margin: 0 0 6px;
-  text-shadow: 0 4px 20px rgba(77,208,200,0.4);
+  margin: 0 0 14px;
 }
-.mooney-app .fg-variant-glow .fg-tagline-glow {
-  font-size: 20px;
-  color: rgba(255,255,255,0.85);
-  margin: 0;
+.mooney-app .fg-editorial-sub {
+  font-size: 19px;
+  font-weight: 400;
+  color: rgba(255,255,255,0.72);
+  letter-spacing: -0.3px;
+  line-height: 1.4;
+  max-width: 92%;
+  margin: 0 0 30px;
 }
-.mooney-app .fg-variant-glow .fg-phone-glow-right {
+.mooney-app .fg-editorial-icon {
+  width: 56px; height: 56px;
+  border-radius: 14px;
+}
+
+/* --- V6: SHOWCASE — phone center, glass pill below --- */
+.mooney-app .fg-variant-showcase .fg-phone-wrap {
+  max-width: 200px;
+  width: 88%;
+}
+.mooney-app .fg-showcase-pill {
   position: absolute;
-  right: 40px;
-  top: 50%;
-  transform: translateY(-50%) rotate(8deg);
-  width: 24%;
-  z-index: 8;
-  border-radius: 18px;
-  box-shadow: 0 18px 40px rgba(0,0,0,0.5);
+  bottom: 28px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 12;
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+  padding: 10px 22px 10px 12px;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 100px;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.35);
+}
+.mooney-app .fg-showcase-pill-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.mooney-app .fg-showcase-name {
+  font-family: 'TikTok Sans', 'SF Pro Display', sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  color: #FFFFFF;
+  line-height: 1.0;
+}
+.mooney-app .fg-showcase-sub {
+  font-size: 12px;
+  font-weight: 400;
+  letter-spacing: -0.1px;
+  color: rgba(255,255,255,0.62);
+  line-height: 1.2;
 }
 
 /* Mobile: stack feature grid */
