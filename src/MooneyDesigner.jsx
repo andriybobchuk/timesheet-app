@@ -1667,6 +1667,7 @@ function CarouselDesigner({ exportSlide, exporting, setExporting }) {
   const [theme, setTheme] = useState('dark')
   const [textMult, setTextMult] = useState(1.0)
   const [previewMode, setPreviewMode] = useState('clean')
+  const [postMode, setPostMode] = useState('carousel')  // 'carousel' | 'single'
   const [hookVariant, setHookVariant] = useState(() => Math.floor(Math.random() * HOOK_VARIANT_COUNT))
   const [currentSlide, setCurrentSlide] = useState(0)
   const [showAll, setShowAll] = useState(false)
@@ -1675,12 +1676,20 @@ function CarouselDesigner({ exportSlide, exporting, setExporting }) {
   const singleRef = useRef(null)
   const allRefs = useRef([])
 
-  const slides = [
-    { kind: 'hook' },
-    ...takes.map((t, i) => ({ kind: 'take', index: i })),
-    { kind: 'save' },
-    { kind: 'cta' },
-  ]
+  const slides = postMode === 'single'
+    ? [{ kind: 'hook' }]
+    : [
+        { kind: 'hook' },
+        ...takes.map((t, i) => ({ kind: 'take', index: i })),
+        { kind: 'save' },
+        { kind: 'cta' },
+      ]
+
+  // Snap the active slide back to the hook when switching to single mode
+  useEffect(() => {
+    if (postMode === 'single' && currentSlide !== 0) setCurrentSlide(0)
+    if (postMode === 'single' && showAll) setShowAll(false)
+  }, [postMode, currentSlide, showAll])
 
   const reshuffleHook = () => {
     let next = Math.floor(Math.random() * HOOK_VARIANT_COUNT)
@@ -1744,6 +1753,15 @@ function CarouselDesigner({ exportSlide, exporting, setExporting }) {
         <div className="ctrl-section">
           <h3 className="ctrl-section-title">Style</h3>
           <div className="control-cards">
+            <div className="control-card wide">
+              <label className="control-card-label">
+                Post type <span className="hint">— pick carousel for multi-slide or single for one-off posts</span>
+              </label>
+              <div className="seg-toggle">
+                <button className={postMode === 'carousel' ? 'on' : ''} onClick={() => setPostMode('carousel')}>Carousel · 7 slides</button>
+                <button className={postMode === 'single' ? 'on' : ''} onClick={() => setPostMode('single')}>Single post</button>
+              </div>
+            </div>
             <div className="control-card">
               <label className="control-card-label">Color theme</label>
               <div className="seg-toggle">
@@ -1751,11 +1769,19 @@ function CarouselDesigner({ exportSlide, exporting, setExporting }) {
                 <button className={theme === 'light' ? 'on' : ''} onClick={() => setTheme('light')}>Light</button>
               </div>
             </div>
-            <div className="control-card">
+            <div className="control-card wide">
               <label className="control-card-label">Format</label>
-              <div className="seg-toggle">
-                <button className={format === 'portrait' ? 'on' : ''} onClick={() => setFormat('portrait')}>Portrait · 4:5</button>
-                <button className={format === 'square' ? 'on' : ''} onClick={() => setFormat('square')}>Square · 1:1</button>
+              <div className="seg-toggle seg-toggle-scroll">
+                {Object.entries(CAROUSEL_FORMATS).map(([key, val]) => (
+                  <button
+                    key={key}
+                    className={format === key ? 'on' : ''}
+                    onClick={() => setFormat(key)}
+                    title={`${val.name} · ${val.w}×${val.h}`}
+                  >
+                    {val.name} · {val.label}
+                  </button>
+                ))}
               </div>
             </div>
             <div className="control-card wide">
@@ -1833,26 +1859,28 @@ function CarouselDesigner({ exportSlide, exporting, setExporting }) {
           </div>
         </div>
 
-        <div className="ctrl-section">
-          <h3 className="ctrl-section-title">Slides</h3>
-          <div className="slide-strip">
-            {slides.map((s, i) => (
+        {postMode === 'carousel' && (
+          <div className="ctrl-section">
+            <h3 className="ctrl-section-title">Slides</h3>
+            <div className="slide-strip">
+              {slides.map((s, i) => (
+                <button
+                  key={i}
+                  className={`slide-chip${currentSlide === i ? ' on' : ''}${s.kind === 'cta' ? ' final' : ''}${s.kind === 'hook' ? ' hook' : ''}`}
+                  onClick={() => { setCurrentSlide(i); setShowAll(false); }}
+                >
+                  {slideLabel(s)}
+                </button>
+              ))}
               <button
-                key={i}
-                className={`slide-chip${currentSlide === i ? ' on' : ''}${s.kind === 'cta' ? ' final' : ''}${s.kind === 'hook' ? ' hook' : ''}`}
-                onClick={() => { setCurrentSlide(i); setShowAll(false); }}
+                className={`slide-chip showall-chip${showAll ? ' on' : ''}`}
+                onClick={() => setShowAll(!showAll)}
               >
-                {slideLabel(s)}
+                {showAll ? '✕ Single' : '◫ All'}
               </button>
-            ))}
-            <button
-              className={`slide-chip showall-chip${showAll ? ' on' : ''}`}
-              onClick={() => setShowAll(!showAll)}
-            >
-              {showAll ? '✕ Single' : '◫ All'}
-            </button>
+            </div>
           </div>
-        </div>
+        )}
 
         {!showAll && (
           <div className="editor-panel">
@@ -1865,7 +1893,7 @@ function CarouselDesigner({ exportSlide, exporting, setExporting }) {
                   <div className="photo-controls">
                     <label className="editor-label">Background photo (kept at full quality)</label>
                     <div className="photo-upload-row">
-                      <label className="brut-btn brut-btn-primary photo-upload-btn">
+                      <label className="btn btn-accent photo-upload-btn">
                         📷 {photo.image ? 'Replace photo' : 'Upload photo'}
                         <input
                           type="file"
@@ -1877,7 +1905,7 @@ function CarouselDesigner({ exportSlide, exporting, setExporting }) {
                       {folder.supported && (
                         <button
                           type="button"
-                          className="brut-btn"
+                          className="btn"
                           onClick={openFolderPicker}
                           title={folder.folderHandle ? `Browse /${folder.folderName}` : 'Connect a folder'}
                         >
@@ -1887,7 +1915,7 @@ function CarouselDesigner({ exportSlide, exporting, setExporting }) {
                       {photo.image && (
                         <button
                           type="button"
-                          className="brut-btn"
+                          className="btn"
                           onClick={() => setPhoto(prev => ({ ...prev, image: null }))}
                         >
                           Clear
@@ -2169,11 +2197,11 @@ function CarouselDesigner({ exportSlide, exporting, setExporting }) {
               <div className="sync-connected">
                 <span className="sync-dot" />
                 <span className="sync-folder-name">/{folder.folderName}</span>
-                <button className="brut-btn brut-btn-sm" onClick={folder.disconnect}>Disconnect</button>
+                <button className="btn" onClick={folder.disconnect}>Disconnect</button>
               </div>
             ) : (
               <>
-                <button className="brut-btn brut-btn-block" onClick={folder.pickFolder}>
+                <button className="btn btn-accent" onClick={folder.pickFolder}>
                   📁 Connect a folder (iCloud-friendly)
                 </button>
                 <p className="ctrl-section-hint">Pick any folder — including your <b>iCloud Drive</b> — and saved PNGs go straight there. Images in that folder show up when you tap Browse on photo slides.</p>
@@ -2187,7 +2215,7 @@ function CarouselDesigner({ exportSlide, exporting, setExporting }) {
         <div className="ctrl-section export-section">
           <div className="export-row">
             <button
-              className="brut-btn brut-btn-primary brut-btn-block"
+              className="btn btn-export btn-big"
               onClick={showAll ? exportAll : exportCurrent}
               disabled={exporting}
             >
@@ -2195,7 +2223,9 @@ function CarouselDesigner({ exportSlide, exporting, setExporting }) {
                 ? 'EXPORTING…'
                 : folder.folderHandle
                   ? (showAll ? `↗ Save all ${slides.length} to /${folder.folderName}` : `↗ Save to /${folder.folderName}`)
-                  : (showAll ? `↓ Export all ${slides.length} as PNG` : `↓ Export this slide`)}
+                  : (postMode === 'single'
+                      ? `↓ Export post as PNG`
+                      : (showAll ? `↓ Export all ${slides.length} as PNG` : `↓ Export this slide`))}
             </button>
             <p className="ctrl-section-hint">{fmt.w} × {fmt.h}px · {fmt.label} · {fmt.name}</p>
           </div>
@@ -2262,8 +2292,8 @@ function CarouselDesigner({ exportSlide, exporting, setExporting }) {
                 <div className="folder-modal-name">/{folder.folderName}</div>
               </div>
               <div className="folder-modal-actions">
-                <button className="brut-btn brut-btn-sm" onClick={refreshFolderImages}>↻ Refresh</button>
-                <button className="brut-btn brut-btn-sm" onClick={() => setFolderPickerOpen(false)}>Close ×</button>
+                <button className="btn" onClick={refreshFolderImages}>↻ Refresh</button>
+                <button className="btn" onClick={() => setFolderPickerOpen(false)}>Close ×</button>
               </div>
             </div>
             {folderImages.length === 0 ? (
