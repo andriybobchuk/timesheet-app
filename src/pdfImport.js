@@ -39,10 +39,14 @@ export async function extractPdfText(file) {
    Idea 21: "Wedding culture is a financial scam"
    We accept ASCII " smart quotes " and even Polish/Latin punctuation. */
 function extractIdeaTitle(header, fallback) {
-  // Try quoted forms first
-  const quoted = header.match(/["'“”‘’]([^"'“”‘’\n]{1,220})["'“”‘’]/)
-  if (quoted) return normalize(quoted[1])
-  // Fall back to the text after "Idea N:" up to the first newline or "Slide"
+  // Try matched-pair quotes first — outer double-quotes preferred, then singles.
+  // Grouping the CLOSING quote to match the OPENING quote character prevents
+  // inner quotes of another type from ending the match early, e.g. the outer
+  // "The 'Good Debt' Lie" won't get cut at the inner apostrophe.
+  const doubleQ = header.match(/["“”]([^"“”\n]{1,220})["“”]/)
+  if (doubleQ) return normalize(doubleQ[1])
+  const singleQ = header.match(/['‘’]([^'‘’\n]{1,220})['‘’]/)
+  if (singleQ) return normalize(singleQ[1])
   const bare = header.match(/Idea\s+\d+\s*:\s*(.+?)(?=\s+Slide\s+\d+|\s*$)/i)
   if (bare) return normalize(bare[1])
   return fallback

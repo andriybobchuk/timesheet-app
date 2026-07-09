@@ -3529,6 +3529,20 @@
   min-width: 0;
 }
 .mooney-app .posts-current:hover { border-color: rgba(192,132,252,0.4); }
+.mooney-app .posts-chevron-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: 4px 6px;
+  border-radius: 4px;
+  font-size: 10px;
+  transition: color 0.15s ease, background 0.15s ease;
+}
+.mooney-app .posts-chevron-btn:hover {
+  color: var(--ui-accent);
+  background: rgba(192,132,252,0.10);
+}
 .mooney-app .posts-count {
   font-family: 'SF Mono', Menlo, monospace;
   font-size: 11px;

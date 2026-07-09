@@ -1899,21 +1899,23 @@ function CarouselDesigner({ exportSlide, exporting, setExporting }) {
         <div className="ctrl-section posts-bar-section">
           <div className="posts-bar">
             <button className="posts-nav-btn" onClick={goPrev} disabled={activeIdx === 0} title="Previous post">‹</button>
-            <button
-              className="posts-current"
-              onClick={() => setPostsMenuOpen(o => !o)}
-              title="Show all posts"
-            >
+            <div className="posts-current">
               <span className="posts-count">{activeIdx + 1} / {posts.length}</span>
               <input
                 className="posts-title-input"
                 value={activePost?.title || ''}
                 onChange={e => renameActivePost(e.target.value)}
-                onClick={e => e.stopPropagation()}
                 placeholder="Untitled post"
               />
-              <span className="posts-chevron">{postsMenuOpen ? '▲' : '▼'}</span>
-            </button>
+              <button
+                type="button"
+                className="posts-chevron-btn"
+                onClick={() => setPostsMenuOpen(o => !o)}
+                title="Show all posts"
+              >
+                {postsMenuOpen ? '▲' : '▼'}
+              </button>
+            </div>
             <button className="posts-nav-btn" onClick={goNext} disabled={activeIdx >= posts.length - 1} title="Next post">›</button>
             <label className="btn btn-accent posts-import-btn" title="Import a PDF of posts">
               {importing ? '…' : '📄 Import PDF'}
