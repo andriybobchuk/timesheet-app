@@ -1,6 +1,7 @@
 import { useState, useRef, useCallback, useEffect } from 'react'
 import { toPng } from 'html-to-image'
 import twemoji from '@twemoji/api'
+import { parsePdfToPosts } from './pdfImport'
 import './MooneyDesigner.css'
 
 /* html-to-image renders the slide into an SVG <foreignObject>. It tries to
@@ -1622,12 +1623,158 @@ function CTASlide({ data, format, theme, textMult = 1, slideRef }) {
   )
 }
 
+/* --- Posts collection: stores 1..N Post objects. Each Post is one carousel's
+     worth of editable content (hook, takes, save, cta, photo, variant + a
+     human-readable title). UI-transient state (format, theme, currentSlide,
+     etc.) stays at CarouselDesigner scope and applies across all posts. --- */
+const POSTS_STORAGE_KEY = 'mooney-posts-v1'
+const POSTS_ACTIVE_KEY = 'mooney-active-post-v1'
+
+function createPost({ id, title, hookText, takes, ctaSub } = {}) {
+  const filledTakes = takes && takes.length
+    ? takes.slice(0, 4).map((t, i) => ({
+        number: t.number ?? String(i + 1).padStart(2, '0'),
+        title: t.title ?? '',
+        accent: t.accent ?? '',
+        body: t.body ?? '',
+        graphicSeed: t.graphicSeed ?? Math.floor(Math.random() * 100000),
+      }))
+    : DEFAULT_TAKES.map(t => ({ ...t, graphicSeed: Math.floor(Math.random() * 100000) }))
+  return {
+    id: id || `post-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+    title: title || 'Untitled post',
+    hookText: hookText ?? DEFAULT_HOOK,
+    takes: filledTakes,
+    save: { ...DEFAULT_SAVE },
+    cta: { ...DEFAULT_CTA, sub: ctaSub || DEFAULT_CTA.sub },
+    photo: { ...DEFAULT_PHOTO },
+    hookVariant: Math.floor(Math.random() * HOOK_VARIANT_COUNT),
+  }
+}
+
+function loadPostsFromStorage() {
+  try {
+    const raw = localStorage.getItem(POSTS_STORAGE_KEY)
+    if (raw) {
+      const parsed = JSON.parse(raw)
+      if (Array.isArray(parsed) && parsed.length > 0) return parsed
+    }
+  } catch {}
+  return [createPost({ title: 'Untitled post' })]
+}
+
+/* Photos (data URLs) can be MBs — localStorage caps at ~5 MB. Strip them
+   before serialising; images stay in memory for the session. */
+function savePostsToStorage(posts) {
+  try {
+    const stripped = posts.map(p => ({
+      ...p,
+      photo: p.photo ? { ...p.photo, image: null } : p.photo,
+    }))
+    localStorage.setItem(POSTS_STORAGE_KEY, JSON.stringify(stripped))
+  } catch (e) {
+    console.warn('Post save failed:', e)
+  }
+}
+
 function CarouselDesigner({ exportSlide, exporting, setExporting }) {
-  const [hookText, setHookText] = useState(DEFAULT_HOOK)
-  const [takes, setTakes] = useState(DEFAULT_TAKES)
-  const [save, setSave] = useState(DEFAULT_SAVE)
-  const [cta, setCta] = useState(DEFAULT_CTA)
-  const [photo, setPhoto] = useState(DEFAULT_PHOTO)
+  const [posts, setPosts] = useState(loadPostsFromStorage)
+  const [activePostId, setActivePostId] = useState(() => {
+    try { return localStorage.getItem(POSTS_ACTIVE_KEY) || null } catch { return null }
+  })
+  const [postsMenuOpen, setPostsMenuOpen] = useState(false)
+  const [importing, setImporting] = useState(false)
+
+  const activeIdx = Math.max(0, posts.findIndex(p => p.id === activePostId))
+  const activePost = posts[activeIdx] || posts[0]
+
+  useEffect(() => { savePostsToStorage(posts) }, [posts])
+  useEffect(() => {
+    try {
+      if (activePost) localStorage.setItem(POSTS_ACTIVE_KEY, activePost.id)
+    } catch {}
+  }, [activePost])
+
+  /* Guarantees activePostId matches an actual post — if the stored id is
+     gone (post deleted, storage cleared), snap to the first post. */
+  useEffect(() => {
+    if (posts.length && !posts.some(p => p.id === activePostId)) {
+      setActivePostId(posts[0].id)
+    }
+  }, [posts, activePostId])
+
+  const patchActivePost = useCallback((patchOrFn) => {
+    setPosts(prev => {
+      const idx = prev.findIndex(p => p.id === activePostId)
+      const effectiveIdx = idx < 0 ? 0 : idx
+      const current = prev[effectiveIdx]
+      if (!current) return prev
+      const patch = typeof patchOrFn === 'function' ? patchOrFn(current) : patchOrFn
+      const next = { ...current, ...patch }
+      return prev.map((p, i) => i === effectiveIdx ? next : p)
+    })
+  }, [activePostId])
+
+  const makeSetter = (field) => (v) =>
+    patchActivePost(cur => ({ [field]: typeof v === 'function' ? v(cur[field]) : v }))
+
+  const hookText = activePost?.hookText ?? DEFAULT_HOOK
+  const setHookText = makeSetter('hookText')
+  const takes = activePost?.takes ?? DEFAULT_TAKES
+  const setTakes = makeSetter('takes')
+  const save = activePost?.save ?? DEFAULT_SAVE
+  const setSave = makeSetter('save')
+  const cta = activePost?.cta ?? DEFAULT_CTA
+  const setCta = makeSetter('cta')
+  const photo = activePost?.photo ?? DEFAULT_PHOTO
+  const setPhoto = makeSetter('photo')
+  const hookVariant = activePost?.hookVariant ?? 0
+  const setHookVariant = makeSetter('hookVariant')
+
+  /* --- Post management --- */
+  const addPost = () => {
+    const p = createPost({ title: `Post ${posts.length + 1}` })
+    setPosts(prev => [...prev, p])
+    setActivePostId(p.id)
+    setPostsMenuOpen(false)
+  }
+  const deletePost = (id) => {
+    setPosts(prev => {
+      const next = prev.filter(p => p.id !== id)
+      return next.length ? next : [createPost({ title: 'Untitled post' })]
+    })
+    if (id === activePostId) {
+      const remaining = posts.filter(p => p.id !== id)
+      if (remaining.length) setActivePostId(remaining[0].id)
+    }
+  }
+  const renameActivePost = (title) => patchActivePost({ title })
+  const goToPost = (id) => { setActivePostId(id); setPostsMenuOpen(false) }
+  const goPrev = () => { if (activeIdx > 0) setActivePostId(posts[activeIdx - 1].id) }
+  const goNext = () => { if (activeIdx < posts.length - 1) setActivePostId(posts[activeIdx + 1].id) }
+
+  const handlePdfImport = async (e) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    e.target.value = ''  // let the same file re-select
+    setImporting(true)
+    try {
+      const drafts = await parsePdfToPosts(file)
+      if (!drafts.length) {
+        alert('No "Idea N:" posts detected in that PDF. Check the format.')
+        return
+      }
+      const newPosts = drafts.map(d => createPost(d))
+      setPosts(prev => [...prev, ...newPosts])
+      setActivePostId(newPosts[0].id)
+      setPostsMenuOpen(false)
+    } catch (err) {
+      console.error(err)
+      alert('Sorry, couldn\'t parse that PDF: ' + (err.message || err))
+    } finally {
+      setImporting(false)
+    }
+  }
 
   /* Folder sync (iCloud-friendly via File System Access API) */
   const folder = useFolderSync()
@@ -1668,7 +1815,6 @@ function CarouselDesigner({ exportSlide, exporting, setExporting }) {
   const [textMult, setTextMult] = useState(1.0)
   const [previewMode, setPreviewMode] = useState('clean')
   const [postMode, setPostMode] = useState('carousel')  // 'carousel' | 'single'
-  const [hookVariant, setHookVariant] = useState(() => Math.floor(Math.random() * HOOK_VARIANT_COUNT))
   const [currentSlide, setCurrentSlide] = useState(0)
   const [showAll, setShowAll] = useState(false)
 
@@ -1750,6 +1896,58 @@ function CarouselDesigner({ exportSlide, exporting, setExporting }) {
   return (
     <div className="carousel-layout">
       <div className="carousel-controls-col"><div className="carousel-controls-wrapper">
+        <div className="ctrl-section posts-bar-section">
+          <div className="posts-bar">
+            <button className="posts-nav-btn" onClick={goPrev} disabled={activeIdx === 0} title="Previous post">‹</button>
+            <button
+              className="posts-current"
+              onClick={() => setPostsMenuOpen(o => !o)}
+              title="Show all posts"
+            >
+              <span className="posts-count">{activeIdx + 1} / {posts.length}</span>
+              <input
+                className="posts-title-input"
+                value={activePost?.title || ''}
+                onChange={e => renameActivePost(e.target.value)}
+                onClick={e => e.stopPropagation()}
+                placeholder="Untitled post"
+              />
+              <span className="posts-chevron">{postsMenuOpen ? '▲' : '▼'}</span>
+            </button>
+            <button className="posts-nav-btn" onClick={goNext} disabled={activeIdx >= posts.length - 1} title="Next post">›</button>
+            <label className="btn btn-accent posts-import-btn" title="Import a PDF of posts">
+              {importing ? '…' : '📄 Import PDF'}
+              <input type="file" accept="application/pdf,.pdf" style={{ display: 'none' }} onChange={handlePdfImport} disabled={importing} />
+            </label>
+            <button className="btn posts-new-btn" onClick={addPost} title="New empty post">＋</button>
+          </div>
+          {postsMenuOpen && (
+            <>
+              <div className="posts-menu-backdrop" onClick={() => setPostsMenuOpen(false)} />
+              <div className="posts-menu">
+                <div className="posts-menu-header">All posts · {posts.length}</div>
+                <div className="posts-menu-list">
+                  {posts.map((p, i) => (
+                    <div key={p.id} className={`posts-menu-row${p.id === activePostId ? ' on' : ''}`}>
+                      <button className="posts-menu-pick" onClick={() => goToPost(p.id)}>
+                        <span className="posts-menu-num">{i + 1}</span>
+                        <span className="posts-menu-title">{p.title || 'Untitled post'}</span>
+                        <span className="posts-menu-hint">{(p.hookText || '').slice(0, 60)}</span>
+                      </button>
+                      <button
+                        className="posts-menu-del"
+                        onClick={() => deletePost(p.id)}
+                        title="Delete this post"
+                        disabled={posts.length <= 1}
+                      >×</button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </>
+          )}
+        </div>
+
         <div className="ctrl-section">
           <h3 className="ctrl-section-title">Style</h3>
           <div className="control-cards">
