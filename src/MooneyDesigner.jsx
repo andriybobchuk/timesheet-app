@@ -1668,9 +1668,18 @@ function createPost({ id, title, hookText, takes, ctaSub } = {}) {
     save: { ...DEFAULT_SAVE },
     cta: { ...DEFAULT_CTA, sub: ctaSub || DEFAULT_CTA.sub },
     photo: { ...DEFAULT_PHOTO },
-    backdrop: { ...DEFAULT_BACKDROP },
+    backdrops: {},   // { hook, take-0, take-1, ..., save, cta }
     hookVariant: Math.floor(Math.random() * HOOK_VARIANT_COUNT),
   }
+}
+
+/* Stable key per slide — used to look up its backdrop from post.backdrops */
+function slideKeyFor(slide) {
+  if (!slide) return 'hook'
+  if (slide.kind === 'hook') return 'hook'
+  if (slide.kind === 'take') return `take-${slide.index}`
+  if (slide.kind === 'save') return 'save'
+  return 'cta'
 }
 
 /* Per-post backdrop layer. Sits above the base bg but below content.
@@ -1701,6 +1710,90 @@ function BackdropLayer({ backdrop }) {
       <div className="slide-backdrop-tint" style={{ background: `rgba(0,0,0,${tint})` }} />
       {backdrop.vignette && <div className="slide-backdrop-vignette" />}
     </>
+  )
+}
+
+/* Reusable per-slide backdrop editor. Renders inside a slide's editor panel
+   so backdrop config lives right next to the fields it decorates. */
+function BackdropEditor({ backdrop, onUpload, onPatch, onRemove }) {
+  const bd = backdrop || null
+  if (!bd?.image) {
+    return (
+      <div className="backdrop-editor backdrop-editor-empty">
+        <label className="btn btn-accent backdrop-upload-btn">
+          📷 Add backdrop image for this slide
+          <input type="file" accept="image/*" onChange={onUpload} style={{ display: 'none' }} />
+        </label>
+      </div>
+    )
+  }
+  return (
+    <div className="backdrop-editor">
+      <div className="backdrop-preview" style={{ backgroundImage: `url(${bd.image})` }}>
+        <div className="backdrop-preview-overlay" style={{ background: `rgba(0,0,0,${(bd.tint ?? 45) / 100})` }} />
+        <label className="backdrop-preview-btn" title="Replace image">
+          Replace
+          <input type="file" accept="image/*" onChange={onUpload} style={{ display: 'none' }} />
+        </label>
+        <button className="backdrop-remove-btn" onClick={onRemove} title="Remove backdrop">×</button>
+      </div>
+      <div className="backdrop-sliders">
+        <div className="backdrop-slider-row">
+          <label>Tint <span className="size-readout">{bd.tint ?? 45}%</span></label>
+          <input type="range" className="size-slider" min="0" max="90" step="1"
+            value={bd.tint ?? 45}
+            onChange={e => onPatch({ tint: Number(e.target.value) })}
+          />
+        </div>
+        <div className="backdrop-slider-row">
+          <label>Zoom <span className="size-readout">{bd.scale ?? 100}%</span></label>
+          <input type="range" className="size-slider" min="100" max="220" step="1"
+            value={bd.scale ?? 100}
+            onChange={e => onPatch({ scale: Number(e.target.value) })}
+          />
+        </div>
+        <div className="backdrop-slider-row">
+          <label>Blur <span className="size-readout">{bd.blur ?? 0}px</span></label>
+          <input type="range" className="size-slider" min="0" max="30" step="1"
+            value={bd.blur ?? 0}
+            onChange={e => onPatch({ blur: Number(e.target.value) })}
+          />
+        </div>
+        <div className="backdrop-focus-grid">
+          <label>Focus</label>
+          <div className="backdrop-focus-pad"
+            onPointerDown={e => {
+              const target = e.currentTarget
+              target.setPointerCapture(e.pointerId)
+              const move = (ev) => {
+                const r = target.getBoundingClientRect()
+                const x = Math.max(0, Math.min(100, ((ev.clientX - r.left) / r.width) * 100))
+                const y = Math.max(0, Math.min(100, ((ev.clientY - r.top) / r.height) * 100))
+                onPatch({ offsetX: Math.round(x), offsetY: Math.round(y) })
+              }
+              move(e)
+              target.onpointermove = move
+              target.onpointerup = () => { target.onpointermove = null; target.onpointerup = null }
+            }}
+          >
+            <div className="backdrop-focus-dot" style={{
+              left: `${bd.offsetX ?? 50}%`,
+              top: `${bd.offsetY ?? 50}%`,
+            }} />
+          </div>
+          <div className="backdrop-focus-nums">
+            <span>{bd.offsetX ?? 50}% · {bd.offsetY ?? 50}%</span>
+          </div>
+        </div>
+        <label className="editor-toggle-row">
+          <input type="checkbox"
+            checked={bd.vignette ?? true}
+            onChange={e => onPatch({ vignette: e.target.checked })}
+          />
+          Vignette (soft edge darkening)
+        </label>
+      </div>
+    </div>
   )
 }
 
@@ -1782,14 +1875,23 @@ function CarouselDesigner({ exportSlide, exporting, setExporting }) {
   const setPhoto = makeSetter('photo')
   const hookVariant = activePost?.hookVariant ?? 0
   const setHookVariant = makeSetter('hookVariant')
-  const backdrop = activePost?.backdrop ?? DEFAULT_BACKDROP
-  const setBackdrop = makeSetter('backdrop')
+  const backdrops = activePost?.backdrops ?? {}
 
-  const handleBackdropUpload = (e) => {
+  const patchBackdrop = (key, patch) => patchActivePost(cur => {
+    const existing = cur.backdrops?.[key] || { ...DEFAULT_BACKDROP }
+    const next = typeof patch === 'function' ? patch(existing) : { ...existing, ...patch }
+    return { backdrops: { ...(cur.backdrops || {}), [key]: next } }
+  })
+  const removeBackdrop = (key) => patchActivePost(cur => {
+    const rest = { ...(cur.backdrops || {}) }
+    delete rest[key]
+    return { backdrops: rest }
+  })
+  const handleBackdropUpload = (key) => (e) => {
     const file = e.target.files?.[0]
     if (!file) return
     const reader = new FileReader()
-    reader.onload = () => setBackdrop(prev => ({ ...prev, image: reader.result }))
+    reader.onload = () => patchBackdrop(key, { image: reader.result })
     reader.readAsDataURL(file)
     e.target.value = ''
   }
@@ -1911,16 +2013,17 @@ function CarouselDesigner({ exportSlide, exporting, setExporting }) {
   }
 
   const renderSlide = (slide, refCb) => {
+    const bd = backdrops[slideKeyFor(slide)]
     if (slide.kind === 'hook') {
-      return <HookSlide text={hookText} variantIndex={hookVariant} format={format} theme={theme} textMult={textMult} photo={photo} backdrop={backdrop} setHookText={setHookText} setPhoto={setPhoto} slideRef={refCb} />
+      return <HookSlide text={hookText} variantIndex={hookVariant} format={format} theme={theme} textMult={textMult} photo={photo} backdrop={bd} setHookText={setHookText} setPhoto={setPhoto} slideRef={refCb} />
     }
     if (slide.kind === 'take') {
-      return <TakeSlide data={takes[slide.index]} format={format} theme={theme} textMult={textMult} backdrop={backdrop} slideRef={refCb} />
+      return <TakeSlide data={takes[slide.index]} format={format} theme={theme} textMult={textMult} backdrop={bd} slideRef={refCb} />
     }
     if (slide.kind === 'save') {
-      return <SaveSlide data={save} format={format} theme={theme} textMult={textMult} backdrop={backdrop} slideRef={refCb} />
+      return <SaveSlide data={save} format={format} theme={theme} textMult={textMult} backdrop={bd} slideRef={refCb} />
     }
-    return <CTASlide data={cta} format={format} theme={theme} textMult={textMult} backdrop={backdrop} slideRef={refCb} />
+    return <CTASlide data={cta} format={format} theme={theme} textMult={textMult} backdrop={bd} slideRef={refCb} />
   }
 
   const folderOpts = folder.folderHandle
@@ -2144,85 +2247,6 @@ function CarouselDesigner({ exportSlide, exporting, setExporting }) {
             </div>
           </div>
         )}
-
-        <div className="ctrl-section">
-          <h3 className="ctrl-section-title">Backdrop <span className="hint">— background image for every slide in this post</span></h3>
-          <div className="backdrop-panel">
-            {backdrop?.image ? (
-              <>
-                <div className="backdrop-preview" style={{ backgroundImage: `url(${backdrop.image})` }}>
-                  <div className="backdrop-preview-overlay" style={{ background: `rgba(0,0,0,${(backdrop.tint ?? 45) / 100})` }} />
-                  <label className="backdrop-preview-btn" title="Replace image">
-                    Replace
-                    <input type="file" accept="image/*" onChange={handleBackdropUpload} style={{ display: 'none' }} />
-                  </label>
-                  <button className="backdrop-remove-btn" onClick={() => setBackdrop({ ...DEFAULT_BACKDROP })} title="Remove backdrop">×</button>
-                </div>
-                <div className="backdrop-sliders">
-                  <div className="backdrop-slider-row">
-                    <label>Tint <span className="size-readout">{backdrop.tint ?? 45}%</span></label>
-                    <input type="range" className="size-slider" min="0" max="90" step="1"
-                      value={backdrop.tint ?? 45}
-                      onChange={e => setBackdrop(prev => ({ ...prev, tint: Number(e.target.value) }))}
-                    />
-                  </div>
-                  <div className="backdrop-slider-row">
-                    <label>Zoom <span className="size-readout">{backdrop.scale ?? 100}%</span></label>
-                    <input type="range" className="size-slider" min="100" max="220" step="1"
-                      value={backdrop.scale ?? 100}
-                      onChange={e => setBackdrop(prev => ({ ...prev, scale: Number(e.target.value) }))}
-                    />
-                  </div>
-                  <div className="backdrop-slider-row">
-                    <label>Blur <span className="size-readout">{backdrop.blur ?? 0}px</span></label>
-                    <input type="range" className="size-slider" min="0" max="30" step="1"
-                      value={backdrop.blur ?? 0}
-                      onChange={e => setBackdrop(prev => ({ ...prev, blur: Number(e.target.value) }))}
-                    />
-                  </div>
-                  <div className="backdrop-focus-grid">
-                    <label>Focus</label>
-                    <div className="backdrop-focus-pad"
-                      onPointerDown={e => {
-                        const target = e.currentTarget
-                        target.setPointerCapture(e.pointerId)
-                        const move = (ev) => {
-                          const r = target.getBoundingClientRect()
-                          const x = Math.max(0, Math.min(100, ((ev.clientX - r.left) / r.width) * 100))
-                          const y = Math.max(0, Math.min(100, ((ev.clientY - r.top) / r.height) * 100))
-                          setBackdrop(prev => ({ ...prev, offsetX: Math.round(x), offsetY: Math.round(y) }))
-                        }
-                        move(e)
-                        target.onpointermove = move
-                        target.onpointerup = () => { target.onpointermove = null; target.onpointerup = null }
-                      }}
-                    >
-                      <div className="backdrop-focus-dot" style={{
-                        left: `${backdrop.offsetX ?? 50}%`,
-                        top: `${backdrop.offsetY ?? 50}%`,
-                      }} />
-                    </div>
-                    <div className="backdrop-focus-nums">
-                      <span>{backdrop.offsetX ?? 50}% · {backdrop.offsetY ?? 50}%</span>
-                    </div>
-                  </div>
-                  <label className="editor-toggle-row">
-                    <input type="checkbox"
-                      checked={backdrop.vignette ?? true}
-                      onChange={e => setBackdrop(prev => ({ ...prev, vignette: e.target.checked }))}
-                    />
-                    Vignette (soft edge darkening)
-                  </label>
-                </div>
-              </>
-            ) : (
-              <label className="btn btn-accent backdrop-upload-btn">
-                📷 Add a backdrop image
-                <input type="file" accept="image/*" onChange={handleBackdropUpload} style={{ display: 'none' }} />
-              </label>
-            )}
-          </div>
-        </div>
 
         {!showAll && (
           <div className="editor-panel">
@@ -2529,6 +2553,16 @@ function CarouselDesigner({ exportSlide, exporting, setExporting }) {
                 </div>
               </div>
             )}
+
+            <div className="editor-subsection-title">
+              Backdrop <span className="hint">— for this slide only</span>
+            </div>
+            <BackdropEditor
+              backdrop={backdrops[slideKeyFor(currentSlideData)]}
+              onUpload={handleBackdropUpload(slideKeyFor(currentSlideData))}
+              onPatch={(patch) => patchBackdrop(slideKeyFor(currentSlideData), patch)}
+              onRemove={() => removeBackdrop(slideKeyFor(currentSlideData))}
+            />
           </div>
         )}
 

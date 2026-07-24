@@ -3886,3 +3886,26 @@
   color: var(--text-secondary);
   white-space: nowrap;
 }
+
+.mooney-app .editor-subsection-title {
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px dashed rgba(255,255,255,0.08);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--ui-accent);
+  margin-bottom: 8px;
+}
+.mooney-app .editor-subsection-title .hint {
+  font-weight: 500;
+  color: var(--text-secondary);
+  font-size: 10px;
+  letter-spacing: 0;
+  text-transform: none;
+  margin-left: 6px;
+}
+.mooney-app .backdrop-editor-empty {
+  padding: 4px 0;
+}
