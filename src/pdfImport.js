@@ -39,10 +39,10 @@ export async function extractPdfText(file) {
    Idea 21: "Wedding culture is a financial scam"
    We accept ASCII " smart quotes " and even Polish/Latin punctuation. */
 function extractIdeaTitle(header, fallback) {
-  // Try matched-pair quotes first — outer double-quotes preferred, then singles.
-  // Grouping the CLOSING quote to match the OPENING quote character prevents
-  // inner quotes of another type from ending the match early, e.g. the outer
-  // "The 'Good Debt' Lie" won't get cut at the inner apostrophe.
+  // "Carousel N - Title" format (dash or en-dash)
+  const carousel = header.match(/Carousel\s+\d+\s*[-–—]\s*(.+?)(?=\s+Slide\s+\d+|\s*$)/i)
+  if (carousel) return normalize(carousel[1])
+  // "Idea N: 'Title'" — matched-pair quotes so inner quotes don't cut it early
   const doubleQ = header.match(/["“”]([^"“”\n]{1,220})["“”]/)
   if (doubleQ) return normalize(doubleQ[1])
   const singleQ = header.match(/['‘’]([^'‘’\n]{1,220})['‘’]/)
@@ -52,12 +52,33 @@ function extractIdeaTitle(header, fallback) {
   return fallback
 }
 
+/* Parse structured sub-fields inside a slide. Some PDFs label their slide
+   content with "First line:" / "Second line:" / "Body copy:" — extract them
+   so we can map onto the take's title / accent / body respectively. */
+function parseSlideFields(rawText) {
+  const t = ' ' + rawText + ' '
+  const grab = (label) => {
+    const re = new RegExp(
+      `${label}\\s*:\\s*(.+?)(?=\\s+(?:First\\s+line|Second\\s+line|Body\\s+copy)\\s*:|\\s*$)`,
+      'i'
+    )
+    const m = t.match(re)
+    return m ? normalize(m[1]) : ''
+  }
+  const first  = grab('First\\s+line')
+  const second = grab('Second\\s+line')
+  const body   = grab('Body\\s+copy')
+  return { first, second, body, hasLabels: !!(first || second || body) }
+}
+
 /* Split a single idea's block on Slide markers. Handles:
    Slide 1 (Hook): ...
    Slide 2: ...
    Slide 5 (CTA): ... */
 function extractSlides(block) {
-  const slidePattern = /Slide\s+(\d+)(?:\s*\(([^)]+)\))?\s*:\s*/gi
+  // Trailing colon is optional — legacy PDFs write "Slide 1 (Hook):" but the
+  // release format uses "Slide 1 (Hook)" with no colon.
+  const slidePattern = /Slide\s+(\d+)(?:\s*\(([^)]+)\))?\s*:?\s*/gi
   const matches = [...block.matchAll(slidePattern)]
   const slides = []
   for (let i = 0; i < matches.length; i++) {
@@ -73,13 +94,15 @@ function extractSlides(block) {
   return slides
 }
 
-/* Given the raw text of the whole PDF, return an array of Idea blocks. */
+/* Given the raw text of the whole PDF, return an array of post blocks.
+   Supports both formats we've seen so far:
+     - "Idea N: 'Title'"      (legacy)
+     - "Carousel N - Title"   (release format with labeled sub-fields) */
 function splitIdeas(rawText) {
-  // Ideas start with "Idea NN:" or "Idea NN :" — capture with lookahead so
-  // the marker stays at the head of the following block.
+  const marker = /(?=Idea\s+\d+\s*:|Carousel\s+\d+\s*[-–—])/i
   return rawText
-    .split(/(?=Idea\s+\d+\s*:)/i)
-    .filter(b => /Idea\s+\d+\s*:/i.test(b))
+    .split(marker)
+    .filter(b => /(Idea\s+\d+\s*:|Carousel\s+\d+\s*[-–—])/i.test(b))
 }
 
 /* Parse the whole PDF file into an array of Post-shaped objects. Each Post
@@ -94,20 +117,33 @@ export async function parsePdfToPosts(file) {
     const title = extractIdeaTitle(header, `Post ${idx + 1}`)
     const slides = extractSlides(block)
     const hook = slides.find(s => s.num === 1 || (s.label || '').toLowerCase().includes('hook'))
-    const cta  = slides.find(s => (s.label || '').toLowerCase().includes('cta'))
-                || slides[slides.length - 1]
+    const explicitCta = slides.find(s => (s.label || '').toLowerCase().includes('cta'))
+    /* Only treat the last slide as a CTA if the slide is *explicitly* labeled
+       CTA. The release format only has 4 slides per carousel (all takes) with
+       no CTA line, so we must NOT steal slide 4 for the CTA sub-headline. */
+    const cta = explicitCta || null
     const takes = slides
       .filter(s => s !== hook && s !== cta)
       .slice(0, 4)
-      .map((s, i) => ({
-        number: String(i + 1).padStart(2, '0'),
-        title: '',
-        accent: '',
-        body: s.text,
-      }))
+      .map((s, i) => {
+        const { first, second, body, hasLabels } = parseSlideFields(s.text)
+        return {
+          number: String(i + 1).padStart(2, '0'),
+          title:  hasLabels ? first  : '',
+          accent: hasLabels ? second : '',
+          body:   hasLabels ? body   : s.text,
+        }
+      })
+    /* If the Hook slide itself has "First line:" / "Second line:" labels,
+       flatten to a single hookText string (the hook is a plain punchy
+       statement — not a title/accent split). */
+    const hookFields = hook ? parseSlideFields(hook.text) : null
+    const hookText = hookFields && hookFields.hasLabels
+      ? [hookFields.first, hookFields.second, hookFields.body].filter(Boolean).join(' ')
+      : (hook?.text || '')
     return {
       title,
-      hookText: hook?.text || '',
+      hookText,
       takes,
       ctaSub: cta?.text || '',
     }
