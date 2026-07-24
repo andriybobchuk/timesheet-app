@@ -1127,7 +1127,7 @@ function FeatureDesigner({ exportFeature, exporting }) {
   )
 }
 
-function HookSlide({ text, variantIndex, format, theme, textMult = 1, photo, setHookText, setPhoto, slideRef }) {
+function HookSlide({ text, variantIndex, format, theme, textMult = 1, photo, backdrop, setHookText, setPhoto, slideRef }) {
   const updPhoto = (field) => (val) => setPhoto && setPhoto(prev => ({ ...prev, [field]: val }))
   const fmt = CAROUSEL_FORMATS[format]
   const v = variantIndex % HOOK_VARIANT_COUNT
@@ -1137,14 +1137,18 @@ function HookSlide({ text, variantIndex, format, theme, textMult = 1, photo, set
   const secondHalf = words.slice(mid).join(' ')
   const s = scaleHook(text) * textMult
   const sz = (base) => ({ fontSize: `${base * s}px` })
+  // Photo hook variants already have their own image; skip the backdrop layer
+  // so we don't stack two conflicting images.
+  const showBackdrop = !isPhotoVariant(v) && backdrop?.image
 
   return (
-    <div ref={slideRef} className={`carousel-slide hook-slide hook-variant-${v} theme-${theme}`} style={{ width: fmt.w, height: fmt.h }}>
+    <div ref={slideRef} className={`carousel-slide hook-slide hook-variant-${v} theme-${theme}${showBackdrop ? ' has-backdrop' : ''}`} style={{ width: fmt.w, height: fmt.h }}>
       <div className="cs-bg-base" />
       <div className="cs-bg-gradient" />
       <div className="cs-bg-noise" />
       <div className="cs-bg-orb cs-orb-1" />
       <div className="cs-bg-orb cs-orb-2" />
+      {showBackdrop && <BackdropLayer backdrop={backdrop} />}
 
       {v === 0 && (
         <div className="hook-content hook-mega">
@@ -1500,18 +1504,20 @@ function HookSlide({ text, variantIndex, format, theme, textMult = 1, photo, set
   )
 }
 
-function TakeSlide({ data, format, theme, textMult = 1, slideRef }) {
+function TakeSlide({ data, format, theme, textMult = 1, backdrop, slideRef }) {
   const fmt = CAROUSEL_FORMATS[format]
   const titleScale = scaleTakeTitle(data.title, data.accent)
   const bodyScale = scaleTakeBody(data.body)
   const mult = textMult
   const layout = getGraphicLayout(data.graphicSeed)
+  const showBackdrop = !!backdrop?.image
   return (
-    <div ref={slideRef} className={`carousel-slide take-slide theme-${theme}`} style={{ width: fmt.w, height: fmt.h }}>
+    <div ref={slideRef} className={`carousel-slide take-slide theme-${theme}${showBackdrop ? ' has-backdrop' : ''}`} style={{ width: fmt.w, height: fmt.h }}>
       <div className="cs-bg-base" />
       <div className="cs-bg-gradient take-bg" />
       <div className="cs-bg-noise" />
       <div className="cs-bg-orb cs-orb-1" />
+      {showBackdrop && <BackdropLayer backdrop={backdrop} />}
       <div
         className="take-graphic"
         style={{
@@ -1540,7 +1546,7 @@ function TakeSlide({ data, format, theme, textMult = 1, slideRef }) {
   )
 }
 
-function SaveSlide({ data, format, theme, textMult = 1, slideRef }) {
+function SaveSlide({ data, format, theme, textMult = 1, backdrop, slideRef }) {
   const fmt = CAROUSEL_FORMATS[format]
   const headLen = (data.headline || '').length
   const headScale =
@@ -1548,13 +1554,15 @@ function SaveSlide({ data, format, theme, textMult = 1, slideRef }) {
     headLen <= 40 ? 0.85 :
     headLen <= 60 ? 0.7 :
     headLen <= 85 ? 0.58 : 0.48
+  const showBackdrop = !!backdrop?.image
   return (
-    <div ref={slideRef} className={`carousel-slide save-slide theme-${theme}`} style={{ width: fmt.w, height: fmt.h }}>
+    <div ref={slideRef} className={`carousel-slide save-slide theme-${theme}${showBackdrop ? ' has-backdrop' : ''}`} style={{ width: fmt.w, height: fmt.h }}>
       <div className="cs-bg-base" />
       <div className="cs-bg-gradient save-bg" />
       <div className="cs-bg-noise" />
       <div className="cs-bg-orb cs-orb-1" />
       <div className="cs-bg-orb cs-orb-2" />
+      {showBackdrop && <BackdropLayer backdrop={backdrop} />}
 
       <div className="save-mark" aria-hidden="true">
         <svg viewBox="0 0 24 24" fill="currentColor">
@@ -1581,16 +1589,18 @@ function SaveSlide({ data, format, theme, textMult = 1, slideRef }) {
   )
 }
 
-function CTASlide({ data, format, theme, textMult = 1, slideRef }) {
+function CTASlide({ data, format, theme, textMult = 1, backdrop, slideRef }) {
   const fmt = CAROUSEL_FORMATS[format]
   const headScale = scaleCtaHeadline(data.headline) * textMult
   const subScale = scaleCtaSub(data.sub) * textMult
+  const showBackdrop = !!backdrop?.image
   return (
-    <div ref={slideRef} className={`carousel-slide cta-slide theme-${theme}`} style={{ width: fmt.w, height: fmt.h }}>
+    <div ref={slideRef} className={`carousel-slide cta-slide theme-${theme}${showBackdrop ? ' has-backdrop' : ''}`} style={{ width: fmt.w, height: fmt.h }}>
       <div className="cs-bg-base" />
       <div className="cs-bg-gradient cta-bg" />
       <div className="cs-bg-noise" />
       <div className="cs-bg-orb cs-orb-1" />
+      {showBackdrop && <BackdropLayer backdrop={backdrop} />}
       <div className="cs-bg-orb cs-orb-2" />
       <div className="cta-mock-fragment">
         <img src={data.mockImage} alt="" draggable={false} />
@@ -1630,6 +1640,16 @@ function CTASlide({ data, format, theme, textMult = 1, slideRef }) {
 const POSTS_STORAGE_KEY = 'mooney-posts-v1'
 const POSTS_ACTIVE_KEY = 'mooney-active-post-v1'
 
+const DEFAULT_BACKDROP = {
+  image: null,       // data URL (not persisted in localStorage — session only)
+  tint: 45,          // 0-90 dark overlay opacity in %
+  scale: 100,        // 100-220 zoom (100 = cover fit)
+  offsetX: 50,       // 0-100 horizontal focal point in %
+  offsetY: 50,       // 0-100 vertical focal point in %
+  blur: 0,           // 0-30 blur in px
+  vignette: true,    // subtle radial darkening at the edges for readability
+}
+
 function createPost({ id, title, hookText, takes, ctaSub } = {}) {
   const filledTakes = takes && takes.length
     ? takes.slice(0, 4).map((t, i) => ({
@@ -1648,8 +1668,40 @@ function createPost({ id, title, hookText, takes, ctaSub } = {}) {
     save: { ...DEFAULT_SAVE },
     cta: { ...DEFAULT_CTA, sub: ctaSub || DEFAULT_CTA.sub },
     photo: { ...DEFAULT_PHOTO },
+    backdrop: { ...DEFAULT_BACKDROP },
     hookVariant: Math.floor(Math.random() * HOOK_VARIANT_COUNT),
   }
+}
+
+/* Per-post backdrop layer. Sits above the base bg but below content.
+   The IMG uses object-fit:cover so it always fills the slide; transform:scale
+   zooms further; object-position moves the focal point around. Wrapped in
+   an overflow:hidden so any zoomed-in area is cropped cleanly. */
+function BackdropLayer({ backdrop }) {
+  if (!backdrop?.image) return null
+  const scale = Math.max(1, Math.min(2.5, (backdrop.scale ?? 100) / 100))
+  const tint = Math.max(0, Math.min(100, backdrop.tint ?? 45)) / 100
+  const ox = Math.max(0, Math.min(100, backdrop.offsetX ?? 50))
+  const oy = Math.max(0, Math.min(100, backdrop.offsetY ?? 50))
+  const blur = Math.max(0, Math.min(30, backdrop.blur ?? 0))
+  return (
+    <>
+      <div className="slide-backdrop">
+        <img
+          src={backdrop.image}
+          alt=""
+          draggable={false}
+          style={{
+            objectPosition: `${ox}% ${oy}%`,
+            transform: scale !== 1 ? `scale(${scale})` : undefined,
+            filter: blur ? `blur(${blur}px)` : undefined,
+          }}
+        />
+      </div>
+      <div className="slide-backdrop-tint" style={{ background: `rgba(0,0,0,${tint})` }} />
+      {backdrop.vignette && <div className="slide-backdrop-vignette" />}
+    </>
+  )
 }
 
 function loadPostsFromStorage() {
@@ -1730,6 +1782,17 @@ function CarouselDesigner({ exportSlide, exporting, setExporting }) {
   const setPhoto = makeSetter('photo')
   const hookVariant = activePost?.hookVariant ?? 0
   const setHookVariant = makeSetter('hookVariant')
+  const backdrop = activePost?.backdrop ?? DEFAULT_BACKDROP
+  const setBackdrop = makeSetter('backdrop')
+
+  const handleBackdropUpload = (e) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    const reader = new FileReader()
+    reader.onload = () => setBackdrop(prev => ({ ...prev, image: reader.result }))
+    reader.readAsDataURL(file)
+    e.target.value = ''
+  }
 
   /* --- Post management --- */
   const addPost = () => {
@@ -1849,15 +1912,15 @@ function CarouselDesigner({ exportSlide, exporting, setExporting }) {
 
   const renderSlide = (slide, refCb) => {
     if (slide.kind === 'hook') {
-      return <HookSlide text={hookText} variantIndex={hookVariant} format={format} theme={theme} textMult={textMult} photo={photo} setHookText={setHookText} setPhoto={setPhoto} slideRef={refCb} />
+      return <HookSlide text={hookText} variantIndex={hookVariant} format={format} theme={theme} textMult={textMult} photo={photo} backdrop={backdrop} setHookText={setHookText} setPhoto={setPhoto} slideRef={refCb} />
     }
     if (slide.kind === 'take') {
-      return <TakeSlide data={takes[slide.index]} format={format} theme={theme} textMult={textMult} slideRef={refCb} />
+      return <TakeSlide data={takes[slide.index]} format={format} theme={theme} textMult={textMult} backdrop={backdrop} slideRef={refCb} />
     }
     if (slide.kind === 'save') {
-      return <SaveSlide data={save} format={format} theme={theme} textMult={textMult} slideRef={refCb} />
+      return <SaveSlide data={save} format={format} theme={theme} textMult={textMult} backdrop={backdrop} slideRef={refCb} />
     }
-    return <CTASlide data={cta} format={format} theme={theme} textMult={textMult} slideRef={refCb} />
+    return <CTASlide data={cta} format={format} theme={theme} textMult={textMult} backdrop={backdrop} slideRef={refCb} />
   }
 
   const folderOpts = folder.folderHandle
@@ -2081,6 +2144,85 @@ function CarouselDesigner({ exportSlide, exporting, setExporting }) {
             </div>
           </div>
         )}
+
+        <div className="ctrl-section">
+          <h3 className="ctrl-section-title">Backdrop <span className="hint">— background image for every slide in this post</span></h3>
+          <div className="backdrop-panel">
+            {backdrop?.image ? (
+              <>
+                <div className="backdrop-preview" style={{ backgroundImage: `url(${backdrop.image})` }}>
+                  <div className="backdrop-preview-overlay" style={{ background: `rgba(0,0,0,${(backdrop.tint ?? 45) / 100})` }} />
+                  <label className="backdrop-preview-btn" title="Replace image">
+                    Replace
+                    <input type="file" accept="image/*" onChange={handleBackdropUpload} style={{ display: 'none' }} />
+                  </label>
+                  <button className="backdrop-remove-btn" onClick={() => setBackdrop({ ...DEFAULT_BACKDROP })} title="Remove backdrop">×</button>
+                </div>
+                <div className="backdrop-sliders">
+                  <div className="backdrop-slider-row">
+                    <label>Tint <span className="size-readout">{backdrop.tint ?? 45}%</span></label>
+                    <input type="range" className="size-slider" min="0" max="90" step="1"
+                      value={backdrop.tint ?? 45}
+                      onChange={e => setBackdrop(prev => ({ ...prev, tint: Number(e.target.value) }))}
+                    />
+                  </div>
+                  <div className="backdrop-slider-row">
+                    <label>Zoom <span className="size-readout">{backdrop.scale ?? 100}%</span></label>
+                    <input type="range" className="size-slider" min="100" max="220" step="1"
+                      value={backdrop.scale ?? 100}
+                      onChange={e => setBackdrop(prev => ({ ...prev, scale: Number(e.target.value) }))}
+                    />
+                  </div>
+                  <div className="backdrop-slider-row">
+                    <label>Blur <span className="size-readout">{backdrop.blur ?? 0}px</span></label>
+                    <input type="range" className="size-slider" min="0" max="30" step="1"
+                      value={backdrop.blur ?? 0}
+                      onChange={e => setBackdrop(prev => ({ ...prev, blur: Number(e.target.value) }))}
+                    />
+                  </div>
+                  <div className="backdrop-focus-grid">
+                    <label>Focus</label>
+                    <div className="backdrop-focus-pad"
+                      onPointerDown={e => {
+                        const target = e.currentTarget
+                        target.setPointerCapture(e.pointerId)
+                        const move = (ev) => {
+                          const r = target.getBoundingClientRect()
+                          const x = Math.max(0, Math.min(100, ((ev.clientX - r.left) / r.width) * 100))
+                          const y = Math.max(0, Math.min(100, ((ev.clientY - r.top) / r.height) * 100))
+                          setBackdrop(prev => ({ ...prev, offsetX: Math.round(x), offsetY: Math.round(y) }))
+                        }
+                        move(e)
+                        target.onpointermove = move
+                        target.onpointerup = () => { target.onpointermove = null; target.onpointerup = null }
+                      }}
+                    >
+                      <div className="backdrop-focus-dot" style={{
+                        left: `${backdrop.offsetX ?? 50}%`,
+                        top: `${backdrop.offsetY ?? 50}%`,
+                      }} />
+                    </div>
+                    <div className="backdrop-focus-nums">
+                      <span>{backdrop.offsetX ?? 50}% · {backdrop.offsetY ?? 50}%</span>
+                    </div>
+                  </div>
+                  <label className="editor-toggle-row">
+                    <input type="checkbox"
+                      checked={backdrop.vignette ?? true}
+                      onChange={e => setBackdrop(prev => ({ ...prev, vignette: e.target.checked }))}
+                    />
+                    Vignette (soft edge darkening)
+                  </label>
+                </div>
+              </>
+            ) : (
+              <label className="btn btn-accent backdrop-upload-btn">
+                📷 Add a backdrop image
+                <input type="file" accept="image/*" onChange={handleBackdropUpload} style={{ display: 'none' }} />
+              </label>
+            )}
+          </div>
+        </div>
 
         {!showAll && (
           <div className="editor-panel">
