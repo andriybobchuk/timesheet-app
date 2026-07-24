@@ -1373,20 +1373,17 @@ function HookSlide({ text, variantIndex, format, theme, textMult = 1, photo, bac
       )}
 
       {isPhotoVariant(v) && (
-        /* PHOTO COLLECTION — 3 styles. Shared shell: full-bleed image. */
+        /* PHOTO COLLECTION — 3 styles. Background image + tint come from the
+           slide's own backdrop entry, so the Backdrop section in the editor
+           is the single source of truth for the photo. */
         <div className={`hook-content hook-photo hook-photo-${v - TYPO_VARIANT_COUNT}`}>
-          {photo?.image ? (
-            <img className="hook-photo-bg" src={photo.image} alt="" draggable={false} />
+          {backdrop?.image ? (
+            <BackdropLayer backdrop={backdrop} />
           ) : (
             <div className="hook-photo-placeholder">
               <div className="hook-photo-placeholder-icon">📷</div>
-              <div>tap "upload photo" in the editor</div>
+              <div>Add a backdrop image below</div>
             </div>
-          )}
-
-          {/* Adjustable dark overlay — available on every photo variant */}
-          {isPhotoVariant(v) && (
-            <div className="hp-dark" style={{ opacity: (photo?.darkness ?? 35) / 100 }} />
           )}
 
           {v === 21 && (
@@ -2257,49 +2254,6 @@ function CarouselDesigner({ exportSlide, exporting, setExporting }) {
               <>
                 {isPhotoVariant(hookVariant) ? (
                   <div className="photo-controls">
-                    <label className="editor-label">Background photo (kept at full quality)</label>
-                    <div className="photo-upload-row">
-                      <label className="btn btn-accent photo-upload-btn">
-                        📷 {photo.image ? 'Replace photo' : 'Upload photo'}
-                        <input
-                          type="file"
-                          accept="image/*"
-                          onChange={handlePhotoUpload}
-                          style={{ display: 'none' }}
-                        />
-                      </label>
-                      {folder.supported && (
-                        <button
-                          type="button"
-                          className="btn"
-                          onClick={openFolderPicker}
-                          title={folder.folderHandle ? `Browse /${folder.folderName}` : 'Connect a folder'}
-                        >
-                          📂 Browse
-                        </button>
-                      )}
-                      {photo.image && (
-                        <button
-                          type="button"
-                          className="btn"
-                          onClick={() => setPhoto(prev => ({ ...prev, image: null }))}
-                        >
-                          Clear
-                        </button>
-                      )}
-                    </div>
-
-                    <label className="editor-label">
-                      Photo darkness <span className="size-readout">{photo.darkness}%</span>
-                    </label>
-                    <input
-                      type="range"
-                      className="size-slider"
-                      min="0" max="90" step="1"
-                      value={photo.darkness}
-                      onChange={e => setPhoto(prev => ({ ...prev, darkness: Number(e.target.value) }))}
-                    />
-
                     {hookVariant === 21 && (
                       <div className="ph-block">
                         <div className="ph-block-title">Title</div>
@@ -2457,7 +2411,7 @@ function CarouselDesigner({ exportSlide, exporting, setExporting }) {
                       </>
                     )}
 
-                    <p className="editor-tip">✏︎ Tap any text on the preview to edit · ↔︎ drag any element to reposition.</p>
+                    <p className="editor-tip">📷 Set the background image in the Backdrop section below · ✏︎ Tap any text on the preview to edit · ↔︎ drag any element to reposition.</p>
                   </div>
                 ) : (
                   <>
